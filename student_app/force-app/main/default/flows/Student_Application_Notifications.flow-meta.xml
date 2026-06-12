@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Sends email notifications to students when their application status changes (Submitted, Approved, Rejected).</description>
+    <environments>Default</environments>
+    <interviewLabel>Student Application Notifications {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Student Application Notifications</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>1 OR 2 OR 3</filterLogic>
+        <filters>
+            <field>Application_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Submitted</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Application_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Approved</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Application_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Rejected</stringValue>
+            </value>
+        </filters>
+        <object>Student_Application__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <connector>
+            <targetReference>Check_Status</targetReference>
+        </connector>
+    </start>
+    <decisions>
+        <description>Routes the notification to the correct email template based on Application_Status__c.</description>
+        <name>Check_Status</name>
+        <label>Check Application Status</label>
+        <locationX>270</locationX>
+        <locationY>120</locationY>
+        <defaultConnectorLabel>Other</defaultConnectorLabel>
+        <rules>
+            <name>Status_Submitted</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Application_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Submitted</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Submitted_Email</targetReference>
+            </connector>
+            <label>Status is Submitted</label>
+        </rules>
+        <rules>
+            <name>Status_Approved</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Application_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Approved</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Approved_Email</targetReference>
+            </connector>
+            <label>Status is Approved</label>
+        </rules>
+        <rules>
+            <name>Status_Rejected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Application_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Rejected</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Rejected_Email</targetReference>
+            </connector>
+            <label>Status is Rejected</label>
+        </rules>
+    </decisions>
+    <actionCalls>
+        <description>Sends confirmation email when application is submitted.</description>
+        <name>Send_Submitted_Email</name>
+        <label>Send Submitted Confirmation</label>
+        <locationX>50</locationX>
+        <locationY>260</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>$Record.Email__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Your Application Has Been Received</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <stringValue>Dear Student,
+
+Thank you for submitting your application. We have successfully received Application #{!$Record.Name} and it is now under review.
+
+Our admissions team will review your application within 5-7 business days. You will receive an email once a decision has been made.
+
+Applied Course: {!$Record.Applied_Course__r.Name}
+Current Status: Submitted
+
+If you have any questions, please contact the admissions office.
+
+Best regards,
+Admissions Office</stringValue>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <actionCalls>
+        <description>Sends congratulations email when application is approved.</description>
+        <name>Send_Approved_Email</name>
+        <label>Send Approval Notification</label>
+        <locationX>270</locationX>
+        <locationY>260</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>$Record.Email__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Congratulations! Your Application Has Been Approved</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <stringValue>Dear Student,
+
+Congratulations! We are delighted to inform you that your application has been APPROVED.
+
+Please log in to the Student Portal to complete your fee payment and confirm your enrollment.
+
+Next Steps:
+1. Complete your fee payment to secure your seat.
+2. Upload any remaining required documents.
+3. You will receive your admission letter once payment is confirmed.
+
+Best regards,
+Admissions Office</stringValue>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <actionCalls>
+        <description>Sends rejection notification email.</description>
+        <name>Send_Rejected_Email</name>
+        <label>Send Rejection Notification</label>
+        <locationX>490</locationX>
+        <locationY>260</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>$Record.Email__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Update on Your Application Status</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <stringValue>Dear Student,
+
+We regret to inform you that your application has not been approved at this time.
+
+We understand this may be disappointing. You are welcome to reapply in the next admission cycle. Our admissions counselors are available to guide you.
+
+If you believe there has been an error, please contact the admissions office within 7 days.
+
+Thank you for your interest in our university.
+
+Best regards,
+Admissions Office</stringValue>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <status>Active</status>
+</Flow>

@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "skills": {
+    "sf-ai-agentforce": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-ai-agentforce/SKILL.md",
+      "computedHash": "cbdc4aa43a385f3435272f08cc625f669aaa4ebc647cdd28fab8a2e059f20b21"
+    },
+    "sf-ai-agentforce-grid": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-ai-agentforce-grid/SKILL.md",
+      "computedHash": "d0952d6cfedaa234e977f86894e7c8de6ac00a2b2a3ee34b4a8d5524cadef826"
+    },
+    "sf-ai-agentforce-observability": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-ai-agentforce-observability/SKILL.md",
+      "computedHash": "01b3e3632a1efbd4693e77ddd166842c4a5f7328d4ec8659b410d364a4b85e3b"
+    },
+    "sf-ai-agentforce-persona": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-ai-agentforce-persona/SKILL.md",
+      "computedHash": "838bebc8c53da63fdfa346fec987add724cc9f06fb4b1c802045aa536d47ad32"
+    },
+    "sf-ai-agentforce-testing": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-ai-agentforce-testing/SKILL.md",
+      "computedHash": "0ff5c7ab12ab030384dd07a273c5c7a0c62599e71553545a9a693f3f43d547e5"
+    },
+    "sf-ai-agentscript": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-ai-agentscript/SKILL.md",
+      "computedHash": "92a44e7658a9445e0e7ffacc8499adceab69a2e4267747cc10cb197aa8a5fbc1"
+    },
+    "sf-apex": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-apex/SKILL.md",
+      "computedHash": "a0effa99e16bc8e18ec43bf3929161310b16830f2edbda29f98cfc1a1e7d48f0"
+    },
+    "sf-connected-apps": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-connected-apps/SKILL.md",
+      "computedHash": "153704337a965178f24d3125531657e750d0135256a60467bbfe136c8c893764"
+    },
+    "sf-data": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-data/SKILL.md",
+      "computedHash": "e5ec233c998db2f27a398657be927ed4d39af4ff0409ddb132029eab48f5b661"
+    },
+    "sf-datacloud": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-datacloud/SKILL.md",
+      "computedHash": "36b4f118c5fcf666791ef59b68613e6936809827974c46c9fd746b56ca6cb2b1"
+    },
+    "sf-datacloud-act": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-datacloud-act/SKILL.md",
+      "computedHash": "cd8fb565903b5990544437bcff79a3bcdf9d8b995c54fbe40212341eecad2aaf"
+    },
+    "sf-datacloud-connect": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-datacloud-connect/SKILL.md",
+      "computedHash": "a347e3eab952174b20a15eb179799a904d9b08c538d29a7af3e4b18f1ffb54fa"
+    },
+    "sf-datacloud-harmonize": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-datacloud-harmonize/SKILL.md",
+      "computedHash": "f4d698f542751e02c6d0d799a263f8460b44668554526a66ecd598d9ad12ac34"
+    },
+    "sf-datacloud-prepare": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-datacloud-prepare/SKILL.md",
+      "computedHash": "34f0ae5aaa0d497d27d72dda2703766e8497b239962d0ac870e64ff9ac222638"
+    },
+    "sf-datacloud-retrieve": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-datacloud-retrieve/SKILL.md",
+      "computedHash": "a9cc3645e976a26c07840a99e89ecb5ad7fb45aaf7e0c274d458b59df58474be"
+    },
+    "sf-datacloud-segment": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-datacloud-segment/SKILL.md",
+      "computedHash": "b9c51f15dd8ad5f7672a951426b1b59d7eb7d53fd8302dcbd9450f0387a80978"
+    },
+    "sf-debug": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-debug/SKILL.md",
+      "computedHash": "45de1ce6c84c5ff8e0a09fca4bed84d6be3e45364b190dc33c001c37f6a6cc45"
+    },
+    "sf-deploy": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-deploy/SKILL.md",
+      "computedHash": "37e48831d68242aedc7aa9eb8861e261e0b858ea906f9a47a52302e1ee8887a1"
+    },
+    "sf-diagram-mermaid": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-diagram-mermaid/SKILL.md",
+      "computedHash": "7d5986ff6e38ff6bd4603b031e557fc6c0a6bbd60607bfbb0cfd6c8f89204241"
+    },
+    "sf-diagram-nanobananapro": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-diagram-nanobananapro/SKILL.md",
+      "computedHash": "e77cb61967bea2556ac0b2cb5e74f28a1c5a170945431f48c4bbb67c2e97e8d5"
+    },
+    "sf-docs": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-docs/SKILL.md",
+      "computedHash": "da2f991ad2d911b019d20798b11c814b0441b9d82ed84d0f0a57e40b4c7529f7"
+    },
+    "sf-flex-estimator": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-flex-estimator/SKILL.md",
+      "computedHash": "89127f1e265ed4b0277f8d7fae53f4c79ad15be4ceb08a786d20adb9f2f4d431"
+    },
+    "sf-flow": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-flow/SKILL.md",
+      "computedHash": "98b50bc369f5f7952e20f3aff3e6f0e8eb3b71f6d41cd139a4b667c84511224c"
+    },
+    "sf-industry-cme-epc-model": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-industry-cme-epc-model/SKILL.md",
+      "computedHash": "9e1a71b8729f1edcfc950761133bf1b852e0682e5a790018fc71e66a39c38cd9"
+    },
+    "sf-industry-commoncore-callable-apex": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-industry-commoncore-callable-apex/SKILL.md",
+      "computedHash": "6cfcb4f5b337e7ed2f0e02f6b700bf809d07c01469e189720b63eaa738456a65"
+    },
+    "sf-industry-commoncore-datamapper": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-industry-commoncore-datamapper/SKILL.md",
+      "computedHash": "a7a6cb21cb4ba4d2d16203cd2ce4cf6b3bf8234e553202e9f189c7d765e3a053"
+    },
+    "sf-industry-commoncore-flexcard": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-industry-commoncore-flexcard/SKILL.md",
+      "computedHash": "5adde932b198140f0331444568df007208ac47c2eac872f0e90fa86caa304b58"
+    },
+    "sf-industry-commoncore-integration-procedure": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-industry-commoncore-integration-procedure/SKILL.md",
+      "computedHash": "d204e0c4021cfb9ee8e36d2d2895719e92760748ad21fccb4c887081b9a3892d"
+    },
+    "sf-industry-commoncore-omniscript": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-industry-commoncore-omniscript/SKILL.md",
+      "computedHash": "e5477a054232add65a6f27d044b8c4cf18b5250851265604870015832ae60731"
+    },
+    "sf-industry-commoncore-omnistudio-analyze": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-industry-commoncore-omnistudio-analyze/SKILL.md",
+      "computedHash": "c5b18d9bdc2af40f1422adbb277c303211d8c32688e5e04436f6fa7099091e7c"
+    },
+    "sf-integration": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-integration/SKILL.md",
+      "computedHash": "86456c9c4eb4358cc19aa87669b21d09bb829a8544ccb73f2ea8ea1595b116d2"
+    },
+    "sf-lwc": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-lwc/SKILL.md",
+      "computedHash": "595faf832a32aa329c3494871539c42987f695f52418d731fe0dc2ba7be1df02"
+    },
+    "sf-metadata": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-metadata/SKILL.md",
+      "computedHash": "66282a6fcec548897a0582f36723cbf630878ca9e36faefad54d3844a21bafd9"
+    },
+    "sf-permissions": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-permissions/SKILL.md",
+      "computedHash": "b70469ce43166771c4f13c92b0aecab426d387a5b89bfb8248b40f39dbcf6ba8"
+    },
+    "sf-soql": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-soql/SKILL.md",
+      "computedHash": "4c8d2171364cc7ae44f54be162e232ed9adbc27cd59dbb28305b99755a1619e7"
+    },
+    "sf-testing": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-testing/SKILL.md",
+      "computedHash": "f126ff2415fcf46c4037e496fd4d546a4343cf8d395a11e530eb77b7a7e16f87"
+    },
+    "sf-vlocity-build-deploy": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sf-vlocity-build-deploy/SKILL.md",
+      "computedHash": "09236e8105f5d805524a12528d06bf0cc0e6ae5c015c088e12ebb27c3724d54d"
+    }
+  }
+}

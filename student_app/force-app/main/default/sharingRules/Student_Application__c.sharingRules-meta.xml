@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingOwnerRules>
+        <fullName>Share_All_Applications_With_Executive</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Share All Applications With Executive</label>
+        <sharedTo>
+            <role>Admission_Executive</role>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinates>System_Administrator</roleAndSubordinates>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Share_All_Applications_With_Verifier</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Share All Applications With Verifier</label>
+        <sharedTo>
+            <role>Document_Verifier</role>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinates>System_Administrator</roleAndSubordinates>
+        </sharedFrom>
+    </sharingOwnerRules>
+</SharingRules>

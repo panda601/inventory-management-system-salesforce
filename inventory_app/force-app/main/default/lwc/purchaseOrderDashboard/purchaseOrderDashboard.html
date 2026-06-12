@@ -1,0 +1,70 @@
+<template>
+    <div class="po-dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+            <div>
+                <h2 class="dashboard-title">Purchase Order Dashboard</h2>
+                <p class="dashboard-subtitle">Monitor and track supplier procurement requests</p>
+            </div>
+            <button class="refresh-button" onclick={handleRefresh} title="Refresh POs">
+                <lightning-icon icon-name="utility:refresh" size="x-small" class="refresh-icon" variant="inverse"></lightning-icon>
+            </button>
+        </div>
+
+        <template if:true={error}>
+            <div class="error-container slds-m-bottom_medium">
+                <span>Error loading purchase orders: {error.body.message}</span>
+            </div>
+        </template>
+
+        <!-- Segmented Tab bar -->
+        <div class="tab-bar slds-m-bottom_medium">
+            <template for:each={tabOptions} for:item="tab">
+                <button 
+                    key={tab.value} 
+                    class={tab.class} 
+                    onclick={handleTabClick} 
+                    data-tab={tab.value}>
+                    <span class="tab-label">{tab.label}</span>
+                    <span class="tab-count">{tab.count}</span>
+                </button>
+            </template>
+        </div>
+
+        <!-- Orders list -->
+        <template if:true={hasOrders}>
+            <div class="table-container">
+                <table class="po-table">
+                    <thead>
+                        <tr>
+                            <th>PO Number</th>
+                            <th>Supplier</th>
+                            <th>Order Date</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={currentOrders} for:item="po">
+                            <tr key={po.Id}>
+                                <td class="po-number">{po.Name}</td>
+                                <td class="po-supplier">{po.Supplier__r.Supplier_Name__c}</td>
+                                <td class="po-date">
+                                    <lightning-formatted-date-time value={po.Order_Date__c} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                </td>
+                                <td class="po-amount">
+                                    <lightning-formatted-number value={po.Total_Amount__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+        <template if:false={hasOrders}>
+            <div class="no-orders">
+                <lightning-icon icon-name="utility:inbox" size="medium" variant="info" class="slds-m-bottom_x-small"></lightning-icon>
+                <p>No purchase orders found with status "{activeTab}".</p>
+            </div>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>Payment__c.Payment_Number__c</field>
+    </columns>
+    <columns>
+        <field>Payment__c.Student_Application__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Payment__c.Amount__c</field>
+    </columns>
+    <columns>
+        <field>Payment__c.Payment_Status__c</field>
+    </columns>
+    <columns>
+        <field>Payment__c.Payment_Date__c</field>
+    </columns>
+    <description>Admissions payments summarized by Applied Course Name</description>
+    <format>Summary</format>
+    <fullName>Student_App_Reports/Payments_by_Course</fullName>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Payment__c.Course__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Payments by Course</name>
+    <reportType>CustomEntity$Payment__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+</Report>

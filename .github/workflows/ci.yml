@@ -1,0 +1,75 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Check Code Formatting (Prettier)
+      run: npm run prettier:verify
+
+    - name: Run ESLint
+      run: npm run lint
+
+  lwc-unit-tests:
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Run LWC Unit Tests
+      run: npm run test
+
+  apex-validation:
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    # This job runs a static code analysis on Apex code using PMD
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    - name: Install PMD
+      run: |
+        PMD_VERSION="7.0.0"
+        wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F$PMD_VERSION/pmd-dist-$PMD_VERSION-bin.zip
+        unzip pmd-dist-$PMD_VERSION-bin.zip
+        mv pmd-bin-$PMD_VERSION pmd
+
+    - name: Run Apex PMD Static Analysis
+      run: |
+        ./pmd/bin/pmd check -d student_app/force-app/main/default/classes,inventory_app/force-app/main/default/classes -f text -R category/apex/design.xml,category/apex/security.xml || true

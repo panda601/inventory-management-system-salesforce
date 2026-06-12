@@ -1,0 +1,151 @@
+<template>
+    <div class="detail-container">
+        <template if:true={hasProduct}>
+            <template if:true={product.data}>
+                <!-- Detail Header -->
+                <div class="detail-header slds-m-bottom_medium">
+                    <h2 class="detail-title">{product.data.Product_Name__c}</h2>
+                    <span class="detail-sku">SKU: {product.data.SKU__c}</span>
+                </div>
+
+                <div class="slds-grid slds-wrap slds-gutters_direct-small">
+                    <!-- Product & Stock Info (Column 1) -->
+                    <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-m-bottom_medium">
+                        <!-- Product Info Card -->
+                        <div class="info-card">
+                            <h3 class="card-section-title">Product Information</h3>
+                            <div class="info-list">
+                                <div class="info-item">
+                                    <span class="label">Category</span>
+                                    <span class="value">{product.data.Category__c}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Price</span>
+                                    <span class="value price-val">
+                                        <lightning-formatted-number value={product.data.Price__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                    </span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">System Status</span>
+                                    <span class="value">{product.data.Status__c}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stock Info Card -->
+                        <div class="info-card slds-m-top_medium">
+                            <h3 class="card-section-title">Stock Status</h3>
+                            <div class="info-list">
+                                <div class="info-item">
+                                    <span class="label">Current Stock</span>
+                                    <span class="value">{product.data.Current_Stock__c} units</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Minimum Stock Limit</span>
+                                    <span class="value">{product.data.Minimum_Stock__c} units</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Status</span>
+                                    <span class={stockStatusClass}>{stockStatusLabel}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Supplier Info (Column 2) -->
+                    <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-m-bottom_medium">
+                        <div class="info-card supplier-card">
+                            <h3 class="card-section-title">Supplier Information</h3>
+                            <template if:true={supplier.data}>
+                                <div class="info-list">
+                                    <div class="info-item">
+                                        <span class="label">Supplier Name</span>
+                                        <span class="value supplier-name">{supplier.data.Supplier_Name__c}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Email</span>
+                                        <span class="value">
+                                            <template if:true={supplier.data.Email__c}>
+                                                <a href={supplier.data.Email__c} class="link">{supplier.data.Email__c}</a>
+                                            </template>
+                                            <template if:false={supplier.data.Email__c}>N/A</template>
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Phone</span>
+                                        <span class="value">{supplier.data.Phone__c}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Address</span>
+                                        <span class="value address-val">{supplier.data.Address__c}</span>
+                                    </div>
+                                </div>
+                            </template>
+                            <template if:false={supplier.data}>
+                                <div class="no-supplier">
+                                    <lightning-icon icon-name="utility:info_alt" size="small" variant="info" class="slds-m-bottom_xx-small"></lightning-icon>
+                                    <p>No supplier order history found for this product.</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Transaction History (Full Width) -->
+                    <div class="slds-col slds-size_1-1 slds-m-top_medium">
+                        <div class="info-card">
+                            <h3 class="card-section-title">Recent Stock Transactions</h3>
+                            <template if:true={transactions.data}>
+                                <template if:true={transactions.data.length}>
+                                    <div class="table-container">
+                                        <table class="transaction-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Txn Code</th>
+                                                    <th>Type</th>
+                                                    <th>Qty</th>
+                                                    <th>Date/Time</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={transactions.data} for:item="txn">
+                                                    <tr key={txn.Id}>
+                                                        <td class="txn-name">{txn.Name}</td>
+                                                        <td>
+                                                            <span class={txn.Transaction_Type__c}>{txn.Transaction_Type__c}</span>
+                                                        </td>
+                                                        <td class="txn-qty">{txn.Quantity__c}</td>
+                                                        <td class="txn-date">
+                                                            <lightning-formatted-date-time value={txn.Transaction_Date__c} year="numeric" month="short" day="2-digit" hour="2-digit" minute="2-digit"></lightning-formatted-date-time>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </template>
+                                <template if:false={transactions.data.length}>
+                                    <p class="no-transactions">No stock transaction history records found.</p>
+                                </template>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <template if:true={product.error}>
+                <div class="error-container">
+                    <span>Error loading details: {product.error.body.message}</span>
+                </div>
+            </template>
+        </template>
+
+        <template if:false={hasProduct}>
+            <div class="placeholder-container">
+                <div class="placeholder-content">
+                    <lightning-icon icon-name="custom:custom62" size="large" class="placeholder-icon"></lightning-icon>
+                    <h3>Select a Product</h3>
+                    <p>Select any product from the catalog to inspect its detailed specifications, current stock status, suppliers, and recent transaction history.</p>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

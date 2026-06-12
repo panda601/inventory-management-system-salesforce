@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>ProductSelected</masterLabel>
+    <isExposed>true</isExposed>
+    <description>Message channel to publish selected product ID for master-detail views</description>
+    <lightningMessageFields>
+        <fieldName>productId</fieldName>
+        <description>The Salesforce Record ID of the selected Product</description>
+    </lightningMessageFields>
+</LightningMessageChannel>

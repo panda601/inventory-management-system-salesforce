@@ -1,0 +1,11 @@
+# Ignore temporary directories
+.sf/
+.sfdx/
+node_modules/
+coverage/
+dist/
+.pmdCache
+.eslintcache
+package-lock.json
+package.json
+sfdx-project.json

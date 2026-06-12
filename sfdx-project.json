@@ -1,0 +1,21 @@
+{
+  "packageDirectories": [
+    {
+      "path": "student_app/force-app",
+      "default": true,
+      "package": "StudentApp",
+      "versionName": "Version 1.0",
+      "versionNumber": "1.0.0.NEXT"
+    },
+    {
+      "path": "inventory_app/force-app",
+      "package": "InventoryApp",
+      "versionName": "Version 1.0",
+      "versionNumber": "1.0.0.NEXT"
+    }
+  ],
+  "name": "Salesforce-Enterprise-Monorepo",
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "65.0"
+}

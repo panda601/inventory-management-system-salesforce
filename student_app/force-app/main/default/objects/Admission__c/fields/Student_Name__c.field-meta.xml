@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Student_Name__c</fullName>
+    <label>Student Name</label>
+    <type>Text</type>
+    <required>false</required>
+
+
+
+
+
+
+
+    <formula>Student_Application__r.First_Name__c & ' ' & Student_Application__r.Last_Name__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+</CustomField>

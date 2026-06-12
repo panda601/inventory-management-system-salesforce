@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Product__c.Current_Stock__c</field>
+    </columns>
+    <columns>
+        <field>Product__c.Minimum_Stock__c</field>
+    </columns>
+    <description>List of products that have fallen below the minimum safety stock levels.</description>
+    <filter>
+        <criteriaItems>
+            <column>Product__c.Current_Stock__c</column>
+            <columnToColumn>true</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>lessThan</operator>
+            <value>Product__c.Minimum_Stock__c</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <fullName>Inventory_Management_Reports/Low_Stock_Report</fullName>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Product__c.Product_Name__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Low Stock Report</name>
+    <reportType>CustomEntity$Product__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+</Report>

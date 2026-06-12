@@ -1,0 +1,86 @@
+<template>
+    <div class="sales-dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+            <div>
+                <h2 class="dashboard-title">Sales & Revenue Dashboard</h2>
+                <p class="dashboard-subtitle">Monitor customer demand and financial sales performance</p>
+            </div>
+            <button class="refresh-button" onclick={handleRefresh} title="Refresh Sales">
+                <lightning-icon icon-name="utility:refresh" size="x-small" class="refresh-icon" variant="inverse"></lightning-icon>
+            </button>
+        </div>
+
+        <template if:true={error}>
+            <div class="error-container slds-m-bottom_medium">
+                <span>Error loading sales metrics: {error.body.message}</span>
+            </div>
+        </template>
+
+        <!-- KPI Cards -->
+        <div class="slds-grid slds-wrap slds-gutters_direct-small slds-m-bottom_large">
+            <!-- Total Orders Card -->
+            <div class="slds-col slds-size_1-1 slds-small-size_1-2 slds-m-bottom_small">
+                <div class="kpi-card total-orders">
+                    <div class="kpi-icon-wrapper">
+                        <lightning-icon icon-name="standard:orders" size="medium"></lightning-icon>
+                    </div>
+                    <div class="kpi-details">
+                        <span class="kpi-label">Total Sales Orders</span>
+                        <h3 class="kpi-value">{totalOrders}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Card -->
+            <div class="slds-col slds-size_1-1 slds-small-size_1-2 slds-m-bottom_small">
+                <div class="kpi-card total-revenue">
+                    <div class="kpi-icon-wrapper">
+                        <lightning-icon icon-name="custom:custom17" size="medium"></lightning-icon>
+                    </div>
+                    <div class="kpi-details">
+                        <span class="kpi-label">Confirmed Revenue</span>
+                        <h3 class="kpi-value">
+                            <lightning-formatted-number value={totalRevenue} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Sales Breakdown -->
+        <div class="breakdown-card">
+            <h3 class="breakdown-title">Product Sales Performance</h3>
+            <template if:true={hasProductSales}>
+                <div class="table-container">
+                    <table class="sales-table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Qty Sold</th>
+                                <th>Total Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={productSales} for:item="sale">
+                                <tr key={sale.productName}>
+                                    <td class="product-name">{sale.productName}</td>
+                                    <td class="sold-qty">{sale.quantitySold} units</td>
+                                    <td class="revenue-amount">
+                                        <lightning-formatted-number value={sale.totalSales} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+            <template if:false={hasProductSales}>
+                <div class="no-sales">
+                    <lightning-icon icon-name="utility:graph" size="medium" variant="info" class="slds-m-bottom_x-small"></lightning-icon>
+                    <p>No product sales recorded yet.</p>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

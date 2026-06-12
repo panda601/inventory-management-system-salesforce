@@ -1,0 +1,167 @@
+.sales-dashboard-container {
+    background: #0f172a;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    color: #f8fafc;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    height: 100%;
+}
+
+.dashboard-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #38bdf8;
+    margin: 0;
+}
+
+.dashboard-subtitle {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 2px 0 0 0;
+}
+
+.refresh-button {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #f8fafc;
+    padding: 0.4rem;
+    border-radius: 6px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.refresh-button:hover {
+    background: #38bdf8;
+    color: #0f172a;
+    border-color: #38bdf8;
+}
+
+.refresh-icon {
+    --sds-c-icon-color-foreground: currentColor;
+}
+
+.error-container {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 0.75rem;
+    border-radius: 8px;
+    color: #fca5a5;
+    display: flex;
+    align-items: center;
+}
+
+.kpi-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    transition: transform 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    border-color: #475569;
+}
+
+.kpi-icon-wrapper {
+    background: #334155;
+    padding: 0.75rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.total-orders .kpi-icon-wrapper { background: rgba(56, 189, 248, 0.1); }
+.total-orders lightning-icon { --sds-c-icon-color-foreground: #38bdf8; }
+
+.total-revenue .kpi-icon-wrapper { background: rgba(16, 185, 129, 0.1); }
+.total-revenue lightning-icon { --sds-c-icon-color-foreground: #10b981; }
+
+.kpi-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-label {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.kpi-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 4px 0 0 0;
+}
+
+.breakdown-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 1.25rem;
+}
+
+.breakdown-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #38bdf8;
+    margin-bottom: 1rem;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.sales-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.sales-table th {
+    color: #94a3b8;
+    font-weight: 600;
+    padding: 10px 14px;
+    border-bottom: 2px solid #334155;
+}
+
+.sales-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #334155;
+    color: #f8fafc;
+}
+
+.sales-table tr:hover td {
+    background: #0f172a;
+}
+
+.product-name {
+    font-weight: 700;
+}
+
+.sold-qty {
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.revenue-amount {
+    font-weight: 700;
+    color: #10b981;
+}
+
+.no-sales {
+    text-align: center;
+    padding: 2.5rem;
+    color: #94a3b8;
+}

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <decisions>
+        <name>Is_Status_Approved</name>
+        <label>Is Status Changed to Approved?</label>
+        <locationX>314</locationX>
+        <locationY>278</locationY>
+        <defaultConnectorLabel>Not Approved</defaultConnectorLabel>
+        <rules>
+            <name>Status_Is_Approved</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Application_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Paid</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.Application_Status__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Paid</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Admission_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Admission_Record</targetReference>
+            </connector>
+            <label>Yes - Status is Approved</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_Status_Rejected</name>
+        <label>Is Status Changed to Rejected?</label>
+        <locationX>578</locationX>
+        <locationY>278</locationY>
+        <defaultConnectorLabel>Not Rejected</defaultConnectorLabel>
+        <rules>
+            <name>Status_Is_Rejected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Application_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Rejected</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.Application_Status__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Rejected</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Rejection_Email</targetReference>
+            </connector>
+            <label>Yes - Status is Rejected</label>
+        </rules>
+    </decisions>
+    <description>After save flow for Student Application - creates Admission on approval and sends rejection email</description>
+    <interviewLabel>Student_Application_After_Save {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Student Application - After Save Actions</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Create_Admission_Record</name>
+        <label>Create Admission Record</label>
+        <locationX>182</locationX>
+        <locationY>398</locationY>
+        <inputAssignments>
+            <field>Course__c</field>
+            <value>
+                <elementReference>$Record.Applied_Course__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Student_Application__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Admission_Date__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Admission__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+        <connector>
+            <targetReference>Update_Admission_Status</targetReference>
+        </connector>
+    </recordCreates>
+    <recordUpdates>
+        <name>Update_Admission_Status</name>
+        <label>Update Admission Status to Admitted</label>
+        <locationX>182</locationX>
+        <locationY>518</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Admission_Status__c</field>
+            <value>
+                <stringValue>Admitted</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Student_Application__c</object>
+    </recordUpdates>
+    <actionCalls>
+        <name>Send_Rejection_Email</name>
+        <label>Send Rejection Notification Email</label>
+        <locationX>578</locationX>
+        <locationY>398</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>$Record.Email__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Application Status Update - Rejected</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <stringValue>Dear Applicant, We regret to inform you that your application has been rejected. Please contact us for more information.</stringValue>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <start>
+        <locationX>188</locationX>
+        <locationY>48</locationY>
+        <connector>
+            <targetReference>Is_Status_Approved</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>false</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <object>Student_Application__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

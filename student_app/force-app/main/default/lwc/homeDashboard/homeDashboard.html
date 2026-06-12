@@ -1,0 +1,417 @@
+<template>
+    <div class="dashboard-container">
+        <!-- Header Controls -->
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_large header-wrapper">
+            <div>
+                <h1 class="portal-title">Admissions Operations Center</h1>
+                <p class="portal-subtitle">Real-time admission logs, verification backlog queue, and conversion yield analysis.</p>
+            </div>
+            <lightning-button-icon 
+                icon-name="utility:refresh" 
+                variant="border-filled" 
+                alternative-text="Refresh Metrics" 
+                title="Refresh Metrics"
+                onclick={handleRefresh}
+                class="refresh-btn">
+            </lightning-button-icon>
+        </div>
+
+        <!-- Spinner Loading State -->
+        <template if:true={isLoading}>
+            <div class="spinner-overlay">
+                <lightning-spinner alternative-text="Updating dashboard data..." size="medium" variant="brand"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Admissions KPI Board (5 cards) -->
+        <h3 class="slds-text-title_caps slds-m-bottom_small" style="font-weight: 700; color: #475569; letter-spacing: 1px;">Admissions Metrics</h3>
+        <div class="kpi-grid-container slds-m-bottom_large">
+            <!-- Total Applications -->
+            <div class="kpi-card card-total">
+                <div class="kpi-icon-container">
+                    <lightning-icon icon-name="utility:survey" variant="inverse" size="small"></lightning-icon>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Total Logs</span>
+                    <h2 class="kpi-value">{metrics.totalApplications}</h2>
+                </div>
+            </div>
+
+            <!-- Pending Review -->
+            <div class="kpi-card card-pending">
+                <div class="kpi-icon-container">
+                    <lightning-icon icon-name="utility:clock" variant="inverse" size="small"></lightning-icon>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Pending Review</span>
+                    <h2 class="kpi-value">{metrics.pendingApplications}</h2>
+                </div>
+            </div>
+
+            <!-- Verification Backlog -->
+            <div class="kpi-card card-backlog">
+                <div class="kpi-icon-container">
+                    <lightning-icon icon-name="utility:open_folder" variant="inverse" size="small"></lightning-icon>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Verify Backlog</span>
+                    <h2 class="kpi-value">{metrics.verificationBacklog}</h2>
+                </div>
+            </div>
+
+            <!-- Approved -->
+            <div class="kpi-card card-approved">
+                <div class="kpi-icon-container">
+                    <lightning-icon icon-name="utility:approval" variant="inverse" size="small"></lightning-icon>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Approved</span>
+                    <h2 class="kpi-value">{metrics.approvedApplications}</h2>
+                </div>
+            </div>
+
+            <!-- Rejected -->
+            <div class="kpi-card card-rejected">
+                <div class="kpi-icon-container">
+                    <lightning-icon icon-name="utility:close" variant="inverse" size="small"></lightning-icon>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Rejected</span>
+                    <h2 class="kpi-value">{metrics.rejectedApplications}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment KPI Board (5 cards) -->
+        <h3 class="slds-text-title_caps slds-m-bottom_small" style="font-weight: 700; color: #475569; letter-spacing: 1px;">Finance & Revenue Metrics</h3>
+        <div class="kpi-grid-container slds-m-bottom_xx-large">
+            <!-- Revenue -->
+            <div class="kpi-card card-total">
+                <div class="kpi-icon-container">
+                    <lightning-icon icon-name="utility:moneybag" variant="inverse" size="small"></lightning-icon>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Total Revenue</span>
+                    <h2 class="kpi-value">${formattedRevenue}</h2>
+                </div>
+            </div>
+
+            <!-- Success Rate -->
+            <div class="kpi-card card-approved">
+                <div class="kpi-icon-container">
+                    <lightning-icon icon-name="utility:trending_up" variant="inverse" size="small"></lightning-icon>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Success Rate</span>
+                    <h2 class="kpi-value">{paymentSuccessRate}%</h2>
+                </div>
+            </div>
+
+            <!-- Success Count -->
+            <div class="kpi-card card-approved">
+                <div class="kpi-icon-container">
+                    <lightning-icon icon-name="utility:check" variant="inverse" size="small"></lightning-icon>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Paid Logs</span>
+                    <h2 class="kpi-value">{metrics.successPayments}</h2>
+                </div>
+            </div>
+
+            <!-- Pending Count -->
+            <div class="kpi-card card-pending">
+                <div class="kpi-icon-container">
+                    <lightning-icon icon-name="utility:clock" variant="inverse" size="small"></lightning-icon>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Pending Logs</span>
+                    <h2 class="kpi-value">{metrics.pendingPayments}</h2>
+                </div>
+            </div>
+
+            <!-- Failed Count -->
+            <div class="kpi-card card-rejected">
+                <div class="kpi-icon-container">
+                    <lightning-icon icon-name="utility:warning" variant="inverse" size="small"></lightning-icon>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Failed Logs</span>
+                    <h2 class="kpi-value">{metrics.failedPayments}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Row 1: Document Analytics & Admissions Funnel Chart -->
+        <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_xx-large">
+            <!-- Document Analytics Panel -->
+            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                <div class="panel-box">
+                    <div class="panel-header slds-m-bottom_large">
+                        <h3 class="panel-title">Document Verification Analytics</h3>
+                        <p class="panel-subtitle">Total documents: {metrics.totalDocuments} | Verification compliance distribution.</p>
+                    </div>
+                    <div class="funnel-container">
+                        <!-- Verified Documents -->
+                        <div class="funnel-row slds-m-bottom_medium">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                <span class="funnel-label">Verified Documents</span>
+                                <span class="funnel-val bold-text">{metrics.verifiedDocuments} ({docVerifiedPercent}%)</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill fill-success" style={docVerifiedBarStyle}></div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Documents -->
+                        <div class="funnel-row slds-m-bottom_medium">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                <span class="funnel-label">Pending Verification</span>
+                                <span class="funnel-val bold-text">{metrics.pendingDocuments} ({docPendingPercent}%)</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill fill-warning" style={docPendingBarStyle}></div>
+                            </div>
+                        </div>
+
+                        <!-- Rejected Documents -->
+                        <div class="funnel-row">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                <span class="funnel-label">Rejected Documents</span>
+                                <span class="funnel-val bold-text">{metrics.rejectedDocuments} ({docRejectedPercent}%)</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill fill-danger" style={docRejectedBarStyle}></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admissions Funnel Panel -->
+            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                <div class="panel-box">
+                    <div class="panel-header slds-m-bottom_large">
+                        <h3 class="panel-title">Admissions Funnel</h3>
+                        <p class="panel-subtitle">Distribution of student application states across statuses.</p>
+                    </div>
+                    <div class="funnel-container">
+                        <!-- Approved row -->
+                        <div class="funnel-row slds-m-bottom_medium">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                <span class="funnel-label">Approved Outcomes</span>
+                                <span class="funnel-val bold-text">{metrics.approvedApplications} ({approvedPercent}%)</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill fill-success" style={approvedBarStyle}></div>
+                            </div>
+                        </div>
+
+                        <!-- Pending row -->
+                        <div class="funnel-row slds-m-bottom_medium">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                <span class="funnel-label">Under Review / Draft</span>
+                                <span class="funnel-val bold-text">{metrics.pendingApplications} ({pendingPercent}%)</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill fill-warning" style={pendingBarStyle}></div>
+                            </div>
+                        </div>
+
+                        <!-- Rejected row -->
+                        <div class="funnel-row">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                <span class="funnel-label">Rejected Outcomes</span>
+                                <span class="funnel-val bold-text">{metrics.rejectedApplications} ({rejectedPercent}%)</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill fill-danger" style={rejectedBarStyle}></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Row 2: Recent Activity Feeds (Double Panel Layout) -->
+        <div class="slds-grid slds-wrap slds-gutters">
+            <!-- Left panel: Recent Applications feed -->
+            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                <div class="panel-box">
+                    <div class="panel-header slds-m-bottom_medium">
+                        <h3 class="panel-title">Recent Applications</h3>
+                        <p class="panel-subtitle">Click on any application to view detail page.</p>
+                    </div>
+
+                    <template if:true={hasRecentApplications}>
+                        <div class="table-container slds-scrollable_x">
+                            <table class="slds-table slds-table_cell-buffer custom-table">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th scope="col"><div class="slds-truncate header-cell">Application No.</div></th>
+                                        <th scope="col"><div class="slds-truncate header-cell">Student</div></th>
+                                        <th scope="col"><div class="slds-truncate header-cell">Course</div></th>
+                                        <th scope="col"><div class="slds-truncate header-cell">Status</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={recentApplications} for:item="app">
+                                        <tr key={app.Id} class="table-row-hover" onclick={handleRowClick} data-id={app.Id} style="cursor: pointer;">
+                                            <th scope="row">
+                                                <div class="slds-truncate app-number-cell">
+                                                    {app.Name}
+                                                </div>
+                                            </th>
+                                            <td>
+                                                <div class="slds-truncate text-cell bold-text">
+                                                    {app.studentName}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate text-cell">
+                                                    {app.courseName}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <span class={app.statusClass}>{app.Application_Status__c}</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+
+                    <template if:false={hasRecentApplications}>
+                        <div class="empty-state">
+                            <lightning-icon icon-name="utility:inbox" size="medium" class="empty-icon"></lightning-icon>
+                            <p>No recent activity detected.</p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Right panel: Recent Payments feed -->
+            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                <div class="panel-box">
+                    <div class="panel-header slds-m-bottom_medium">
+                        <h3 class="panel-title">Recent Transactions</h3>
+                        <p class="panel-subtitle">Latest student-initiated application payments.</p>
+                    </div>
+
+                    <template if:true={hasRecentPayments}>
+                        <div class="table-container slds-scrollable_x">
+                            <table class="slds-table slds-table_cell-buffer custom-table">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th scope="col"><div class="slds-truncate header-cell">Txn ID</div></th>
+                                        <th scope="col"><div class="slds-truncate header-cell">Application</div></th>
+                                        <th scope="col"><div class="slds-truncate header-cell">Amount</div></th>
+                                        <th scope="col"><div class="slds-truncate header-cell">Status</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={recentPayments} for:item="pay">
+                                        <tr key={pay.Id} class="table-row-hover">
+                                            <th scope="row">
+                                                <div class="slds-truncate app-number-cell">
+                                                    {pay.Name}
+                                                </div>
+                                            </th>
+                                            <td>
+                                                <div class="slds-truncate text-cell">
+                                                    {pay.appNumber} ({pay.studentName})
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate text-cell bold-text fee-value">
+                                                    ${pay.Amount__c}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <span class={pay.statusClass}>{pay.Payment_Status__c}</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+
+                    <template if:false={hasRecentPayments}>
+                        <div class="empty-state">
+                            <lightning-icon icon-name="utility:moneybag" size="medium" class="empty-icon"></lightning-icon>
+                            <p>No payments recorded yet.</p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Row 3: Monthly Admissions Trend + Course Analytics -->
+        <div class="slds-grid slds-wrap slds-gutters slds-m-top_xx-large slds-m-bottom_xx-large">
+            <!-- Monthly Admissions Trend (Bar Chart) -->
+            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                <div class="panel-box">
+                    <div class="panel-header slds-m-bottom_large">
+                        <h3 class="panel-title">Monthly Admissions Trend</h3>
+                        <p class="panel-subtitle">Application volume over the last 6 months.</p>
+                    </div>
+                    <template if:true={hasMonthlyTrends}>
+                        <div class="trend-chart-container">
+                            <template for:each={monthlyTrends} for:item="trend">
+                                <div key={trend.label} class="trend-bar-col">
+                                    <div class="trend-bar-wrapper">
+                                        <div class="trend-bar-fill" style={trend.barStyle}></div>
+                                    </div>
+                                    <div class="trend-bar-count">{trend.count}</div>
+                                    <div class="trend-bar-label">{trend.label}</div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <template if:false={hasMonthlyTrends}>
+                        <div class="empty-state">
+                            <lightning-icon icon-name="utility:trending_up" size="medium" class="empty-icon"></lightning-icon>
+                            <p>No trend data available yet.</p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Course Enrollment Yield -->
+            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                <div class="panel-box">
+                    <div class="panel-header slds-m-bottom_large">
+                        <h3 class="panel-title">Course Enrollment Yield</h3>
+                        <p class="panel-subtitle">Approval rate per course (Approved / Total Applications).</p>
+                    </div>
+                    <template if:true={hasCourseAnalytics}>
+                        <div class="funnel-container">
+                            <template for:each={courseAnalytics} for:item="course">
+                                <div key={course.courseName} class="funnel-row slds-m-bottom_medium">
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                        <span class="funnel-label">{course.courseName}</span>
+                                        <span class="funnel-val bold-text">{course.approved}/{course.total} ({course.yieldPct}%)</span>
+                                    </div>
+                                    <div class="progress-bar-bg">
+                                        <div class={course.combinedYieldClass} style={course.yieldBarStyle}></div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <template if:false={hasCourseAnalytics}>
+                        <div class="empty-state">
+                            <lightning-icon icon-name="utility:education" size="medium" class="empty-icon"></lightning-icon>
+                            <p>No course enrollment data available yet.</p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

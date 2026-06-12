@@ -1,0 +1,51 @@
+<template>
+    <div class="txn-container">
+        <!-- Header -->
+        <div class="txn-header slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+            <div>
+                <h2 class="txn-title">Recent Transactions</h2>
+                <p class="txn-subtitle">Latest stock adjustments and movements</p>
+            </div>
+            <button class="refresh-button" onclick={handleRefresh} title="Refresh Transactions">
+                <lightning-icon icon-name="utility:refresh" size="x-small" class="refresh-icon" variant="inverse"></lightning-icon>
+            </button>
+        </div>
+
+        <template if:true={error}>
+            <div class="error-container slds-m-bottom_medium">
+                <span>Error loading transactions: {error.body.message}</span>
+            </div>
+        </template>
+
+        <!-- Transaction List -->
+        <template if:true={transactions}>
+            <template if:true={transactions.length}>
+                <div class="txn-list">
+                    <template for:each={transactions} for:item="txn">
+                        <div key={txn.Id} class="txn-item">
+                            <div class="txn-meta">
+                                <span class="txn-name">{txn.Name}</span>
+                                <span class="txn-date">
+                                    <lightning-formatted-date-time value={txn.Transaction_Date__c} month="short" day="2-digit" hour="2-digit" minute="2-digit"></lightning-formatted-date-time>
+                                </span>
+                            </div>
+                            <div class="txn-details">
+                                <span class="product-name" title={txn.Product__r.Product_Name__c}>{txn.Product__r.Product_Name__c}</span>
+                                <div class="txn-amount-type">
+                                    <span class="txn-qty">{txn.Quantity__c} units</span>
+                                    <span class={txn.badgeClass}>{txn.Transaction_Type__c}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            <template if:false={transactions.length}>
+                <div class="no-transactions">
+                    <lightning-icon icon-name="utility:description" size="medium" variant="info" class="slds-m-bottom_x-small"></lightning-icon>
+                    <p>No recent stock transactions recorded.</p>
+                </div>
+            </template>
+        </template>
+    </div>
+</template>

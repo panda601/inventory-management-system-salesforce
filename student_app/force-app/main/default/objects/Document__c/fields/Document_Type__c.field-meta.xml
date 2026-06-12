@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Document_Type__c</fullName>
+    <label>Document Type</label>
+    <type>Picklist</type>
+    <required>false</required>
+
+
+
+
+
+
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Academic Transcript</fullName>
+                <default>true</default>
+                <label>Academic Transcript</label>
+            </value>
+            <value>
+                <fullName>Identity Proof</fullName>
+                <default>false</default>
+                <label>Identity Proof</label>
+            </value>
+            <value>
+                <fullName>Address Proof</fullName>
+                <default>false</default>
+                <label>Address Proof</label>
+            </value>
+            <value>
+                <fullName>Passport Photo</fullName>
+                <default>false</default>
+                <label>Passport Photo</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+
+</CustomField>

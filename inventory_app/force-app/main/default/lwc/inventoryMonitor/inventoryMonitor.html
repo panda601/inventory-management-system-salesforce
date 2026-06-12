@@ -1,0 +1,52 @@
+<template>
+    <div class="monitor-container">
+        <!-- Monitor Header -->
+        <div class="monitor-header slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+            <div>
+                <h2 class="monitor-title">Inventory Monitor</h2>
+                <p class="monitor-subtitle">Stock levels and reorder alerts</p>
+            </div>
+            <button class="refresh-button" onclick={handleRefresh} title="Refresh Alerts">
+                <lightning-icon icon-name="utility:refresh" size="x-small" class="refresh-icon" variant="inverse"></lightning-icon>
+            </button>
+        </div>
+
+        <template if:true={error}>
+            <div class="error-container slds-m-bottom_medium">
+                <span>Error loading alerts: {error.body.message}</span>
+            </div>
+        </template>
+
+        <!-- Monitor List -->
+        <template if:true={monitorData.length}>
+            <div class="monitor-list">
+                <template for:each={monitorData} for:item="item">
+                    <div key={item.Id} class="monitor-item">
+                        <div class="item-header">
+                            <span class="light-indicator">{item.trafficLight}</span>
+                            <span class="product-name" title={item.Product_Name__c}>{item.Product_Name__c}</span>
+                        </div>
+                        <div class="item-body">
+                            <div class="stock-row">
+                                <span class="stock-detail">Stock: <strong>{item.Current_Stock__c}</strong> / Min: {item.Minimum_Stock__c}</span>
+                                <span class={item.badgeClass}>{item.status}</span>
+                            </div>
+                            <template if:true={item.showRec}>
+                                <div class="reorder-row">
+                                    <lightning-icon icon-name="utility:cart" size="xx-small" class="cart-icon" variant="warning"></lightning-icon>
+                                    <span class="reorder-text">Recommend Reorder: <strong>{item.recommendation}</strong> units</span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+        <template if:false={monitorData.length}>
+            <div class="no-alerts">
+                <lightning-icon icon-name="utility:success" size="medium" variant="success" class="slds-m-bottom_x-small"></lightning-icon>
+                <p>All stock levels are currently healthy!</p>
+            </div>
+        </template>
+    </div>
+</template>

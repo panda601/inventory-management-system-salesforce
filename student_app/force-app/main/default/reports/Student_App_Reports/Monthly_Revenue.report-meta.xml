@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>Payment__c.Payment_Number__c</field>
+    </columns>
+    <columns>
+        <field>Payment__c.Student_Application__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Payment__c.Amount__c</field>
+    </columns>
+    <columns>
+        <field>Payment__c.Payment_Method__c</field>
+    </columns>
+    <columns>
+        <field>Payment__c.Transaction_Id__c</field>
+    </columns>
+    <description>Monthly revenue generated from paid applications</description>
+    <filter>
+        <criteriaItems>
+            <column>Payment__c.Payment_Status__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Paid</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <fullName>Student_App_Reports/Monthly_Revenue</fullName>
+    <groupingsDown>
+        <dateGranularity>Month</dateGranularity>
+        <field>Payment__c.Payment_Date__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Monthly Revenue</name>
+    <reportType>CustomEntity$Payment__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+</Report>

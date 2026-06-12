@@ -1,0 +1,153 @@
+.po-dashboard-container {
+    background: #0f172a;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    color: #f8fafc;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    height: 100%;
+}
+
+.dashboard-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #38bdf8;
+    margin: 0;
+}
+
+.dashboard-subtitle {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 2px 0 0 0;
+}
+
+.refresh-button {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #f8fafc;
+    padding: 0.4rem;
+    border-radius: 6px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.refresh-button:hover {
+    background: #38bdf8;
+    color: #0f172a;
+    border-color: #38bdf8;
+}
+
+.refresh-icon {
+    --sds-c-icon-color-foreground: currentColor;
+}
+
+.error-container {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    color: #fca5a5;
+    display: flex;
+    align-items: center;
+}
+
+.tab-bar {
+    display: flex;
+    background: #1e293b;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    gap: 4px;
+    width: fit-content;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 6px 16px;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background: #38bdf8;
+    color: #0f172a;
+}
+
+.tab-count {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1px 6px;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.tab-btn.active .tab-count {
+    background: rgba(0, 0, 0, 0.1);
+    color: #0f172a;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.po-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.po-table th {
+    color: #94a3b8;
+    font-weight: 600;
+    padding: 10px 14px;
+    border-bottom: 2px solid #334155;
+}
+
+.po-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #334155;
+    color: #f8fafc;
+}
+
+.po-table tr:hover td {
+    background: #1e293b;
+}
+
+.po-number {
+    font-family: monospace;
+    font-weight: 700;
+    color: #38bdf8;
+}
+
+.po-supplier {
+    font-weight: 600;
+}
+
+.po-date {
+    color: #94a3b8;
+}
+
+.po-amount {
+    font-weight: 700;
+    color: #10b981;
+}
+
+.no-orders {
+    text-align: center;
+    padding: 3rem;
+    background: #1e293b;
+    border-radius: 12px;
+    color: #94a3b8;
+}

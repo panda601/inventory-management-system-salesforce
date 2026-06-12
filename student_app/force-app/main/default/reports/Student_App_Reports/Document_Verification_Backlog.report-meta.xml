@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Document__c$Name</field>
+    </columns>
+    <columns>
+        <field>Document__c$Student_Application__c.Name</field>
+    </columns>
+    <columns>
+        <field>Document__c$Document_Type__c</field>
+    </columns>
+    <columns>
+        <field>Document__c$CreatedDate</field>
+    </columns>
+    <description>Verification backlog for submitted documents</description>
+    <format>Summary</format>
+    <fullName>Student_App_Reports/Document_Verification_Backlog</fullName>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Document__c$Verification_Status__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Document Verification Backlog</name>
+    <reportType>Documents_Custom__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <filter>
+        <criteriaItems>
+            <column>Document__c$Verification_Status__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Pending</value>
+        </criteriaItems>
+    </filter>
+</Report>

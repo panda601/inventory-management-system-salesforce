@@ -1,0 +1,22 @@
+{
+  "printWidth": 120,
+  "tabWidth": 4,
+  "singleQuote": true,
+  "trailingComma": "none",
+  "plugins": ["prettier-plugin-apex", "@prettier/plugin-xml"],
+  "overrides": [
+    {
+      "files": "**/lwc/**/*.js",
+      "options": {
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": "*.xml",
+      "options": {
+        "parser": "xml",
+        "tabWidth": 4
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+Dear Student,
+
+We are pleased to confirm that we have received your payment.
+
+Payment Details:
+- Payment Number: {!Payment__c.Payment_Number__c}
+- Amount: {!Payment__c.Amount__c}
+- Payment Date: {!Payment__c.Payment_Date__c}
+- Transaction ID: {!Payment__c.Transaction_Id__c}
+- Receipt Number: {!Payment__c.Receipt_Number__c}
+
+Thank you for completing your payment. Your application is now being processed.
+
+Best regards,
+Admissions Office
+University Student Portal

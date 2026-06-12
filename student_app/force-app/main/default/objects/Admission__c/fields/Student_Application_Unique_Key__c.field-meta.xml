@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Student_Application_Unique_Key__c</fullName>
+    <label>Student Application Unique Key</label>
+    <type>Text</type>
+    <required>false</required>
+    <unique>true</unique>
+    <length>255</length>
+
+
+
+
+
+
+</CustomField>

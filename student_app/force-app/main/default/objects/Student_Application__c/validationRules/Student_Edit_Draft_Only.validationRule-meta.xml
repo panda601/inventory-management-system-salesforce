@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Student_Edit_Draft_Only</fullName>
+    <active>true</active>
+    <description>Ensures student role users can only edit applications that are in Draft status.</description>
+    <errorConditionFormula>NOT(ISNEW()) &amp;&amp; 
+$UserRole.Name = 'Student' &amp;&amp; 
+NOT(ISPICKVAL(PRIORVALUE(Application_Status__c), 'Draft')) &amp;&amp;
+(
+    ISCHANGED(First_Name__c) ||
+    ISCHANGED(Last_Name__c) ||
+    ISCHANGED(Email__c) ||
+    ISCHANGED(Phone__c) ||
+    ISCHANGED(Date_of_Birth__c) ||
+    ISCHANGED(Applied_Course__c)
+)</errorConditionFormula>
+    <errorMessage>You can only edit applications that are in Draft status.</errorMessage>
+</ValidationRule>

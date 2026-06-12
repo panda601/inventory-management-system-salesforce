@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingOwnerRules>
+        <fullName>Share_All_Payments_With_Finance_Officer</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Share All Payments With Finance Officer</label>
+        <sharedTo>
+            <role>Finance_Officer</role>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinates>System_Administrator</roleAndSubordinates>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Share_All_Payments_With_Admission_Executive</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Share All Payments With Admission Executive</label>
+        <sharedTo>
+            <role>Admission_Executive</role>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinates>System_Administrator</roleAndSubordinates>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Share_All_Payments_With_Admission_Manager</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Share All Payments With Admission Manager</label>
+        <sharedTo>
+            <role>Admission_Manager</role>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinates>System_Administrator</roleAndSubordinates>
+        </sharedFrom>
+    </sharingOwnerRules>
+</SharingRules>

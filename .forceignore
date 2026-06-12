@@ -1,0 +1,18 @@
+# List files or directories to ignore when deploying or retrieving metadata
+
+# Ignore local configuration files in subdirectories
+**/package.json
+**/.gitignore
+**/.prettierrc
+**/.prettierignore
+**/eslint.config.js
+**/.forceignore
+**/README.md
+
+# LWC Jest tests and configurations
+**/__tests__/**
+**/jest.config.js
+**/jsconfig.json
+
+# Local config definitions
+config/
