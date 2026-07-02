@@ -1,0 +1,243 @@
+<template>
+    <div class="dashboard-root slds-is-relative">
+        <!-- Spinner -->
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading return requests..." size="medium" variant="brand"></lightning-spinner>
+        </template>
+
+        <!-- Header -->
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_medium dashboard-header">
+            <div>
+                <h2 class="title-text font-bold">Product Return & Replacement Dashboard</h2>
+                <p class="subtitle-text text-muted">Manage product returns, adjustments, and replacement status</p>
+            </div>
+            <div>
+                <button class="slds-button slds-button_neutral refresh-btn slds-grid slds-grid_vertical-align-center" onclick={handleRefresh} title="Refresh Data">
+                    <lightning-icon icon-name="utility:refresh" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Metric Summary Cards -->
+        <div class="slds-grid slds-wrap slds-gutters_direct-small slds-m-bottom_large metrics-row">
+            <!-- 1. Total Requests -->
+            <div class="slds-col slds-size_1-1 slds-small-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                <div class="metric-card total-requests">
+                    <div class="metric-icon-wrapper">
+                        <lightning-icon icon-name="standard:service_contract" size="medium"></lightning-icon>
+                    </div>
+                    <div class="metric-details">
+                        <span class="metric-label">Total Requests</span>
+                        <h3 class="metric-value">{totalCount}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Submitted / New -->
+            <div class="slds-col slds-size_1-1 slds-small-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                <div class="metric-card submitted-requests">
+                    <div class="metric-icon-wrapper">
+                        <lightning-icon icon-name="standard:contract_line_item" size="medium"></lightning-icon>
+                    </div>
+                    <div class="metric-details">
+                        <span class="metric-label">Submitted</span>
+                        <h3 class="metric-value">{submittedCount}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Approved -->
+            <div class="slds-col slds-size_1-1 slds-small-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                <div class="metric-card approved-requests">
+                    <div class="metric-icon-wrapper">
+                        <lightning-icon icon-name="standard:task2" size="medium"></lightning-icon>
+                    </div>
+                    <div class="metric-details">
+                        <span class="metric-label">Approved</span>
+                        <h3 class="metric-value">{approvedCount}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Replacements Sent -->
+            <div class="slds-col slds-size_1-1 slds-small-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                <div class="metric-card replacement-requests">
+                    <div class="metric-icon-wrapper">
+                        <lightning-icon icon-name="standard:shipment" size="medium"></lightning-icon>
+                    </div>
+                    <div class="metric-details">
+                        <span class="metric-label">Replacements Sent</span>
+                        <h3 class="metric-value">{replacementSentCount}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Rejected -->
+            <div class="slds-col slds-size_1-1 slds-small-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                <div class="metric-card rejected-requests">
+                    <div class="metric-icon-wrapper">
+                        <lightning-icon icon-name="standard:record" size="medium"></lightning-icon>
+                    </div>
+                    <div class="metric-details">
+                        <span class="metric-label">Rejected</span>
+                        <h3 class="metric-value">{rejectedCount}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Search controls -->
+        <div class="controls-panel slds-m-bottom_medium slds-grid slds-wrap slds-grid_align-spread slds-grid_vertical-align-center">
+            <!-- Filter Tabs -->
+            <div class="slds-col slds-size_1-1 slds-medium-size_7-12 tabs-container slds-m-bottom_small">
+                <ul class="filter-tabs">
+                    <template for:each={filterOptions} for:item="opt">
+                        <li key={opt.value} 
+                            class={opt.activeClass}>
+                            <button class="tab-button" 
+                                    onclick={handleFilterSelect} 
+                                    data-value={opt.value}>
+                                {opt.label}
+                            </button>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="slds-col slds-size_1-1 slds-medium-size_4-12 slds-m-bottom_small">
+                <lightning-input
+                    type="search"
+                    onchange={handleSearch}
+                    placeholder="Search by Request #, Customer, Product..."
+                    variant="label-hidden"
+                    class="search-bar"
+                ></lightning-input>
+            </div>
+        </div>
+
+        <!-- Returns Data Table -->
+        <div class="table-container slds-m-bottom_medium">
+            <template if:false={filteredRequests.length}>
+                <div class="empty-state slds-align_absolute-center slds-p-vertical_xx-large">
+                    <div class="slds-text-align_center">
+                        <lightning-icon icon-name="utility:open_folder" size="large" class="slds-m-bottom_small empty-icon"></lightning-icon>
+                        <p class="slds-text-heading_small font-bold text-muted">No return requests found</p>
+                        <p class="text-muted slds-m-top_xx-small">Adjust search keywords or filter tab criteria</p>
+                    </div>
+                </div>
+            </template>
+
+            <template if:true={filteredRequests.length}>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered custom-table">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col"><span class="slds-truncate font-bold">Request ID</span></th>
+                            <th scope="col"><span class="slds-truncate font-bold">Sales Order</span></th>
+                            <th scope="col"><span class="slds-truncate font-bold">Customer</span></th>
+                            <th scope="col"><span class="slds-truncate font-bold">Product</span></th>
+                            <th scope="col"><span class="slds-truncate font-bold">Quantity</span></th>
+                            <th scope="col"><span class="slds-truncate font-bold">Reason</span></th>
+                            <th scope="col"><span class="slds-truncate font-bold">Status</span></th>
+                            <th scope="col"><span class="slds-truncate font-bold">Date Requested</span></th>
+                            <th scope="col"><span class="slds-truncate font-bold">Processed Info</span></th>
+                            <template if:true={isManagerOrAdmin}>
+                                <th scope="col" class="slds-text-align_center"><span class="slds-truncate font-bold">Actions</span></th>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={filteredRequests} for:item="req">
+                            <tr key={req.Id} class="slds-hint-parent">
+                                <!-- Request ID -->
+                                <th scope="row">
+                                    <div class="slds-truncate font-bold">
+                                        <a onclick={navigateToRecord} data-id={req.Id} data-object="Return_Request__c">{req.Name}</a>
+                                    </div>
+                                </th>
+                                <!-- Sales Order -->
+                                <td>
+                                    <div class="slds-truncate">
+                                        <template if:true={req.Sales_Order__c}>
+                                            <a onclick={navigateToRecord} data-id={req.Sales_Order__c} data-object="Sales_Order__c">{req.Sales_Order__r.Name}</a>
+                                        </template>
+                                    </div>
+                                </td>
+                                <!-- Customer -->
+                                <td><div class="slds-truncate">{req.Customer_Name__c}</div></td>
+                                <!-- Product -->
+                                <td><div class="slds-truncate font-bold">{req.Product__r.Product_Name__c}</div></td>
+                                <!-- Quantity -->
+                                <td><div class="slds-truncate">{req.Quantity__c}</div></td>
+                                <!-- Reason -->
+                                <td><div class="slds-truncate">{req.Reason__c}</div></td>
+                                <!-- Status Badge -->
+                                <td>
+                                    <span class={req.badgeClass}>{req.Status__c}</span>
+                                </td>
+                                <!-- Date Requested -->
+                                <td><div class="slds-truncate">{req.formattedRequestedDate}</div></td>
+                                <!-- Processed Info -->
+                                <td>
+                                    <div class="slds-truncate processed-details">
+                                        <template if:true={req.Processed_Date__c}>
+                                            <span>On: {req.formattedProcessedDate}</span><br/>
+                                            <span class="processed-user">By: {req.processedByName}</span>
+                                        </template>
+                                        <template if:false={req.Processed_Date__c}>
+                                            <span class="text-muted">Unprocessed</span>
+                                        </template>
+                                    </div>
+                                </td>
+                                <!-- Action Buttons (Visible for Managers and Admins) -->
+                                <template if:true={isManagerOrAdmin}>
+                                    <td class="slds-text-align_center actions-cell">
+                                        <div class="slds-grid slds-grid_align-center action-buttons-group">
+                                            <!-- Approve -->
+                                            <template if:true={req.canApprove}>
+                                                <button class="action-btn approve-btn" 
+                                                        onclick={handleApprove} 
+                                                        data-id={req.Id} 
+                                                        title="Approve Return (Increases stock)">
+                                                    Approve
+                                                </button>
+                                            </template>
+                                            
+                                            <!-- Reject -->
+                                            <template if:true={req.canReject}>
+                                                <button class="action-btn reject-btn" 
+                                                        onclick={handleReject} 
+                                                        data-id={req.Id} 
+                                                        title="Reject Return">
+                                                    Reject
+                                                </button>
+                                            </template>
+                                            
+                                            <!-- Ship Replacement -->
+                                            <template if:true={req.canShip}>
+                                                <button class="action-btn ship-btn" 
+                                                        onclick={handleShipReplacement} 
+                                                        data-id={req.Id} 
+                                                        title="Mark Replacement Shipped (Decreases stock)">
+                                                    Ship Replacement
+                                                </button>
+                                            </template>
+
+                                            <!-- No actions applicable -->
+                                            <template if:false={req.canApprove}>
+                                                <template if:false={req.canShip}>
+                                                    <span class="text-muted">Completed</span>
+                                                </template>
+                                            </template>
+                                        </div>
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </template>
+        </div>
+    </div>
+</template>

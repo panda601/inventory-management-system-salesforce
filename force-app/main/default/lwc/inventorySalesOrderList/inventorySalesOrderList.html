@@ -1,0 +1,100 @@
+<template>
+    <c-error-boundary onretry={refreshList}>
+        <div class="so-list-container">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="small" variant="brand"></lightning-spinner>
+            </template>
+            
+            <div class="header-row slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <h3 class="section-title font-bold">Sales Orders</h3>
+                <div class="slds-grid slds-grid_vertical-align-center">
+                    <button class="slds-button slds-button_brand slds-button_small slds-m-right_xx-small" onclick={handleCreateSO}>
+                        <lightning-icon icon-name="utility:add" size="x-small" variant="inverse" class="slds-m-right_xx-small"></lightning-icon>
+                        Create Sales Order
+                    </button>
+                    <button class="slds-button slds-button_neutral slds-button_small" onclick={handleViewAllSOs}>
+                        View All Sales Orders
+                    </button>
+                </div>
+            </div>
+
+            <!-- Status Filter Cards -->
+            <div class="slds-grid slds-wrap slds-gutters_direct-small slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                    <div class={allCardClass} onclick={handleFilterChange} data-status="All">
+                        <span class="card-count">{allCount}</span>
+                        <span class="card-label">All Orders</span>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                    <div class={draftCardClass} onclick={handleFilterChange} data-status="Draft">
+                        <span class="card-count">{draftCount}</span>
+                        <span class="card-label">Draft</span>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                    <div class={approvedCardClass} onclick={handleFilterChange} data-status="Confirmed">
+                        <span class="card-count">{approvedCount}</span>
+                        <span class="card-label">Approved</span>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                    <div class={shippedCardClass} onclick={handleFilterChange} data-status="Delivered">
+                        <span class="card-count">{shippedCount}</span>
+                        <span class="card-label">Shipped</span>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                    <div class={cancelledCardClass} onclick={handleFilterChange} data-status="Cancelled">
+                        <span class="card-count">{cancelledCount}</span>
+                        <span class="card-label">Cancelled</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table View -->
+            <template if:true={hasSOs}>
+                <div class="table-container">
+                    <table class="so-table">
+                        <thead>
+                            <tr>
+                                <th>SO Number</th>
+                                <th>Customer Name</th>
+                                <th>Order Date</th>
+                                <th>Status</th>
+                                <th class="text-right">Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={filteredSOs} for:item="so">
+                                <tr key={so.Id} class="so-row" onclick={handleViewDetails} data-id={so.Id}>
+                                    <td class="so-name font-bold">{so.Name}</td>
+                                    <td class="so-customer">{so.Customer_Name__c}</td>
+                                    <td class="so-date">
+                                        <lightning-formatted-date-time value={so.Order_Date__c} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                    </td>
+                                    <td>
+                                        <span class={so.badgeClass}>{so.Status__c}</span>
+                                    </td>
+                                    <td class="text-right font-mono font-bold">
+                                        <lightning-formatted-number value={so.Total_Amount__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+
+            <template if:false={hasSOs}>
+                <template if:false={isLoading}>
+                    <c-empty-state 
+                        title="No Sales Orders Found" 
+                        message="There are no sales orders matching this status filter." 
+                        icon-name="utility:database">
+                    </c-empty-state>
+                </template>
+            </template>
+        </div>
+    </c-error-boundary>
+</template>

@@ -1,138 +1,174 @@
-# Salesforce Enterprise Monorepo
+# Inventory Management System (IMS)
 
-Welcome to the **Salesforce Enterprise Monorepo**. This repository contains two independent custom applications built with Salesforce DX:
+[![Salesforce](https://img.shields.io/badge/Salesforce-Platform-blue?logo=salesforce&style=flat-square)](https://developer.salesforce.com/)
+[![Apex](https://img.shields.io/badge/Apex-Secured-orange?style=flat-square)](https://developer.salesforce.com/)
+[![LWC](https://img.shields.io/badge/LWC-Lightning%20Web%20Components-blue?style=flat-square)](https://developer.salesforce.com/docs/platform/lwc/overview)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-1. **Student Application Management System (SAMS)**: Manages student admissions, documents, payments, and notifications.
-2. **Inventory Management System**: Manages product records, suppliers, sales orders, purchase orders, and inventory transactions.
-
-This project is built using modern Salesforce practices including the Lightning Web Component (LWC) framework, Apex design patterns, flows, sharing rules, and automated CI/CD configurations.
+An enterprise-grade, custom **Inventory Management System (IMS)** built natively on the Salesforce platform. This system facilitates multi-role operations, real-time analytics, automated restocking, secure transaction auditing, and full return (RMA) approvals.
 
 ---
 
-## 🏛️ Repository Architecture
+## 📌 Business Case & Solution
 
-This repository is structured as a **Salesforce DX Monorepo**. Both applications share a single root configuration (`sfdx-project.json`), configuration tooling (`package.json`, `.prettierrc`, `eslint.config.js`), and GitHub Actions pipeline, while keeping metadata and application source directories isolated.
+### The Problem
+Traditional supply chains suffer from disjointed operational silos between sales executives, stock managers, and finance teams. This results in:
+* **Order Backlogs / Starvation**: Sales reps booking deals for out-of-stock items due to a lack of live inventory visibility.
+* **Lagging Business Analytics**: Executives relying on static, stale end-of-month spreadsheets rather than real-time revenue, cost, and margin updates.
+* **Manual Return Process Overhead**: Sluggish processing of customer product returns, resulting in inventory ledger write-off mismatches.
+* **Privileged Data Leaks**: Sensitive purchase cost rates and supplier contract details exposed to unauthorized internal roles.
 
+### The Solution
+A secure, native Salesforce application providing:
+* **Real-time Synchronization**: LWC dashboards connected via platform events to Change Data Capture (CDC) streams, enabling real-time stock counters.
+* **Stock Starvation Protection**: Dynamic validation rules blocking sales confirmations if product quantities on hand are insufficient.
+* **Multi-Role Workspaces**: Separated consoles custom-tailored for Admins, Inventory Managers, and Sales Executives.
+* **Automated Accounting & Ledgers**: Inbound/outbound stock flow automation posting transactions automatically without manual intervention.
+
+---
+
+## 🚀 Key Features
+
+* **Admin Command Center**: Real-time business P&L tracking, monthly revenue/cost ChartJS trend visualizers, and final refund approvals.
+* **Warehouse Manager Workspace**: Reorder notification engine with automated restock level alerts and PO receiving controls.
+* **Sales Workspace**: Live catalog browsing, validation-guarded Sales Order placement, and RMA tracking.
+* **Automated RMA Approvals**: Dynamic transaction adjustment flows handling product repairs, replacements, and refunds.
+* **Persona-Driven Security**: Strict permission sets, sharing rules, and custom permission gates restricting access to sensitive pricing cost metrics and supplier profiles.
+
+---
+
+## 📸 System Screenshots
+
+### 1. Admin Command Center
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+### 2. Inventory Manager Dashboard
+![Inventory Manager Dashboard](screenshots/inventory-dashboard.png)
+
+### 3. Sales Executive Dashboard
+![Sales Executive Dashboard](screenshots/sales-dashboard.png)
+
+### 4. Product Catalog & Details
+![Product Catalog](screenshots/product-catalog.png)
+![Product Details](screenshots/product-details.png)
+
+### 5. Return Management & Approvals
+![Returns Dashboard](screenshots/returns-dashboard.png)
+![Approval Process](screenshots/approval-workflow.png)
+
+### 6. Inventory Monitor & Mobile Views
+![Inventory Monitor](screenshots/inventory-monitor.png)
+![Responsive Mobile View](screenshots/responsive-mobile.png)
+
+---
+
+## 🛠 Technology Stack & Architecture
+
+* **UI Layer**: Lightning Web Components (LWC), HTML5, Vanilla CSS, Lightning Experience.
+* **Logic Layer**: Apex Controllers (Cacheable, Secure, bulk-safe), Custom Triggers.
+* **Database & Integrations**: Change Data Capture (CDC), Platform Events, custom database objects (Schema relations, Roll-up summaries).
+* **Automations**: Low-Code Salesforce Flows, Validation Rules.
+* **Charts**: ChartJS (loaded dynamically via static resource).
+
+### System Architecture Diagram
 ```mermaid
 graph TD
-    Root[Monorepo Root]
-    Root --> Configs[Unified Configs: package.json, Prettier, ESLint, Forceignore]
-    Root --> Docs[docs/ - Architecture & Guides]
-    Root --> Github[github/ - Actions Workflows & Templates]
-    Root --> StudentApp[student_app/ - Student Application Management]
-    Root --> InventoryApp[inventory_app/ - Inventory Management System]
+    A[inventoryCommandCenter LWC] --> B{Role Check}
+    B -->|Admin| C[Admin Workspace]
+    B -->|Manager| D[Manager Workspace]
+    B -->|Sales| E[Sales Workspace]
 
-    StudentApp --> SForceApp[force-app/ - Apex, LWC, Objects]
-    InventoryApp --> IForceApp[force-app/ - Apex, Objects, Layouts]
+    C --> C1[inventoryDashboard]
+    C --> C2[returnManagementDashboard]
+    
+    D --> D1[inventoryDashboard]
+    D --> D2[inventoryMonitor]
+    
+    E --> E1[salesDashboard]
+    E --> E2[productCatalog]
+
+    F[InventoryController Apex] --> A
+    G[InventoryDashboardController Apex] --> C1
+```
+
+### Entity Relationship Diagram (ERD)
+```mermaid
+erDiagram
+    Supplier ||--o{ Purchase-Order : "supplies"
+    Purchase-Order ||--|{ Purchase-Order-Item : "contains"
+    Product ||--o{ Purchase-Order-Item : "procured"
+    Product ||--o{ Sales-Order-Item : "sold"
+    Product ||--o{ Inventory-Transaction : "mutates"
+    Sales-Order ||--|{ Sales-Order-Item : "contains"
+    Sales-Order-Item ||--o{ Return-Request : "returned"
 ```
 
 ---
 
-## 📱 Application Modules & Features
+## 🔒 Security Model
 
-### 🎓 1. Student Application Management System (SAMS)
-SAMS is designed to streamline the student enrollment pipeline:
-- **Course Cataloging**: Tracks active courses, credits, capacities, fees, and seating in real-time.
-- **Student Admissions**: Automates approved applications into institutional admissions, generating PDF certificates via Visualforce.
-- **Document Verification**: Multi-file document upload, review, and status logging.
-- **Payment Processing**: Integrates course fee extraction, automated receipts, and transaction status syncing.
-- **Interactive Dashboards**: SPAs for students (course wizard, timeline tracker) and admins (KPI panels, transaction history).
-
-### 📦 2. Inventory Management System
-A back-office application to manage warehouse inventory and procurement:
-- **Product Tracking**: Logs SKUs, cost prices, selling prices, and real-time stock levels.
-- **Suppliers**: Links inventory items to registered product suppliers.
-- **Procurement & Sales**: Logs customer sales orders and purchases.
-- **Inventory Ledger**: Tracks inflow, outflow, and warehouse stock adjustments.
+The system enforces row and field-level security constraints:
+* **Admin**: Assigns `Admin_Access` permission set. Grants full access, including profit indicators (`View_Profit_Metrics` Custom Permission).
+* **Inventory Manager**: Assigns `Inventory_Manager_Access`. Restricts visibility of Sales Orders and profit metrics.
+* **Sales Executive**: Assigns `Sales_Executive_Access`. Disallows visibility of cost rates, supplier directories, and purchase orders. Enforces OWD private sharing rules (own sales orders and return requests only).
 
 ---
 
-## 🛠️ Technology Stack
+## 📦 Installation & Setup
 
-- **Platform**: Salesforce Custom Objects, Sharing Rules, Approval Processes
-- **Backend**: Salesforce Apex (Triggers, Controllers, without sharing helpers)
-- **Frontend**: Lightning Web Components (LWC), Visualforce (PDF generation), CSS (Navy & Gold Theme)
-- **Tooling**: Salesforce CLI, ESLint, Prettier, Husky, LWC Jest
-- **CI/CD**: GitHub Actions
+Please follow the detailed [Deployment & Setup Guide](docs/DEPLOYMENT_GUIDE.md) to set up the system.
 
----
-
-## 🚀 Installation & Setup
-
-### Prerequisites
-1. Install [Salesforce CLI](https://developer.salesforce.com/tools/sfdxcli) or the newer `sf` CLI.
-2. Install [Node.js](https://nodejs.org/) (v18 or higher recommended).
-3. Sign up for a [Salesforce Developer Edition Org](https://developer.salesforce.com/signup) or use a Dev Hub.
-
-### Step 1: Clone the Repository
+### Quick Deployment commands:
 ```bash
-git clone https://github.com/panda601/student_app.git
-cd student_app
-```
+# 1. Authenticate
+sf org login web --alias ims-sandbox
 
-### Step 2: Install Development Dependencies
-```bash
-npm install
-```
+# 2. Deploy Metadata
+sf project deploy start --source-dir force-app
 
-### Step 3: Authenticate with your Salesforce Org
-```bash
-sf org login web -d -a DevOrg
-```
+# 3. Assign Permissions
+sf org assign permset --name Admin_Access
 
-### Step 4: Deploy the Metadata to your Org
-You can deploy either application individually or the entire monorepo.
-
-To deploy **SAMS**:
-```bash
-sf project deploy start --package-dir student_app/force-app
-```
-
-To deploy **Inventory System**:
-```bash
-sf project deploy start --package-dir inventory_app/force-app
-```
-
-To deploy **everything**:
-```bash
-sf project deploy start
-```
-
-### Step 5: Assign Permission Sets
-Assign access rights to target users:
-```bash
-sf org assign permset --name Student_Portal_Access -o DevOrg
+# 4. Import Sample Seed Data
+sf apex run --file scripts/apex/seed_and_verify_e2e.apex
 ```
 
 ---
 
-## 📋 Environment Variables
-A `.env.example` file is included at the root directory. Copy it to `.env` and configure your credentials for scripts or API testing:
+## 🧪 Testing
+
+### Automated Unit Tests
+The backend Apex code is fully tested with **92% average code coverage**:
 ```bash
-SF_USERNAME=your-salesforce-username
-SF_CLIENT_ID=your-connected-app-client-id
-SF_JWT_KEY_FILE=path/to/server.key
+sf apex run test --test-level RunLocalTests --wait 10
 ```
+For more details, see [Test Report](docs/TEST_REPORT.md).
+
+### Manual Test Scenarios
+Refer to [Manual Test Plan](docs/MANUAL_TEST_PLAN.md) to execute user role verification, mobile responsiveness checks, and RMA flow cycles.
 
 ---
 
-## 🛡️ Security & Access Control
+## 📂 Repository Structure
 
-Both applications enforce security-first design principles:
-- **Organization-Wide Defaults (OWD)**: Configured as `Private` for applications, admissions, and payments.
-- **Apex Security**: Every query uses `WITH USER_MODE` or `WITH SYSTEM_MODE` explicitly to preserve field-level security.
-- **Sharing Rules**: Criteria-based sharing rules give access dynamically to role-specific employees.
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please review our:
-- [CONTRIBUTING.md](file:///d:/SF%20Project/CONTRIBUTING.md) for code submission guidelines and branching strategy.
-- [CODE_OF_CONDUCT.md](file:///d:/SF%20Project/CODE_OF_CONDUCT.md) for community standards.
-- [SECURITY.md](file:///d:/SF%20Project/SECURITY.md) to report security issues.
+```
+inventory-management-system-salesforce/
+├── force-app/                  # Core Salesforce metadata (classes, triggers, flows, LWCs)
+├── docs/                       # Project documentation (System/App architecture, guides)
+├── diagrams/                   # Mermaid diagram sources
+├── screenshots/                # Application mockups and visual screenshots
+├── scripts/                    # Apex seeding, testing, and smoke scripts
+├── package.json                # Project configurations
+├── sfdx-project.json           # Salesforce DX project descriptor
+└── LICENSE                     # MIT License
+```
 
 ---
 
 ## 📄 License
-This project is licensed under the MIT License. See [LICENSE](file:///d:/SF%20Project/LICENSE) for details.
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more details.
+
+## 👤 Author
+
+* **Rahul Kumar Roy** - [GitHub](https://github.com/723145roy) | [LinkedIn](https://linkedin.com/in/rahul-kumar-roy)

@@ -1,0 +1,8 @@
+erDiagram
+    Supplier ||--o{ Purchase-Order : "supplies"
+    Purchase-Order ||--|{ Purchase-Order-Item : "contains"
+    Product ||--o{ Purchase-Order-Item : "procured"
+    Product ||--o{ Sales-Order-Item : "sold"
+    Product ||--o{ Inventory-Transaction : "mutates"
+    Sales-Order ||--|{ Sales-Order-Item : "contains"
+    Sales-Order-Item ||--o{ Return-Request : "returned"

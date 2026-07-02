@@ -1,0 +1,82 @@
+========================================================================
+INVENTORY MANAGEMENT SYSTEM (IMS) - PROJECT DETAILS & STATUS
+========================================================================
+
+1. OVERVIEW
+This document outlines the architecture, data model, security settings, flows, and the latest custom header/navigation layout fixes implemented in the Inventory Management System (IMS).
+
+------------------------------------------------------------------------
+2. RECENT UPDATE: ADMIN HEADER & NAVIGATION LAYOUT FIX
+------------------------------------------------------------------------
+An issue was resolved where the custom Admin utility bar (containing Notifications + Quick Actions) overlapped standard Salesforce Lightning navigation and broke layout scrolling behavior.
+
+Fix Implemented:
+- The Salesforce Lightning Navigation is preserved as the primary header.
+- The Admin Utility Bar is positioned immediately below standard Salesforce navigation.
+- Desktop, tablet, and mobile sticky positions have been configured:
+  * Salesforce Header (standard navigation) is at the top.
+  * Utility Bar (Notifications + Quick Actions) is sticky immediately below it (top: 90px on desktop/tablet, top: 50px on mobile).
+  * Dashboard Tabs stick below the utility bar (top: 140px on desktop/tablet, top: 100px on mobile).
+  * Dashboard Content scrolls cleanly underneath the tabs and utility bar.
+- Changes were targeted strictly to the Admin dashboard components, preventing any modifications or regressions to the Inventory Manager or Sales Executive workspaces.
+
+Files Modified:
+- d:/SF Project/inventory_app/force-app/main/default/lwc/inventoryCommandCenter/inventoryCommandCenter.css
+  * Added specific overrides for `.dashboard-header.sticky-shell-header`
+  * Added specific overrides for `.admin-workspace .slds-tabs_default__nav`
+  * Added mobile media query overrides for mobile responsive view.
+
+------------------------------------------------------------------------
+3. CURRENT STATUS
+------------------------------------------------------------------------
+- Project: Inventory Management System
+- Target Org User: 723145roy.6036123142ec@agentforce.com
+- Deployment Status: SUCCESS
+- LWC Deployment Result: All custom components successfully compiled and deployed.
+- Test Run Result: All test suites passing (including SecurityAuditTest, ReturnRequestTest, InventoryControllerTest, InventoryDashboardControllerTest, and ProductControllerTest).
+
+------------------------------------------------------------------------
+4. COMPONENT MODEL & ARCHITECTURE
+------------------------------------------------------------------------
+The system is built on Apex controllers, custom flows, and custom Lightning Web Components.
+
+- Apex Controllers:
+  * InventoryController.cls: Resolves roles, provides console data, handles return-request status transitions, and reorder alerts.
+  * InventoryDashboardController.cls: Provides KPI counters, trend metrics, revenue, cost, and profit margins.
+  * ProductController.cls: Supports product catalog search and detail displays.
+
+- Lightning Web Components:
+  * inventoryCommandCenter: Main console/shell container. Dispatches workspaces based on logged-in user role (Admin, Manager, Sales Executive).
+  * inventoryDashboard: Houses metrics dashboard charts and cards.
+  * returnManagementDashboard: Handles intake, workflow actions, and lists for return requests.
+  * productCatalog & productDetail: Catalog grids and specific detail views.
+  * recentTransactions & recentOrdersWidget: Lists recent record operations.
+
+------------------------------------------------------------------------
+5. SECURITY & PERSONA ACCESS MODEL
+------------------------------------------------------------------------
+The system enforces functional boundaries using Salesforce Permission Sets:
+- Admin Access: Full view across all objects, financial metrics, and final return decision approvals.
+- Inventory Manager Access: Manager dashboard, products, suppliers, PO management, and initial return reviews.
+- Sales Executive Access: Product catalog, Sales Order creation, return request submissions, and own-returns visibility.
+
+------------------------------------------------------------------------
+6. CUSTOM OBJECT SCHEMA
+------------------------------------------------------------------------
+- Product__c: Standard catalog items, prices, and inventory levels.
+- Supplier__c: Vendor details.
+- Purchase_Order__c & Purchase_Order_Item__c: Procurement records.
+- Sales_Order__c & Sales_Order_Item__c: Inbound sales entries.
+- Inventory_Transaction__c: Ledger of all stock changes (In, Out, Adjustments).
+- Return_Request__c: Log of return items, resolution types (Repair, Replacement, Refund), and status tracking.
+
+------------------------------------------------------------------------
+7. CORE AUTOMATED FLOWS & VALIDATION RULES
+------------------------------------------------------------------------
+- Purchase_Order_Received: Auto-increments stock and registers Inventory Transaction upon PO status changing to 'Received'.
+- Sales_Order_Confirmed: Auto-decrements stock and registers Inventory Transaction when SO status becomes 'Confirmed'.
+- Return Approval Flows:
+  * Repair Approval: Adjusts stock and creates an 'Adjustment' transaction.
+  * Replacement Approval: Creates a 'Stock Out' transaction and changes status to 'Replacement Sent'.
+  * Refund Approval: Moves return request to 'Refunded' without modifying stock.
+- VR_004 Validation Rule: Restricts confirm actions on Sales Orders exceeding current stock.

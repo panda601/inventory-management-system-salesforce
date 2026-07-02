@@ -1,4 +1,4 @@
-# Contributing to Salesforce Enterprise Monorepo
+# Contributing to Inventory Management System (IMS)
 
 We want to make contributing to this project as easy and transparent as possible, whether it's:
 

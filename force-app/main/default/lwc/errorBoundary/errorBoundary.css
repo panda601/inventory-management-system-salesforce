@@ -1,0 +1,45 @@
+.error-boundary-card {
+    background: rgba(254, 242, 242, 0.9);
+    border: 1px solid #fca5a5;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px 0 rgba(239, 68, 68, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    width: 100%;
+    min-height: 220px;
+    transition: all 0.3s ease;
+}
+
+.error-content-box {
+    max-width: 420px;
+}
+
+.error-title {
+    color: #991b1b;
+    font-weight: 700;
+}
+
+.error-message {
+    color: #b91c1c;
+    font-size: 0.95rem;
+    font-family: inherit;
+    word-break: break-word;
+}
+
+.error-icon-wrapper {
+    display: inline-block;
+}
+
+.shake-animation {
+    animation: shake 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes shake {
+    0% { transform: rotate(-5deg); }
+    100% { transform: rotate(5deg); }
+}
+
+.retry-button {
+    --lwc-brandPrimary: #dc2626;
+    --lwc-brandHeader: #b91c1c;
+}

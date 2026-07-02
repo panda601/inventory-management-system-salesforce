@@ -1,0 +1,13 @@
+InventoryDashboardController.AdminDashboardSummary summary = InventoryDashboardController.getAdminDashboardSummary();
+System.debug('Admin Dashboard Summary:');
+System.debug('  totalProducts = ' + summary.totalProducts);
+System.debug('  availableInventory = ' + summary.availableInventory);
+System.debug('  lowStock = ' + summary.lowStock);
+System.debug('  outOfStock = ' + summary.outOfStock);
+System.debug('  pendingPurchaseOrders = ' + summary.pendingPurchaseOrders);
+System.debug('  pendingSalesOrders = ' + summary.pendingSalesOrders);
+System.debug('  pendingReturns = ' + summary.pendingReturns);
+System.debug('  revenue = ' + summary.revenue);
+System.debug('  procurementCost = ' + summary.procurementCost);
+System.debug('  profit = ' + summary.profit);
+System.debug('  profitMargin = ' + summary.profitMargin);

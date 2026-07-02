@@ -1,0 +1,137 @@
+<template>
+    <c-error-boundary onretry={handleRefresh}>
+        <div class="approval-center-container slds-is-relative">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+            </template>
+
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_medium">
+                <div>
+                    <h2 class="title-text font-bold">Approval Center</h2>
+                    <p class="subtitle-text text-muted">Review and process pending return requests (RMAs)</p>
+                </div>
+                <div>
+                    <button class="slds-button slds-button_neutral refresh-btn" onclick={handleRefresh} title="Refresh Approvals">
+                        <lightning-icon icon-name="utility:refresh" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <template if:true={hasPendingApprovals}>
+                <div class="slds-grid slds-wrap slds-gutters_direct-small">
+                    <template for:each={pendingApprovals} for:item="req">
+                        <div key={req.Id} class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-large-size_1-3 slds-m-bottom_medium">
+                            <div class="approval-card">
+                                <div class="card-header slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                                    <span class="request-number font-bold">{req.Name}</span>
+                                    <span class={req.badgeClass}>{req.Status__c}</span>
+                                </div>
+                                
+                                <div class="card-body slds-p-vertical_small">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Customer:</span>
+                                        <span class="detail-value">{req.Customer_Name__c}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Product:</span>
+                                        <span class="detail-value font-bold text-dark">{req.Product__r.Product_Name__c}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Quantity:</span>
+                                        <span class="detail-value">{req.Quantity__c} units</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Reason:</span>
+                                        <span class="detail-value text-italic">"{req.Reason__c}"</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Requested:</span>
+                                        <span class="detail-value">{req.formattedRequestedDate}</span>
+                                    </div>
+                                </div>
+
+                                <div class="card-actions slds-p-top_small slds-grid slds-gutters_direct-xx-small">
+                                    <div class="slds-col slds-size_1-2">
+                                        <button class="slds-button slds-button_success slds-button_stretch action-btn-success"
+                                                onclick={handleActionClick}
+                                                data-id={req.Id}
+                                                data-name={req.Name}
+                                                data-action="Approve">
+                                            Approve
+                                        </button>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2">
+                                        <button class="slds-button slds-button_destructive slds-button_stretch action-btn-error"
+                                                onclick={handleActionClick}
+                                                data-id={req.Id}
+                                                data-name={req.Name}
+                                                data-action="Reject">
+                                            Reject
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <template if:false={hasPendingApprovals}>
+                <c-empty-state 
+                    title="No Pending Approvals" 
+                    message="You have no return requests waiting for your approval." 
+                    icon-name="utility:success">
+                </c-empty-state>
+            </template>
+        </div>
+    </c-error-boundary>
+
+    <!-- ACTION DIALOG: APPROVE/REJECT DETAILS -->
+    <template if:true={isModalOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" aria-modal="true">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium font-bold">{modalTitle}</h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="slds-form slds-form_stacked">
+                        <template if:true={isApproveAction}>
+                            <template if:true={isAdminRole}>
+                                <div class="slds-form-element slds-m-bottom_medium">
+                                    <label class="slds-form-element__label font-bold" for="resolution-select">Resolution Type</label>
+                                    <div class="slds-form-element__control">
+                                        <select class="slds-select" id="resolution-select" onchange={handleResolutionChange} required>
+                                            <option value="">-- Select Resolution --</option>
+                                            <option value="Replacement">Replacement</option>
+                                            <option value="Refund">Refund</option>
+                                            <option value="Repair">Repair</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </template>
+                        </template>
+
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label font-bold" for="comments-input">Comments</label>
+                            <div class="slds-form-element__control">
+                                <textarea id="comments-input" class="slds-textarea" placeholder="Add optional comments..." oninput={handleCommentsChange}></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeModal} class="slds-m-right_small"></lightning-button>
+                    <lightning-button variant={actionButtonVariant} label={actionButtonLabel} onclick={submitAction}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </template>
+</template>

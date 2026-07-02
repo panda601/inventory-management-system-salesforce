@@ -1,0 +1,95 @@
+.map-view-container {
+    background: #ffffff;
+    border: 1px solid #dddbda;
+    padding: 1.25rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    color: #181818;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.panel-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #181818;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #dddbda;
+    padding-bottom: 6px;
+}
+
+.map-card {
+    background: #ffffff;
+    border: 1px solid #dddbda;
+    border-radius: 6px;
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s ease-in-out;
+}
+
+.map-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+}
+
+.map-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+}
+
+.map-card.healthy::before { background: #2e844a; }
+.map-card.healthy { border-left-color: #2e844a; }
+.map-card.healthy lightning-icon { --sds-c-icon-color-foreground: #2e844a; }
+
+.map-card.low-stock::before { background: #fe9339; }
+.map-card.low-stock { border-left-color: #fe9339; }
+.map-card.low-stock lightning-icon { --sds-c-icon-color-foreground: #fe9339; }
+
+.map-card.out-of-stock::before { background: #ba0517; }
+.map-card.out-of-stock { border-left-color: #ba0517; }
+.map-card.out-of-stock lightning-icon { --sds-c-icon-color-foreground: #ba0517; }
+
+.map-card.pending-orders::before { background: #0176d3; }
+.map-card.pending-orders { border-left-color: #0176d3; }
+.map-card.pending-orders lightning-icon { --sds-c-icon-color-foreground: #0176d3; }
+
+.card-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.card-icon {
+    --sds-c-icon-color-foreground: currentColor;
+}
+
+.card-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-label {
+    font-size: 0.75rem;
+    color: #514f4d;
+    font-weight: 600;
+}
+
+.card-count {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #181818;
+}
+
+.error-container {
+    background: #fedfe2;
+    border: 1px solid #ba0517;
+    padding: 0.5rem;
+    border-radius: 4px;
+    color: #ba0517;
+    font-size: 0.75rem;
+}

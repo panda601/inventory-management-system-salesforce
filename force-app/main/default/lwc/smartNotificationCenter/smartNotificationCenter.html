@@ -1,0 +1,88 @@
+<template>
+    <c-error-boundary onretry={handleRefresh}>
+        <div class="notification-card-container slds-is-relative">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+            </template>
+
+            <article class="slds-card notification-card-layout">
+                <div class="slds-card__header slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="utility:notification" size="small" class="notification-title-icon"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body slds-grid slds-grid_vertical-align-center">
+                            <h2 class="slds-card__header-title font-bold slds-m-right_small">Smart Notification Center</h2>
+                            <template if:true={unreadCount}>
+                                <span class="slds-badge slds-theme_error count-badge">{unreadCount} Unread</span>
+                            </template>
+                        </div>
+                    </header>
+                    <template if:true={unreadCount}>
+                        <button class="slds-button slds-button_neutral slds-button_xx-small mark-all-btn" onclick={handleMarkAllAsRead}>
+                            Mark all read
+                        </button>
+                    </template>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="filters-panel slds-m-horizontal_medium slds-m-bottom_medium slds-grid slds-wrap slds-grid_align-center btn-group">
+                    <button class={allBtnClass} onclick={handleFilterSelect} data-filter="All">All</button>
+                    <button class={unreadBtnClass} onclick={handleFilterSelect} data-filter="Unread">Unread</button>
+                    <button class={stockBtnClass} onclick={handleFilterSelect} data-filter="Stock">Stock</button>
+                    <button class={ordersBtnClass} onclick={handleFilterSelect} data-filter="Orders">Orders</button>
+                    <button class={returnsBtnClass} onclick={handleFilterSelect} data-filter="Returns">Returns</button>
+                </div>
+                
+                <div class="slds-card__body slds-card__body_inner notification-body-scroll">
+                    <template if:true={hasNotifications}>
+                        <ul class="notification-list">
+                            <template for:each={filteredNotifications} for:item="item">
+                                <li key={item.id} 
+                                    class={item.rowClass} 
+                                    onclick={handleNotificationClick} 
+                                    data-id={item.id} 
+                                    data-recordid={item.recordId} 
+                                    data-object={item.objectApiName}>
+                                    
+                                    <div class="slds-media slds-media_center slds-size_1-1">
+                                        <div class="slds-media__figure">
+                                            <lightning-icon icon-name={item.iconName} size="small" variant={item.iconVariant}></lightning-icon>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                                                <span class="item-title font-bold">{item.title}</span>
+                                                <template if:true={item.isUnread}>
+                                                    <button class="slds-button slds-button_icon mark-read-btn" 
+                                                            onclick={handleMarkAsRead} 
+                                                            data-id={item.id} 
+                                                            title="Mark as read">
+                                                        <lightning-icon icon-name="utility:check" size="xx-small"></lightning-icon>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            <span class="item-meta">{item.category} | SKU/Details are viewable in detail view.</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+
+                    <!-- Empty State -->
+                    <template if:false={hasNotifications}>
+                        <c-empty-state 
+                            title="All caught up!" 
+                            message="No new or pending critical notifications found in this category." 
+                            icon-name="utility:smiley_and_people">
+                        </c-empty-state>
+                    </template>
+                </div>
+                
+                <div class="slds-card__footer card-footer-layout">
+                    <button class="slds-button slds-button_neutral slds-button_stretch" onclick={navigateToTransactions}>View All Logs</button>
+                </div>
+            </article>
+        </div>
+    </c-error-boundary>
+</template>

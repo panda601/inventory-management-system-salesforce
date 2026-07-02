@@ -1,0 +1,58 @@
+<template>
+    <c-error-boundary onretry={handleRefresh}>
+        <div class="supplier-list-container">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="small" variant="brand"></lightning-spinner>
+            </template>
+            
+            <div class="header-row slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <h3 class="section-title font-bold">Suppliers</h3>
+                <button class="slds-button slds-button_brand slds-button_small" onclick={handleCreateSupplier}>
+                    <lightning-icon icon-name="utility:add" size="x-small" variant="inverse" class="slds-m-right_xx-small"></lightning-icon>
+                    Create Supplier
+                </button>
+            </div>
+
+            <template if:true={hasSuppliers}>
+                <div class="table-container">
+                    <table class="supplier-table">
+                        <thead>
+                            <tr>
+                                <th>Supplier Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={suppliers} for:item="sup">
+                                <tr key={sup.Id} class="supplier-row">
+                                    <td class="sup-name font-bold">{sup.SupplierName}</td>
+                                    <td class="sup-email">{sup.Email__c}</td>
+                                    <td>
+                                        <span class={sup.badgeClass}>{sup.Status__c}</span>
+                                    </td>
+                                    <td class="text-right">
+                                        <button class="slds-button slds-button_neutral slds-button_xx-small" onclick={handleViewDetails} data-id={sup.Id}>
+                                            View Supplier Details
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+
+            <template if:false={hasSuppliers}>
+                <template if:false={isLoading}>
+                    <c-empty-state 
+                        title="No Suppliers Found" 
+                        message="There are no suppliers in the system." 
+                        icon-name="utility:database">
+                    </c-empty-state>
+                </template>
+            </template>
+        </div>
+    </c-error-boundary>
+</template>

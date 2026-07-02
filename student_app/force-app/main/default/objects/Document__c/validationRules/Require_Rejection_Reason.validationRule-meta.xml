@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Require_Rejection_Reason</fullName>
-    <active>true</active>
-    <description>Ensures a rejection reason is entered if the Verification Status is Rejected.</description>
-    <errorConditionFormula>ISPICKVAL(Verification_Status__c, &quot;Rejected&quot;) &amp;&amp; ISBLANK(Rejection_Reason__c)</errorConditionFormula>
-    <errorDisplayField>Rejection_Reason__c</errorDisplayField>
-    <errorMessage>A rejection reason must be provided if the document is rejected.</errorMessage>
-</ValidationRule>

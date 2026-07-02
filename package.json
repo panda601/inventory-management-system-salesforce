@@ -1,10 +1,10 @@
 {
-  "name": "salesforce-enterprise-monorepo",
-  "private": true,
+  "name": "inventory-management-system-salesforce",
   "version": "1.0.0",
-  "description": "Salesforce DX Monorepo containing Student Application Management System and Inventory Management System",
+  "description": "Professional Salesforce-based Inventory Management System (IMS) with Lightning Web Components, Apex controllers, and automated flows.",
+  "private": true,
   "scripts": {
-    "lint": "eslint \"{student_app,inventory_app}/force-app/main/default/{aura,lwc}/**/*.js\"",
+    "lint": "eslint \"force-app/main/default/lwc/**/*.js\"",
     "test": "npm run test:unit",
     "test:unit": "sfdx-lwc-jest",
     "test:unit:watch": "sfdx-lwc-jest --watch",
@@ -34,7 +34,7 @@
     "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}": [
       "prettier --write"
     ],
-    "**/{aura,lwc}/**/*.js": [
+    "**/lwc/**/*.js": [
       "eslint"
     ]
   }

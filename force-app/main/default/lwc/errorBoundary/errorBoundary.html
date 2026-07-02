@@ -1,0 +1,36 @@
+<template>
+    <template if:true={hasError}>
+        <div class="error-boundary-card slds-align_absolute-center slds-p-around_large">
+            <div class="error-content-box slds-text-align_center">
+                <div class="error-icon-wrapper slds-m-bottom_medium">
+                    <lightning-icon 
+                        icon-name="utility:error" 
+                        alternative-text="Error Details" 
+                        variant="error" 
+                        size="large"
+                        class="shake-animation">
+                    </lightning-icon>
+                </div>
+                <h3 class="error-title slds-text-heading_medium slds-m-bottom_small">
+                    Oops! Something went wrong
+                </h3>
+                <p class="error-message slds-m-bottom_medium">
+                    {errorMessage}
+                </p>
+                <div class="action-buttons">
+                    <lightning-button 
+                        variant="brand" 
+                        label="Retry" 
+                        title="Retry loading this section" 
+                        icon-name="utility:refresh" 
+                        onclick={handleRetry}
+                        class="retry-button">
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template if:false={hasError}>
+        <slot></slot>
+    </template>
+</template>

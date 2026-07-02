@@ -1,0 +1,9 @@
+{
+    "xml.preferences.showSchemaDocumentationType": "none",
+    "xml.validation.filters": [
+        {
+            "pattern": "**/*-meta.xml",
+            "enabled": false
+        }
+    ]
+}

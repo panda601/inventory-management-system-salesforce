@@ -1,0 +1,163 @@
+.timeline-container {
+    background: #ffffff;
+    border: 1px solid #dddbda;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    color: #181818;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.panel-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #181818;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #dddbda;
+    padding-bottom: 6px;
+}
+
+.timeline-wrapper {
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+.timeline-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 15px;
+    width: 2px;
+    background: #dddbda;
+}
+
+.timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.timeline-item {
+    display: flex;
+    position: relative;
+}
+
+.timeline-marker {
+    position: relative;
+    z-index: 10;
+    margin-right: 1.25rem;
+    width: 32px;
+    height: 32px;
+}
+
+.timeline-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.timeline-badge.stock-in {
+    background: rgba(46, 132, 74, 0.1);
+    border: 1px solid #2e844a;
+    color: #2e844a;
+}
+.timeline-badge.stock-in lightning-icon {
+    --sds-c-icon-color-foreground: #2e844a;
+}
+
+.timeline-badge.stock-out {
+    background: rgba(186, 5, 23, 0.1);
+    border: 1px solid #ba0517;
+    color: #ba0517;
+}
+.timeline-badge.stock-out lightning-icon {
+    --sds-c-icon-color-foreground: #ba0517;
+}
+
+.timeline-badge.adjustment {
+    background: rgba(254, 147, 57, 0.1);
+    border: 1px solid #fe9339;
+    color: #fe9339;
+}
+.timeline-badge.adjustment lightning-icon {
+    --sds-c-icon-color-foreground: #fe9339;
+}
+
+.timeline-badge.po {
+    background: rgba(1, 118, 211, 0.1);
+    border: 1px solid #0176d3;
+    color: #0176d3;
+}
+.timeline-badge.po lightning-icon {
+    --sds-c-icon-color-foreground: #0176d3;
+}
+
+.timeline-badge.low-stock-alert {
+    background: rgba(186, 5, 23, 0.1);
+    border: 1px solid #ba0517;
+    color: #ba0517;
+}
+.timeline-badge.low-stock-alert lightning-icon {
+    --sds-c-icon-color-foreground: #ba0517;
+}
+
+.marker-icon {
+    --sds-c-icon-color-foreground: currentColor;
+}
+
+.timeline-content {
+    flex-grow: 1;
+    background: #f8f9fa;
+    border: 1px solid #dddbda;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.01);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.timeline-content:hover {
+    border-color: #b0adab;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.event-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #181818;
+}
+
+.event-date {
+    font-size: 0.75rem;
+    color: #514f4d;
+    white-space: nowrap;
+}
+
+.timeline-detail {
+    font-size: 0.75rem;
+    color: #514f4d;
+}
+
+.no-events {
+    text-align: center;
+    padding: 2.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px dashed #dddbda;
+    color: #514f4d;
+}

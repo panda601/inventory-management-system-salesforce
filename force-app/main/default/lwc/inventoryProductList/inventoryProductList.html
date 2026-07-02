@@ -1,0 +1,62 @@
+<template>
+    <c-error-boundary onretry={handleRefresh}>
+        <div class="product-list-container">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="small" variant="brand"></lightning-spinner>
+            </template>
+            
+            <div class="header-row slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <h3 class="section-title font-bold">Products</h3>
+                <button class="slds-button slds-button_brand slds-button_small" onclick={handleCreateProduct}>
+                    <lightning-icon icon-name="utility:add" size="x-small" variant="inverse" class="slds-m-right_xx-small"></lightning-icon>
+                    Create Product
+                </button>
+            </div>
+
+            <template if:true={hasProducts}>
+                <div class="table-container">
+                    <table class="product-table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>SKU</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={products} for:item="prod">
+                                <tr key={prod.Id} class="product-row">
+                                    <td class="prod-name font-bold">
+                                        <a href="#" onclick={handleViewDetails} data-id={prod.Id}>{prod.Product_Name__c}</a>
+                                    </td>
+                                    <td class="prod-sku font-mono">{prod.SKU__c}</td>
+                                    <td class="prod-stock">{prod.Current_Stock__c} units</td>
+                                    <td>
+                                        <span class={prod.badgeClass}>{prod.Status__c}</span>
+                                    </td>
+                                    <td class="text-right">
+                                        <button class="slds-button slds-button_neutral slds-button_xx-small" onclick={handleViewDetails} data-id={prod.Id}>
+                                            View Product
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+
+            <template if:false={hasProducts}>
+                <template if:false={isLoading}>
+                    <c-empty-state 
+                        title="No Products Found" 
+                        message="There are no active products in the system." 
+                        icon-name="utility:database">
+                    </c-empty-state>
+                </template>
+            </template>
+        </div>
+    </c-error-boundary>
+</template>

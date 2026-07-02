@@ -1,0 +1,122 @@
+.approval-center-container {
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    min-height: 250px;
+}
+
+.title-text {
+    font-size: 1.25rem;
+    color: #0f172a;
+}
+
+.subtitle-text {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.refresh-btn {
+    border-radius: 20px;
+}
+
+.approval-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.approval-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+}
+
+.card-header {
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.75rem;
+}
+
+.request-number {
+    font-size: 1rem;
+    color: #0f766e;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-badge.draft {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.status-badge.approved {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.status-badge.received {
+    background-color: #d1fae5;
+    color: #059669;
+}
+
+.status-badge.cancelled {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.detail-label {
+    color: #64748b;
+}
+
+.detail-value {
+    color: #334155;
+    text-align: right;
+}
+
+.action-btn-success {
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+    color: white !important;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.action-btn-success:hover {
+    background-color: #059669 !important;
+    border-color: #059669 !important;
+}
+
+.action-btn-error {
+    background-color: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: white !important;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.action-btn-error:hover {
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.text-italic {
+    font-style: italic;
+}

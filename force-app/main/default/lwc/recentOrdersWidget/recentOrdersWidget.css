@@ -1,0 +1,116 @@
+.orders-widget-container {
+    background: #ffffff;
+    border: 1px solid #dddbda;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    color: #181818;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    height: 100%;
+}
+
+.panel-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #181818;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #dddbda;
+    padding-bottom: 6px;
+}
+
+.orders-box {
+    background: #f8f9fa;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 1rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.orders-section-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #514f4d;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid #dddbda;
+    padding-bottom: 4px;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.order-item {
+    background: #ffffff;
+    border: 1px solid #dddbda;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.order-item:hover {
+    border-color: #0176d3;
+    transform: translateX(2px);
+    box-shadow: 0 2px 4px rgba(1, 118, 211, 0.04);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.order-name {
+    font-family: monospace;
+    font-weight: 700;
+    color: #0176d3;
+    font-size: 0.8125rem;
+}
+
+.order-date {
+    font-size: 0.75rem;
+    color: #514f4d;
+}
+
+.order-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+}
+
+.order-meta {
+    color: #181818;
+    font-weight: 600;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.order-amount {
+    font-weight: 700;
+    color: #2e844a;
+}
+
+.order-badge {
+    background: rgba(46, 132, 74, 0.1);
+    color: #2e844a;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.6875rem;
+}
+
+.no-orders {
+    text-align: center;
+    padding: 1.5rem;
+    color: #514f4d;
+    font-size: 0.8125rem;
+}

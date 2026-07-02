@@ -1,0 +1,93 @@
+<template>
+    <c-error-boundary onretry={handleRefresh}>
+        <div class="leaderboard-container">
+            <!-- Panel Header and Navigation Buttons -->
+            <div class="panel-header slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-wrap">
+                <h2 class="panel-title slds-m-right_small slds-m-bottom_small">Product Performance Leaderboard</h2>
+                <div class="btn-group slds-m-bottom_small">
+                    <button class={topSellingBtnClass} onclick={handleFilterSelect} data-filter="top-selling">
+                        <lightning-icon icon-name="utility:sales" size="x-small" class="slds-m-right_xx-small btn-icon" variant="inverse"></lightning-icon>
+                        <span>Top Selling</span>
+                    </button>
+                    <button class={topRevenueBtnClass} onclick={handleFilterSelect} data-filter="top-revenue">
+                        <lightning-icon icon-name="utility:moneybag" size="x-small" class="slds-m-right_xx-small btn-icon" variant="inverse"></lightning-icon>
+                        <span>Top Revenue</span>
+                    </button>
+                    <button class={leastSellingBtnClass} onclick={handleFilterSelect} data-filter="least-selling">
+                        <lightning-icon icon-name="utility:trending_down" size="x-small" class="slds-m-right_xx-small btn-icon" variant="inverse"></lightning-icon>
+                        <span>Least Selling</span>
+                    </button>
+                    <button class="slds-button slds-button_neutral rounded-btn view-all-btn" onclick={navigateToProducts}>
+                        <lightning-icon icon-name="utility:open_folder" size="x-small" class="slds-m-right_xx-small btn-icon"></lightning-icon>
+                        <span>View All Products</span>
+                    </button>
+                </div>
+            </div>
+
+            <template if:true={hasData}>
+                <div class="slds-grid slds-wrap slds-gutters_direct-small">
+                    <!-- Conditionally Rendered Top Selling -->
+                    <template if:true={isTopSelling}>
+                        <div class="slds-col slds-size_1-1 animate-fade">
+                            <div class="leader-box top-selling">
+                                <h3 class="box-title">Top Selling (Qty)</h3>
+                                <div class="leader-list">
+                                    <template for:each={topSelling} for:item="item">
+                                        <div key={item.productName} class="leader-item">
+                                            <span class="product-name" title={item.productName}>{item.productName}</span>
+                                            <span class="score-badge positive">{item.quantitySold} units</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Conditionally Rendered Top Revenue -->
+                    <template if:true={isTopRevenue}>
+                        <div class="slds-col slds-size_1-1 animate-fade">
+                            <div class="leader-box top-revenue">
+                                <h3 class="box-title">Top Revenue ($)</h3>
+                                <div class="leader-list">
+                                    <template for:each={topRevenue} for:item="item">
+                                        <div key={item.productName} class="leader-item">
+                                            <span class="product-name" title={item.productName}>{item.productName}</span>
+                                            <span class="score-badge revenue">
+                                                <lightning-formatted-number value={item.totalSales} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                            </span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Conditionally Rendered Least Selling -->
+                    <template if:true={isLeastSelling}>
+                        <div class="slds-col slds-size_1-1 animate-fade">
+                            <div class="leader-box least-selling">
+                                <h3 class="box-title">Least Selling (Qty)</h3>
+                                <div class="leader-list">
+                                    <template for:each={leastSelling} for:item="item">
+                                        <div key={item.productName} class="leader-item">
+                                            <span class="product-name" title={item.productName}>{item.productName}</span>
+                                            <span class="score-badge negative">{item.quantitySold} units</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            
+            <template if:false={hasData}>
+                <c-empty-state 
+                    title="No Leaderboard Data" 
+                    message="No leaderboard performance records available." 
+                    icon-name="utility:graph">
+                </c-empty-state>
+            </template>
+        </div>
+    </c-error-boundary>
+</template>

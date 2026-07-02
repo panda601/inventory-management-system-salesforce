@@ -1,0 +1,74 @@
+<template>
+    <c-error-boundary onretry={refreshCatalog}>
+        <div class="catalog-container">
+            <!-- Catalog Header & Filters -->
+            <div class="catalog-header slds-m-bottom_medium">
+                <h2 class="catalog-title slds-m-bottom_small">Product Catalog</h2>
+                <div class="filters-grid">
+                    <!-- Search Box -->
+                    <div class="search-box">
+                        <lightning-input
+                            type="search"
+                            variant="label-hidden"
+                            placeholder="Search products by Name, SKU..."
+                            value={searchKey}
+                            onchange={handleSearchChange}>
+                        </lightning-input>
+                    </div>
+                    <!-- Category Filter -->
+                    <div class="category-box">
+                        <lightning-combobox
+                            name="category"
+                            variant="label-hidden"
+                            value={categoryFilter}
+                            options={categoryOptions}
+                            onchange={handleCategoryChange}>
+                        </lightning-combobox>
+                    </div>
+                    <!-- Sort Dropdown -->
+                    <div class="sort-box">
+                        <lightning-combobox
+                            name="sort"
+                            variant="label-hidden"
+                            value={sortBy}
+                            options={sortOptions}
+                            onchange={handleSortChange}>
+                        </lightning-combobox>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compact Catalog List -->
+            <template if:true={products}>
+                <template if:true={sortedProducts.length}>
+                    <div class="compact-list">
+                        <template for:each={sortedProducts} for:item="prod">
+                            <div key={prod.Id} class="compact-item">
+                                <div class="product-info-left">
+                                    <a href="#" class="product-name-link" onclick={handleProductNameClick} data-id={prod.Id}>{prod.Product_Name__c}</a>
+                                    <span class="product-sku-sub">SKU: {prod.SKU__c}</span>
+                                </div>
+                                <div class="product-info-right slds-grid slds-grid_vertical-align-center">
+                                    <span class="price-lbl slds-m-right_medium">
+                                        <lightning-formatted-number value={prod.Price__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                    </span>
+                                    <button class="detail-btn slds-m-right_small" onclick={handleProductClick} data-id={prod.Id}>
+                                        View Details
+                                    </button>
+                                    <span class={prod.badgeClass}>{prod.status}</span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template if:false={sortedProducts.length}>
+                    <c-empty-state 
+                        title="No Products Found" 
+                        message="No products found matching your criteria." 
+                        icon-name="utility:search">
+                    </c-empty-state>
+                </template>
+            </template>
+        </div>
+    </c-error-boundary>
+</template>

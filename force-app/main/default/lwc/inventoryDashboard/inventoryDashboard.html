@@ -1,0 +1,158 @@
+<template>
+    <c-error-boundary onretry={handleRefresh}>
+        <div class="dashboard-container slds-is-relative">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+            </template>
+            
+            <template if:true={error}>
+                <div class="error-container slds-m-bottom_medium">
+                    <lightning-icon icon-name="utility:error" size="small" variant="error" class="slds-m-right_small"></lightning-icon>
+                    <span>Error loading dashboard: {error.body.message}</span>
+                </div>
+            </template>
+
+            <!-- Responsive 4-2-1 Grid Container for Charts -->
+            <div class="slds-grid slds-wrap slds-gutters_direct-small slds-m-bottom_medium">
+                <!-- Chart 1: Inventory Health -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-large-size_1-4 slds-m-bottom_small">
+                    <article class="slds-card chart-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="custom:custom55" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span class="slds-text-title_caps font-bold">Inventory Health</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner chart-content-wrapper">
+                            <div class="chart-canvas-container">
+                                <canvas class="inventory-health-chart" lwc:dom="manual"></canvas>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Chart 2: Purchase Order Status -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-large-size_1-4 slds-m-bottom_small">
+                    <article class="slds-card chart-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="standard:drafts" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span class="slds-text-title_caps font-bold">PO Status</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner chart-content-wrapper">
+                            <div class="chart-canvas-container">
+                                <canvas class="po-status-chart" lwc:dom="manual"></canvas>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Chart 3: Stock Trend -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-large-size_1-4 slds-m-bottom_small">
+                    <article class="slds-card chart-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="utility:trending" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span class="slds-text-title_caps font-bold">Stock Trend</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner chart-content-wrapper">
+                            <div class="chart-canvas-container">
+                                <canvas class="stock-trend-chart" lwc:dom="manual"></canvas>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Chart 4: Top Selling Products -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-large-size_1-4 slds-m-bottom_small">
+                    <article class="slds-card chart-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="utility:outcome" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span class="slds-text-title_caps font-bold">Top Products</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner chart-content-wrapper">
+                            <div class="chart-canvas-container">
+                                <canvas class="top-selling-products-chart" lwc:dom="manual"></canvas>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Chart 5: Inventory Aging -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-large-size_1-4 slds-m-bottom_small">
+                    <article class="slds-card chart-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="utility:clock" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span class="slds-text-title_caps font-bold">Stock Aging</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner chart-content-wrapper">
+                            <div class="chart-canvas-container">
+                                <canvas class="inventory-aging-chart" lwc:dom="manual"></canvas>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Chart 6: Demand Forecasting -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-large-size_1-4 slds-m-bottom_small">
+                    <article class="slds-card chart-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="utility:graph" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span class="slds-text-title_caps font-bold">Predictive Forecast</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner chart-content-wrapper">
+                            <div class="chart-canvas-container">
+                                <canvas class="stock-forecast-chart" lwc:dom="manual"></canvas>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+        </div>
+    </c-error-boundary>
+</template>

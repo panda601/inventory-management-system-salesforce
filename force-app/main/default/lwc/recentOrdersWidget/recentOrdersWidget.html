@@ -1,0 +1,81 @@
+<template>
+    <c-error-boundary onretry={refreshWidget}>
+        <div class="orders-widget-container">
+            <div class="panel-header slds-m-bottom_medium">
+                <h2 class="panel-title">Recent Orders</h2>
+            </div>
+
+            <div class="slds-grid slds-wrap slds-gutters_direct">
+                <!-- Latest Purchase Orders -->
+                <template if:true={isManager}>
+                    <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-m-bottom_small">
+                        <div class="orders-box">
+                            <h3 class="orders-section-title">Latest Purchase Orders</h3>
+                            <template if:true={hasPOs}>
+                                <div class="orders-list">
+                                    <template for:each={purchaseOrders} for:item="po">
+                                        <div key={po.Id} class="order-item" onclick={navigateToPO} data-id={po.Id}>
+                                            <div class="order-header">
+                                                <span class="order-name">{po.Name}</span>
+                                                <span class="order-date">
+                                                    <lightning-formatted-date-time value={po.Order_Date__c} month="short" day="2-digit"></lightning-formatted-date-time>
+                                                </span>
+                                            </div>
+                                            <div class="order-body">
+                                                <span class="order-meta">{po.Supplier__r.Name}</span>
+                                                <span class="order-amount">
+                                                    <lightning-formatted-number value={po.Total_Amount__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                            <template if:false={hasPOs}>
+                                <c-empty-state 
+                                    title="No Purchase Orders" 
+                                    message="No purchase orders found." 
+                                    icon-name="utility:database">
+                                </c-empty-state>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Latest Sales Orders -->
+                <div class={salesOrderColumnClass}>
+                    <div class="orders-box">
+                        <h3 class="orders-section-title">Latest Sales Orders</h3>
+                        <template if:true={hasSOs}>
+                            <div class="orders-list">
+                                <template for:each={salesOrders} for:item="so">
+                                    <div key={so.Id} class="order-item" onclick={navigateToSO} data-id={so.Id}>
+                                        <div class="order-header">
+                                            <span class="order-name">{so.Name}</span>
+                                            <span class="order-date">
+                                                <lightning-formatted-date-time value={so.Date} month="short" day="2-digit"></lightning-formatted-date-time>
+                                            </span>
+                                        </div>
+                                        <div class="order-body">
+                                            <span class="order-meta">{so.CustomerName}</span>
+                                            <span class="order-amount">
+                                                <lightning-formatted-number value={so.Amount} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                        <template if:false={hasSOs}>
+                            <c-empty-state 
+                                title="No Sales Orders" 
+                                message="No sales orders found." 
+                                icon-name="utility:database">
+                            </c-empty-state>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </c-error-boundary>
+</template>

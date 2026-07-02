@@ -1,0 +1,1134 @@
+<template>
+    <div class="command-center-container">
+        <template if:true={isAdmin}>
+            <header class="dashboard-header sticky-shell-header slds-grid slds-wrap slds-grid_vertical-align-center">
+                <div class="dashboard-header__group slds-grid slds-grid_vertical-align-center">
+                    <button
+                        class="bell-button dashboard-header__bell"
+                        onclick={handleOpenNotificationModal}
+                        title="View Notifications"
+                    >
+                        <lightning-icon
+                            icon-name="utility:notification"
+                            size="small"
+                            class="bell-icon"
+                        ></lightning-icon>
+                        <template if:true={hasNotifications}>
+                            <span class="bell-badge"></span>
+                        </template>
+                    </button>
+                    <span class="dashboard-header__label">Notifications</span>
+                </div>
+
+                <div class="dashboard-header__divider" aria-hidden="true"></div>
+
+                <div
+                    class="dashboard-header__group dashboard-header__group_actions slds-grid slds-grid_vertical-align-center"
+                >
+                    <span class="dashboard-header__label"></span>
+                    <div class="utility-menu utility-menu_desktop">
+                        <lightning-button-menu
+                            alternative-text="Quick Actions"
+                            label="Quick Actions"
+                            variant="border-filled"
+                            onselect={handleQuickActionSelect}
+                        >
+                            <lightning-menu-item value="create_product" label="Create Product"></lightning-menu-item>
+                            <lightning-menu-item value="create_supplier" label="Create Supplier"></lightning-menu-item>
+                            <lightning-menu-item value="create_po" label="Create Purchase Order"></lightning-menu-item>
+                            <lightning-menu-item value="create_so" label="Create Sales Order"></lightning-menu-item>
+                        </lightning-button-menu>
+                    </div>
+                    <div class="utility-menu utility-menu_mobile">
+                        <lightning-button-menu
+                            alternative-text="Quick Actions"
+                            icon-name="utility:threedots"
+                            variant="border-filled"
+                            onselect={handleQuickActionSelect}
+                        >
+                            <lightning-menu-item value="create_product" label="Create Product"></lightning-menu-item>
+                            <lightning-menu-item value="create_supplier" label="Create Supplier"></lightning-menu-item>
+                            <lightning-menu-item value="create_po" label="Create Purchase Order"></lightning-menu-item>
+                            <lightning-menu-item value="create_so" label="Create Sales Order"></lightning-menu-item>
+                        </lightning-button-menu>
+                    </div>
+                </div>
+            </header>
+        </template>
+
+        <!-- ADMIN WORKSPACE -->
+        <template if:true={isAdmin}>
+            <div class="admin-workspace page-bottom-spacing slds-p-top_none">
+                <lightning-tabset
+                    active-tab-value={activeAdminTab}
+                    ontabselect={handleTabSelect}
+                    class="slds-m-top_none slds-p-top_none"
+                >
+                    <lightning-tab label="Dashboard" value="dashboard">
+                        <div class="admin-dashboard-layout slds-m-top_none slds-p-top_none">
+                            <h2 class="slds-text-heading_small font-bold slds-m-vertical_small">KPI Cards</h2>
+                            <div class="slds-grid slds-wrap slds-gutters_direct-small">
+                                <div
+                                    class="slds-col slds-size_1-1 slds-small-size_1-2 slds-large-size_1-4 slds-m-bottom_small"
+                                >
+                                    <div class="metric-card dashboard-card brand-card">
+                                        <lightning-icon
+                                            icon-name="standard:product"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Products</span>
+                                        <h3 class="metric-value">{summaryData.totalProducts}</h3>
+                                    </div>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-1 slds-small-size_1-2 slds-large-size_1-4 slds-m-bottom_small"
+                                >
+                                    <div class="metric-card dashboard-card success-card">
+                                        <lightning-icon
+                                            icon-name="standard:product"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Inventory</span>
+                                        <h3 class="metric-value">{summaryData.availableInventory}</h3>
+                                    </div>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-1 slds-small-size_1-2 slds-large-size_1-4 slds-m-bottom_small"
+                                >
+                                    <div class="metric-card dashboard-card warning-card">
+                                        <lightning-icon
+                                            icon-name="utility:warning"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Low Stock</span>
+                                        <h3 class="metric-value">{summaryData.lowStock}</h3>
+                                    </div>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-1 slds-small-size_1-2 slds-large-size_1-4 slds-m-bottom_small"
+                                >
+                                    <div class="metric-card dashboard-card info-card">
+                                        <lightning-icon
+                                            icon-name="standard:orders"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Pending POs</span>
+                                        <h3 class="metric-value">{summaryData.pendingPurchaseOrders}</h3>
+                                    </div>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-1 slds-small-size_1-2 slds-large-size_1-4 slds-m-bottom_small"
+                                >
+                                    <div class="metric-card dashboard-card info-card">
+                                        <lightning-icon
+                                            icon-name="standard:record"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Pending SOs</span>
+                                        <h3 class="metric-value">{summaryData.pendingSalesOrders}</h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h2 class="slds-text-heading_small font-bold slds-m-vertical_small">
+                                Profit &amp; Loss Dashboard
+                            </h2>
+                            <div class="slds-grid slds-wrap slds-gutters_direct-small slds-m-bottom_medium">
+                                <div
+                                    class="slds-col slds-size_1-1 slds-small-size_1-2 slds-large-size_1-4 slds-m-bottom_small"
+                                >
+                                    <div class="metric-card dashboard-card revenue-card">
+                                        <lightning-icon
+                                            icon-name="utility:moneybag"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Revenue</span>
+                                        <h3 class="metric-value">
+                                            <lightning-formatted-number
+                                                value={summaryData.revenue}
+                                                format-style="currency"
+                                                currency-code="USD"
+                                            ></lightning-formatted-number>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-1 slds-small-size_1-2 slds-large-size_1-4 slds-m-bottom_small"
+                                >
+                                    <div class="metric-card dashboard-card cost-card">
+                                        <lightning-icon
+                                            icon-name="utility:chart"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Cost</span>
+                                        <h3 class="metric-value">
+                                            <lightning-formatted-number
+                                                value={summaryData.procurementCost}
+                                                format-style="currency"
+                                                currency-code="USD"
+                                            ></lightning-formatted-number>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-1 slds-small-size_1-2 slds-large-size_1-4 slds-m-bottom_small"
+                                >
+                                    <div class="metric-card dashboard-card profit-card">
+                                        <lightning-icon
+                                            icon-name="utility:chart"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Profit</span>
+                                        <h3 class="metric-value">
+                                            <lightning-formatted-number
+                                                value={summaryData.profit}
+                                                format-style="currency"
+                                                currency-code="USD"
+                                            ></lightning-formatted-number>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-1 slds-small-size_1-2 slds-large-size_1-4 slds-m-bottom_small"
+                                >
+                                    <div class="metric-card dashboard-card margin-card">
+                                        <lightning-icon
+                                            icon-name="utility:chart"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Profit Margin</span>
+                                        <h3 class="metric-value">
+                                            <lightning-formatted-number
+                                                value={summaryData.profitMargin}
+                                                maximum-fraction-digits="2"
+                                            ></lightning-formatted-number
+                                            >%
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-wrap slds-gutters_direct-medium">
+                                <div class="slds-col slds-size_1-1 slds-large-size_1-of-3 slds-m-bottom_medium">
+                                    <div class="chart-card slds-card_boundary slds-box_x-small">
+                                        <div class="chart-card-header">
+                                            <h3 class="chart-card-title">Monthly Revenue</h3>
+                                        </div>
+                                        <div class="chart-canvas-container compact-chart">
+                                            <canvas class="monthly-revenue-chart" lwc:dom="manual"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-1 slds-large-size_1-of-3 slds-m-bottom_medium">
+                                    <div class="chart-card slds-card_boundary slds-box_x-small">
+                                        <div class="chart-card-header">
+                                            <h3 class="chart-card-title">Monthly Procurement Cost</h3>
+                                        </div>
+                                        <div class="chart-canvas-container compact-chart">
+                                            <canvas class="monthly-cost-chart" lwc:dom="manual"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-1 slds-large-size_1-of-3 slds-m-bottom_medium">
+                                    <div class="chart-card slds-card_boundary slds-box_x-small">
+                                        <div class="chart-card-header">
+                                            <h3 class="chart-card-title">Profit vs Loss</h3>
+                                        </div>
+                                        <div class="chart-canvas-container compact-chart">
+                                            <canvas class="profit-loss-chart" lwc:dom="manual"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h2 class="slds-text-heading_small font-bold slds-m-vertical_small">Alerts Dashboard</h2>
+                            <div class="slds-grid slds-wrap slds-gutters_direct-small">
+                                <div class="slds-col slds-size_1-1 slds-medium-size_1-3 slds-m-bottom_small">
+                                    <div class="metric-card dashboard-card alert-card warning-card">
+                                        <lightning-icon
+                                            icon-name="utility:warning"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Low Stock</span>
+                                        <h3 class="metric-value">{summaryData.lowStock}</h3>
+                                        <button
+                                            class="action-link-btn"
+                                            onclick={openAdminProductsTab}
+                                        >
+                                            View Low Stock
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-1 slds-medium-size_1-3 slds-m-bottom_small">
+                                    <div class="metric-card dashboard-card alert-card neutral-card">
+                                        <lightning-icon
+                                            icon-name="standard:service_contract"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Pending Returns</span>
+                                        <h3 class="metric-value">{summaryData.pendingReturns}</h3>
+                                        <button
+                                            class="action-link-btn"
+                                            onclick={openAdminReturnsTab}
+                                        >
+                                            View Pending Returns
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-1 slds-medium-size_1-3 slds-m-bottom_small">
+                                    <div class="metric-card dashboard-card alert-card info-card">
+                                        <lightning-icon
+                                            icon-name="standard:drafts"
+                                            size="small"
+                                            class="card-icon"
+                                        ></lightning-icon>
+                                        <span class="metric-label">Pending POs</span>
+                                        <h3 class="metric-value">{summaryData.pendingPurchaseOrders}</h3>
+                                        <button
+                                            class="action-link-btn"
+                                            onclick={openAdminPurchaseOrdersTab}
+                                        >
+                                            View Pending POs
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-tab>
+
+                    <lightning-tab label="Products" value="products">
+                        <div class="slds-m-top_x-small">
+                            <lightning-layout multiple-rows="true" class="slds-grid slds-wrap admin-product-layout">
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="5" class="slds-m-bottom_medium">
+                                    <c-product-catalog onproductselect={handleAdminProductSelect}></c-product-catalog>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="7" class="slds-m-bottom_medium">
+                                    <c-product-detail record-id={selectedAdminProductId}></c-product-detail>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- Tab 3: Purchase Orders -->
+                    <lightning-tab label="Purchase Orders" value="purchase_orders">
+                        <div class="slds-m-top_x-small">
+                            <c-inventory-purchase-order-list></c-inventory-purchase-order-list>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- Tab 4: Sales Orders -->
+                    <lightning-tab label="Sales Orders" value="sales_orders">
+                        <div class="slds-m-top_x-small">
+                            <c-inventory-sales-order-list></c-inventory-sales-order-list>
+                        </div>
+                    </lightning-tab>
+
+                    <lightning-tab label="Returns" value="returns">
+                        <div class="slds-m-top_x-small">
+                            <c-return-management-dashboard
+                                user-role={userRole}
+                                variant="admin"
+                            ></c-return-management-dashboard>
+                        </div>
+                    </lightning-tab>
+
+                    <lightning-tab label="Approval Center" value="approvals">
+                        <div class="slds-m-top_x-small">
+                            <c-approval-center onrefreshdata={refreshAllData}></c-approval-center>
+                        </div>
+                    </lightning-tab>
+                </lightning-tabset>
+            </div>
+        </template>
+
+        <!-- INVENTORY MANAGER WORKSPACE (5 Tabs) -->
+        <template if:true={isManagerOnly}>
+            <header
+                class="manager-utility-bar sticky-shell-header slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-wrap slds-p-around_small slds-m-bottom_small"
+            >
+                <div class="manager-utility-title slds-grid slds-grid_vertical-align-center">
+                    <button
+                        class="bell-button manager-notification-button"
+                        onclick={handleOpenNotificationModal}
+                        title="Open notifications"
+                    >
+                        <lightning-icon
+                            icon-name="utility:notification"
+                            size="small"
+                            class="bell-icon"
+                        ></lightning-icon>
+                        <template if:true={hasNotifications}>
+                            <span class="bell-badge"></span>
+                        </template>
+                    </button>
+                    <span class="manager-utility-label">Notifications</span>
+                </div>
+
+                <div class="manager-utility-actions slds-grid slds-grid_vertical-align-center">
+                    <span class="manager-utility-separator" aria-hidden="true"></span>
+                    <span class="manager-utility-label slds-m-right_small">Quick Actions</span>
+                    <div class="utility-menu utility-menu_desktop">
+                        <lightning-button-menu
+                            alternative-text="Quick Actions"
+                            label="Quick Actions"
+                            variant="border-filled"
+                            onselect={handleQuickActionSelect}
+                        >
+                            <lightning-menu-item value="create_product" label="Create Product"></lightning-menu-item>
+                            <lightning-menu-item value="create_supplier" label="Create Supplier"></lightning-menu-item>
+                            <lightning-menu-item value="create_po" label="Create Purchase Order"></lightning-menu-item>
+                        </lightning-button-menu>
+                    </div>
+                    <div class="utility-menu utility-menu_mobile">
+                        <lightning-button-menu
+                            alternative-text="Quick Actions"
+                            icon-name="utility:threedots"
+                            variant="border-filled"
+                            onselect={handleQuickActionSelect}
+                        >
+                            <lightning-menu-item value="create_product" label="Create Product"></lightning-menu-item>
+                            <lightning-menu-item value="create_supplier" label="Create Supplier"></lightning-menu-item>
+                            <lightning-menu-item value="create_po" label="Create Purchase Order"></lightning-menu-item>
+                        </lightning-button-menu>
+                    </div>
+                </div>
+            </header>
+
+            <div class="manager-workspace page-bottom-spacing slds-p-around_small">
+                <lightning-tabset
+                    variant="scoped"
+                    active-tab-value={activeManagerTab}
+                    ontabselect={handleManagerTabSelect}
+                >
+                    <!-- Tab 1: Dashboard -->
+                    <lightning-tab label="Dashboard" value="dashboard">
+                        <div class="manager-tab-panel slds-m-top_x-small">
+                            <div class="slds-m-bottom_medium">
+                                <c-inventory-dashboard></c-inventory-dashboard>
+                            </div>
+                            <div class="slds-m-bottom_medium">
+                                <c-inventory-monitor show-only-alerts="true" onrefreshdata={refreshAllData}></c-inventory-monitor>
+                            </div>
+                            <div>
+                                <c-purchase-order-dashboard></c-purchase-order-dashboard>
+                            </div>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- Tab 2: Returns -->
+                    <lightning-tab label="Returns" value="returns">
+                        <div class="manager-tab-panel slds-m-top_x-small">
+                            <c-return-management-dashboard user-role={userRole}></c-return-management-dashboard>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- Tab 3: Purchase Orders -->
+                    <lightning-tab label="Purchase Orders" value="purchase_orders">
+                        <div class="manager-tab-panel slds-m-top_x-small">
+                            <c-inventory-purchase-order-list></c-inventory-purchase-order-list>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- Tab 4: Recent Transactions -->
+                    <lightning-tab label="Recent Transactions" value="transactions">
+                        <div class="manager-tab-panel slds-m-top_x-small">
+                            <c-recent-transactions limit="10" show-view-all-button="true"></c-recent-transactions>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- Tab 5: Top Selling Products -->
+                    <lightning-tab label="Top Selling Products" value="top_products">
+                        <div class="manager-tab-panel slds-m-top_x-small">
+                            <c-top-selling-products></c-top-selling-products>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- Tab 6: Suppliers -->
+                    <lightning-tab label="Suppliers" value="suppliers">
+                        <div class="manager-tab-panel slds-m-top_x-small">
+                            <c-inventory-supplier-list></c-inventory-supplier-list>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- Tab 7: Approval Center -->
+                    <lightning-tab label="Approval Center" value="approvals">
+                        <div class="manager-tab-panel slds-m-top_x-small">
+                            <c-approval-center onrefreshdata={refreshAllData}></c-approval-center>
+                        </div>
+                    </lightning-tab>
+                </lightning-tabset>
+            </div>
+        </template>
+
+        <!-- SALES EXECUTIVE WORKSPACE (Single Page Responsive Sequence) -->
+        <template if:true={isSalesExec}>
+            <div class="sales-workspace-container slds-p-around_medium">
+                <header
+                    class="sales-utility-bar sticky-shell-header slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-wrap slds-p-around_small slds-m-bottom_small"
+                >
+                    <div class="sales-utility-title slds-grid slds-grid_vertical-align-center">
+                        <button
+                            class="bell-button sales-notification-button"
+                            onclick={handleOpenNotificationModal}
+                            title="View Notifications"
+                        >
+                            <lightning-icon
+                                icon-name="utility:notification"
+                                size="small"
+                                class="bell-icon"
+                            ></lightning-icon>
+                            <template if:true={hasNotifications}>
+                                <span class="bell-badge"></span>
+                            </template>
+                        </button>
+                        <span class="sales-utility-label">Notifications</span>
+                    </div>
+
+                    <div class="sales-utility-actions slds-grid slds-grid_vertical-align-center">
+                        <span class="sales-utility-separator" aria-hidden="true"></span>
+                        <span class="sales-utility-label slds-m-right_small">Quick Actions</span>
+                        <div class="utility-menu utility-menu_desktop">
+                            <lightning-button-menu
+                                alternative-text="Quick Actions"
+                                label="Quick Actions"
+                                variant="border-filled"
+                                onselect={handleQuickActionSelect}
+                            >
+                                <lightning-menu-item value="create_so_modal" label="Create Sales Order"></lightning-menu-item>
+                                <lightning-menu-item value="create_so_item_modal" label="Create Sales Order Item"></lightning-menu-item>
+                                <lightning-menu-item value="create_return_modal" label="Create Return Request"></lightning-menu-item>
+                            </lightning-button-menu>
+                        </div>
+                        <div class="utility-menu utility-menu_mobile">
+                            <lightning-button-menu
+                                alternative-text="Quick Actions"
+                                icon-name="utility:threedots"
+                                variant="border-filled"
+                                onselect={handleQuickActionSelect}
+                            >
+                                <lightning-menu-item value="create_so_modal" label="Create Sales Order"></lightning-menu-item>
+                                <lightning-menu-item value="create_so_item_modal" label="Create Sales Order Item"></lightning-menu-item>
+                                <lightning-menu-item value="create_return_modal" label="Create Return Request"></lightning-menu-item>
+                            </lightning-button-menu>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="sales-dashboard-layout">
+                    <lightning-tabset
+                        variant="scoped"
+                        active-tab-value={activeSalesTab}
+                        ontabselect={handleSalesTabSelect}
+                    >
+                    <lightning-tab label="Dashboard" value="dashboard">
+                        <div class="slds-m-top_medium">
+                            <c-sales-dashboard
+                                onopencatalog={handleOpenSalesCatalog}
+                                oncreatesalesorder={openCreateSalesOrderModal}
+                                oncreatereturnrequest={openCreateReturnRequestModal}
+                                onnavigatetoreturnstab={handleNavigateToSalesReturnsTab}
+                            ></c-sales-dashboard>
+                        </div>
+                    </lightning-tab>
+
+                        <!-- Tab 2: Product Catalog -->
+                        <lightning-tab label="Product Catalog" value="catalog">
+                            <div class="slds-m-top_medium">
+                                <template if:false={selectedProductId}>
+                                    <c-product-catalog
+                                        is-sales-executive="true"
+                                        onproductselect={handleProductSelect}
+                                    ></c-product-catalog>
+                                </template>
+                                <template if:true={selectedProductId}>
+                                    <div class="slds-m-bottom_medium">
+                                        <button
+                                            class="slds-button slds-button_neutral"
+                                            onclick={handleBackToCatalog}
+                                        >
+                                            <lightning-icon
+                                                icon-name="utility:back"
+                                                size="x-small"
+                                                class="slds-m-right_xx-small"
+                                            ></lightning-icon>
+                                            Back to Catalog
+                                        </button>
+                                    </div>
+                                    <c-product-detail record-id={selectedProductId}></c-product-detail>
+                                </template>
+                            </div>
+                        </lightning-tab>
+
+                        <!-- Tab 3: My Sales Orders -->
+                        <lightning-tab label="My Sales Orders" value="sales_orders">
+                            <div class="slds-m-top_medium">
+                                <c-inventory-sales-order-list></c-inventory-sales-order-list>
+                            </div>
+                        </lightning-tab>
+
+                        <!-- Tab 4: Returns -->
+                        <lightning-tab label="Returns" value="returns">
+                            <div class="slds-m-top_medium">
+                                <c-return-management-dashboard user-role={userRole}></c-return-management-dashboard>
+                            </div>
+                        </lightning-tab>
+
+                        <!-- Tab 5: Recent Orders -->
+                        <lightning-tab label="Recent Orders" value="recent_orders">
+                            <div class="slds-m-top_medium">
+                                <c-recent-orders-widget></c-recent-orders-widget>
+                            </div>
+                        </lightning-tab>
+
+                        <!-- Tab 6: Notifications -->
+                        <lightning-tab label="Notifications" value="notifications">
+                            <div class="slds-m-top_medium">
+                                <c-smart-notification-center></c-smart-notification-center>
+                            </div>
+                        </lightning-tab>
+                    </lightning-tabset>
+                </div>
+            </div>
+
+            <!-- MODAL: CREATE SALES ORDER -->
+            <template if:true={isSalesOrderModalOpen}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button
+                                class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                title="Close"
+                                onclick={closeSalesOrderModal}
+                            >
+                                <lightning-icon
+                                    icon-name="utility:close"
+                                    size="small"
+                                    variant="inverse"
+                                ></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 class="slds-text-heading_medium font-bold">Create Sales Order</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <lightning-record-edit-form
+                                object-api-name="Sales_Order__c"
+                                onsuccess={handleSalesOrderCreateSuccess}
+                                onerror={handleModalError}
+                            >
+                                <lightning-messages></lightning-messages>
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field
+                                            field-name="Customer_Name__c"
+                                            required
+                                        ></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field
+                                            field-name="Customer_Email__c"
+                                            required
+                                        ></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field
+                                            field-name="Order_Date__c"
+                                            required
+                                        ></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Status__c" required></lightning-input-field>
+                                    </div>
+                                </div>
+                                <div class="slds-m-top_medium slds-text-align_right">
+                                    <lightning-button
+                                        variant="neutral"
+                                        label="Cancel"
+                                        onclick={closeSalesOrderModal}
+                                        class="slds-m-right_small"
+                                    ></lightning-button>
+                                    <lightning-button variant="brand" type="submit" label="Save"></lightning-button>
+                                </div>
+                            </lightning-record-edit-form>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+            </template>
+
+            <!-- MODAL: CREATE SALES ORDER ITEM -->
+            <template if:true={isSalesOrderItemModalOpen}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button
+                                class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                title="Close"
+                                onclick={closeSalesOrderItemModal}
+                            >
+                                <lightning-icon
+                                    icon-name="utility:close"
+                                    size="small"
+                                    variant="inverse"
+                                ></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 class="slds-text-heading_medium font-bold">Create Sales Order Item</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <lightning-record-edit-form
+                                object-api-name="Sales_Order_Item__c"
+                                onsuccess={handleSalesOrderItemCreateSuccess}
+                                onerror={handleModalError}
+                            >
+                                <lightning-messages></lightning-messages>
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field
+                                            field-name="Sales_Order__c"
+                                            required
+                                        ></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Product__c" required></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field
+                                            field-name="Quantity__c"
+                                            required
+                                        ></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field
+                                            field-name="Unit_Price__c"
+                                            required
+                                        ></lightning-input-field>
+                                    </div>
+                                </div>
+                                <div class="slds-m-top_medium slds-text-align_right">
+                                    <lightning-button
+                                        variant="neutral"
+                                        label="Cancel"
+                                        onclick={closeSalesOrderItemModal}
+                                        class="slds-m-right_small"
+                                    ></lightning-button>
+                                    <lightning-button variant="brand" type="submit" label="Save"></lightning-button>
+                                </div>
+                            </lightning-record-edit-form>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+            </template>
+
+            <!-- MODAL: CREATE RETURN REQUEST -->
+            <template if:true={isReturnRequestModalOpen}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button
+                                class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                title="Close"
+                                onclick={closeReturnRequestModal}
+                            >
+                                <lightning-icon
+                                    icon-name="utility:close"
+                                    size="small"
+                                    variant="inverse"
+                                ></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 class="slds-text-heading_medium font-bold">Create Return Request</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <lightning-record-edit-form
+                                object-api-name="Return_Request__c"
+                                onsuccess={handleReturnRequestCreateSuccess}
+                                onerror={handleModalError}
+                            >
+                                <lightning-messages></lightning-messages>
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field
+                                            field-name="Sales_Order__c"
+                                            required
+                                        ></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Sales_Order_Item__c"></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Product__c" required></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field
+                                            field-name="Quantity__c"
+                                            required
+                                        ></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Reason__c" required></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Comments__c"></lightning-input-field>
+                                    </div>
+                                </div>
+                                <div class="slds-m-top_medium slds-text-align_right">
+                                    <lightning-button
+                                        variant="neutral"
+                                        label="Cancel"
+                                        onclick={closeReturnRequestModal}
+                                        class="slds-m-right_small"
+                                    ></lightning-button>
+                                    <lightning-button variant="brand" type="submit" label="Save"></lightning-button>
+                                </div>
+                            </lightning-record-edit-form>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+            </template>
+        </template>
+
+        <!-- NOTIFICATION MODAL FOR ADMIN / MANAGER -->
+        <template if:true={isNotificationModalOpen}>
+            <section
+                role="dialog"
+                tabindex="-1"
+                aria-modal="true"
+                class="slds-modal slds-fade-in-open slds-modal_medium"
+            >
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button
+                            class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close"
+                            onclick={handleCloseNotificationModal}
+                        >
+                            <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium font-bold">Notifications Center</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium modal-body-scroll">
+                        <div class="modal-notification-container">
+                            <template if:false={hasNotifications}>
+                                <div class="slds-align_absolute-center slds-p-around_large text-muted">
+                                    <lightning-icon
+                                        icon-name="utility:smiley_and_people"
+                                        size="medium"
+                                        class="slds-m-right_small"
+                                    ></lightning-icon>
+                                    <span>No active notifications. All caught up!</span>
+                                </div>
+                            </template>
+
+                            <template if:true={hasNotifications}>
+                                <!-- Return Request Alerts -->
+                                <template if:true={showReturnNotificationSection}>
+                                    <template if:true={returnRequestAlerts.length}>
+                                        <div class="notif-section slds-m-bottom_medium">
+                                            <h3 class="notif-section-title info-text font-bold slds-m-bottom_x-small">
+                                                <lightning-icon
+                                                    icon-name="standard:service_contract"
+                                                    size="xx-small"
+                                                    class="slds-m-right_xx-small"
+                                                ></lightning-icon>
+                                                Return Request Notifications ({returnRequestAlerts.length})
+                                            </h3>
+                                            <ul class="notif-list">
+                                                <template for:each={returnRequestAlerts} for:item="item">
+                                                    <li
+                                                        key={item.id}
+                                                        class="notif-item slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_x-small"
+                                                    >
+                                                        <span class="notif-text">{item.title}</span>
+                                                        <div>
+                                                            <button
+                                                                class="slds-button slds-button_neutral slds-button_xx-small"
+                                                                onclick={handleOpenRecord}
+                                                                data-id={item.id}
+                                                                data-type="Return_Request__c"
+                                                            >
+                                                                View Request
+                                                            </button>
+                                                            <button
+                                                                class="slds-button class-dismiss slds-m-left_xx-small"
+                                                                title="Dismiss"
+                                                                onclick={handleDismissNotification}
+                                                                data-id={item.id}
+                                                            >
+                                                                <lightning-icon
+                                                                    icon-name="utility:close"
+                                                                    size="xx-small"
+                                                                ></lightning-icon>
+                                                            </button>
+                                                        </div>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </template>
+                                </template>
+                                <!-- Low Stock Alerts -->
+                                <template if:true={lowStockAlerts.length}>
+                                    <div class="notif-section slds-m-bottom_medium">
+                                        <h3 class="notif-section-title warning-text font-bold slds-m-bottom_x-small">
+                                            <lightning-icon
+                                                icon-name="utility:warning"
+                                                size="xx-small"
+                                                variant="warning"
+                                                class="slds-m-right_xx-small"
+                                            ></lightning-icon>
+                                            Low Stock Alerts ({lowStockAlerts.length})
+                                        </h3>
+                                        <ul class="notif-list">
+                                            <template for:each={lowStockAlerts} for:item="item">
+                                                <li
+                                                    key={item.id}
+                                                    class="notif-item slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_x-small"
+                                                >
+                                                    <span class="notif-text"
+                                                        >{item.title} (Current: {item.stock} / Min:
+                                                        {item.minStock})</span
+                                                    >
+                                                    <div>
+                                                        <button
+                                                            class="slds-button slds-button_neutral slds-button_xx-small"
+                                                            onclick={handleOpenRecord}
+                                                            data-id={item.id}
+                                                            data-type="Product__c"
+                                                        >
+                                                            Open Product
+                                                        </button>
+                                                        <button
+                                                            class="slds-button class-dismiss slds-m-left_xx-small"
+                                                            title="Dismiss"
+                                                            onclick={handleDismissNotification}
+                                                            data-id={item.id}
+                                                        >
+                                                            <lightning-icon
+                                                                icon-name="utility:close"
+                                                                size="xx-small"
+                                                            ></lightning-icon>
+                                                        </button>
+                                                    </div>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </template>
+
+                                <!-- Out Of Stock Products -->
+                                <template if:true={outOfStockProducts.length}>
+                                    <div class="notif-section slds-m-bottom_medium">
+                                        <h3 class="notif-section-title error-text font-bold slds-m-bottom_x-small">
+                                            <lightning-icon
+                                                icon-name="utility:ban"
+                                                size="xx-small"
+                                                variant="error"
+                                                class="slds-m-right_xx-small"
+                                            ></lightning-icon>
+                                            Out Of Stock Products ({outOfStockProducts.length})
+                                        </h3>
+                                        <ul class="notif-list">
+                                            <template for:each={outOfStockProducts} for:item="item">
+                                                <li
+                                                    key={item.id}
+                                                    class="notif-item slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_x-small"
+                                                >
+                                                    <span class="notif-text text-danger font-bold">{item.title}</span>
+                                                    <div>
+                                                        <button
+                                                            class="slds-button slds-button_neutral slds-button_xx-small"
+                                                            onclick={handleOpenRecord}
+                                                            data-id={item.id}
+                                                            data-type="Product__c"
+                                                        >
+                                                            Open Product
+                                                        </button>
+                                                        <button
+                                                            class="slds-button class-dismiss slds-m-left_xx-small"
+                                                            title="Dismiss"
+                                                            onclick={handleDismissNotification}
+                                                            data-id={item.id}
+                                                        >
+                                                            <lightning-icon
+                                                                icon-name="utility:close"
+                                                                size="xx-small"
+                                                            ></lightning-icon>
+                                                        </button>
+                                                    </div>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </template>
+
+                                <!-- Pending Purchase Orders -->
+                                <template if:true={pendingPOs.length}>
+                                    <div class="notif-section slds-m-bottom_medium">
+                                        <h3 class="notif-section-title info-text font-bold slds-m-bottom_x-small">
+                                            <lightning-icon
+                                                icon-name="standard:drafts"
+                                                size="xx-small"
+                                                class="slds-m-right_xx-small"
+                                            ></lightning-icon>
+                                            Pending Purchase Orders ({pendingPOs.length})
+                                        </h3>
+                                        <ul class="notif-list">
+                                            <template for:each={pendingPOs} for:item="item">
+                                                <li
+                                                    key={item.id}
+                                                    class="notif-item slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_x-small"
+                                                >
+                                                    <span class="notif-text"
+                                                        >{item.title} (Status: {item.status} / Supplier:
+                                                        {item.supplier})</span
+                                                    >
+                                                    <div>
+                                                        <button
+                                                            class="slds-button slds-button_neutral slds-button_xx-small"
+                                                            onclick={handleOpenRecord}
+                                                            data-id={item.id}
+                                                            data-type="Purchase_Order__c"
+                                                        >
+                                                            Open PO
+                                                        </button>
+                                                        <button
+                                                            class="slds-button class-dismiss slds-m-left_xx-small"
+                                                            title="Dismiss"
+                                                            onclick={handleDismissNotification}
+                                                            data-id={item.id}
+                                                        >
+                                                            <lightning-icon
+                                                                icon-name="utility:close"
+                                                                size="xx-small"
+                                                            ></lightning-icon>
+                                                        </button>
+                                                    </div>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </template>
+
+                                <!-- Pending Sales Orders -->
+                                <template if:true={showPendingSalesNotifications}>
+                                    <template if:true={pendingSOs.length}>
+                                        <div class="notif-section slds-m-bottom_medium">
+                                            <h3 class="notif-section-title info-text font-bold slds-m-bottom_x-small">
+                                                <lightning-icon
+                                                    icon-name="standard:orders"
+                                                    size="xx-small"
+                                                    class="slds-m-right_xx-small"
+                                                ></lightning-icon>
+                                                Pending Sales Orders ({pendingSOs.length})
+                                            </h3>
+                                            <ul class="notif-list">
+                                                <template for:each={pendingSOs} for:item="item">
+                                                    <li
+                                                        key={item.id}
+                                                        class="notif-item slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_x-small"
+                                                    >
+                                                        <span class="notif-text"
+                                                            >{item.title} (Customer: {item.customer})</span
+                                                        >
+                                                        <div>
+                                                            <button
+                                                                class="slds-button slds-button_neutral slds-button_xx-small"
+                                                                onclick={handleOpenRecord}
+                                                                data-id={item.id}
+                                                                data-type="Sales_Order__c"
+                                                            >
+                                                                Open Sales Order
+                                                            </button>
+                                                            <button
+                                                                class="slds-button class-dismiss slds-m-left_xx-small"
+                                                                title="Dismiss"
+                                                                onclick={handleDismissNotification}
+                                                                data-id={item.id}
+                                                            >
+                                                                <lightning-icon
+                                                                    icon-name="utility:close"
+                                                                    size="xx-small"
+                                                                ></lightning-icon>
+                                                            </button>
+                                                        </div>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </template>
+                                </template>
+
+                                <!-- Recent Activities -->
+                                <template if:true={recentActivities.length}>
+                                    <div class="notif-section slds-m-bottom_medium">
+                                        <h3 class="notif-section-title text-muted font-bold slds-m-bottom_x-small">
+                                            <lightning-icon
+                                                icon-name="utility:feed"
+                                                size="xx-small"
+                                                class="slds-m-right_xx-small"
+                                            ></lightning-icon>
+                                            Recent Activities ({recentActivities.length})
+                                        </h3>
+                                        <ul class="notif-list">
+                                            <template for:each={recentActivities} for:item="item">
+                                                <li
+                                                    key={item.id}
+                                                    class="notif-item slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_x-small"
+                                                >
+                                                    <span class="notif-text">{item.title}</span>
+                                                    <div>
+                                                        <button
+                                                            class="slds-button slds-button_neutral slds-button_xx-small"
+                                                            onclick={handleOpenRecord}
+                                                            data-id={item.id}
+                                                            data-type="Inventory_Transaction__c"
+                                                        >
+                                                            Open Details
+                                                        </button>
+                                                        <button
+                                                            class="slds-button class-dismiss slds-m-left_xx-small"
+                                                            title="Dismiss"
+                                                            onclick={handleDismissNotification}
+                                                            data-id={item.id}
+                                                        >
+                                                            <lightning-icon
+                                                                icon-name="utility:close"
+                                                                size="xx-small"
+                                                            ></lightning-icon>
+                                                        </button>
+                                                    </div>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </template>
+                            </template>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button
+                            class="slds-button slds-button_neutral"
+                            onclick={handleCloseNotificationModal}
+                        >
+                            Close
+                        </button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
+    </div>
+</template>

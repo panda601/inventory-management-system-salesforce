@@ -1,0 +1,37 @@
+graph TD
+    A[inventoryCommandCenter LWC] --> B{Role Check}
+    B -->|Admin| C[Admin Workspace]
+    B -->|Manager| D[Manager Workspace]
+    B -->|Sales| E[Sales Workspace]
+
+    subgraph Admin View
+        C --> C1[inventoryDashboard]
+        C --> C2[productCatalog]
+        C --> C3[productDetail]
+        C --> C4[inventoryPurchaseOrderList]
+        C --> C5[inventorySalesOrderList]
+        C --> C6[returnManagementDashboard]
+        C --> C7[approvalCenter]
+    end
+
+    subgraph Manager View
+        D --> D1[inventoryDashboard]
+        D --> D2[inventoryMonitor]
+        D --> D3[purchaseOrderDashboard]
+        D --> D4[returnManagementDashboard]
+        D --> D5[inventoryPurchaseOrderList]
+        D --> D6[recentTransactions]
+        D --> D7[topSellingProducts]
+        D --> D8[inventorySupplierList]
+        D --> D9[approvalCenter]
+    end
+
+    subgraph Sales View
+        E --> E1[salesDashboard]
+        E --> E2[productCatalog]
+        E --> E3[productDetail]
+        E --> E4[inventorySalesOrderList]
+        E --> E5[returnManagementDashboard]
+        E --> E6[recentOrdersWidget]
+        E --> E7[smartNotificationCenter]
+    end

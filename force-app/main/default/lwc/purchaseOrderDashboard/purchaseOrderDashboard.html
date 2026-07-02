@@ -1,0 +1,69 @@
+<template>
+    <div class="po-dashboard-container slds-is-relative">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+        </template>
+
+        <!-- Header and Action Buttons -->
+        <div class="dashboard-header slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-wrap">
+            <div>
+                <h2 class="dashboard-title">Purchase Order Dashboard</h2>
+                <p class="dashboard-subtitle">Monitor and track supplier procurement requests</p>
+            </div>
+            
+            <div class="btn-group slds-m-top_small">
+                <button class="refresh-button slds-m-left_xx-small" onclick={handleRefresh} title="Refresh POs">
+                    <lightning-icon icon-name="utility:refresh" size="x-small" class="refresh-icon"></lightning-icon>
+                </button>
+            </div>
+        </div>
+
+        <template if:true={error}>
+            <div class="error-container slds-m-bottom_medium">
+                <span>Error loading Purchase Orders: {error.body.message}</span>
+            </div>
+        </template>
+
+        <!-- KPI Cards Grid (3 Cards: Draft, Ordered, Received) -->
+        <div class="slds-grid slds-wrap slds-gutters_direct-small">
+            <!-- Draft PO Card -->
+            <div class="slds-col slds-size_1-1 slds-medium-size_1-3 slds-m-bottom_small">
+                <div class="kpi-card po-draft" onclick={navigateToViewAllPOs} style="cursor: pointer;">
+                    <div class="kpi-icon-wrapper">
+                        <lightning-icon icon-name="standard:drafts" size="medium"></lightning-icon>
+                    </div>
+                    <div class="kpi-details">
+                        <span class="kpi-label">Draft POs</span>
+                        <h3 class="kpi-value">{draftCount}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ordered PO Card -->
+            <div class="slds-col slds-size_1-1 slds-medium-size_1-3 slds-m-bottom_small">
+                <div class="kpi-card po-ordered" onclick={navigateToViewAllPOs} style="cursor: pointer;">
+                    <div class="kpi-icon-wrapper">
+                        <lightning-icon icon-name="standard:service_contract" size="medium"></lightning-icon>
+                    </div>
+                    <div class="kpi-details">
+                        <span class="kpi-label">Ordered</span>
+                        <h3 class="kpi-value">{orderedCount}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Received PO Card -->
+            <div class="slds-col slds-size_1-1 slds-medium-size_1-3 slds-m-bottom_small">
+                <div class="kpi-card po-received" onclick={navigateToViewAllPOs} style="cursor: pointer;">
+                    <div class="kpi-icon-wrapper">
+                        <lightning-icon icon-name="standard:work_order_item" size="medium"></lightning-icon>
+                    </div>
+                    <div class="kpi-details">
+                        <span class="kpi-label">Received</span>
+                        <h3 class="kpi-value">{receivedCount}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

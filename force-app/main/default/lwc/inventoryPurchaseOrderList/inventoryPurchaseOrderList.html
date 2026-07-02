@@ -1,0 +1,99 @@
+<template>
+    <c-error-boundary onretry={handleRefresh}>
+        <div class="po-list-container">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="small" variant="brand"></lightning-spinner>
+            </template>
+            
+            <div class="header-row slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <h3 class="section-title font-bold">Purchase Orders</h3>
+                <div class="slds-grid slds-grid_vertical-align-center">
+                    <button class="slds-button slds-button_brand slds-button_small slds-m-right_xx-small" onclick={handleCreatePO}>
+                        <lightning-icon icon-name="utility:add" size="x-small" variant="inverse" class="slds-m-right_xx-small"></lightning-icon>
+                        Create Purchase Order
+                    </button>
+                    <button class="slds-button slds-button_neutral slds-button_small" onclick={handleViewAllPOs}>
+                        View All Purchase Orders
+                    </button>
+                </div>
+            </div>
+
+            <!-- Status Filter Cards -->
+            <div class="slds-grid slds-wrap slds-gutters_direct-small slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                    <div class={allCardClass} onclick={handleFilterChange} data-status="All">
+                        <span class="card-count">{allCount}</span>
+                        <span class="card-label">All Orders</span>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                    <div class={draftCardClass} onclick={handleFilterChange} data-status="Draft">
+                        <span class="card-count">{draftCount}</span>
+                        <span class="card-label">Draft</span>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                    <div class={orderedCardClass} onclick={handleFilterChange} data-status="Approved">
+                        <span class="card-count">{orderedCount}</span>
+                        <span class="card-label">Ordered</span>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                    <div class={receivedCardClass} onclick={handleFilterChange} data-status="Received">
+                        <span class="card-count">{receivedCount}</span>
+                        <span class="card-label">Received</span>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                    <div class={cancelledCardClass} onclick={handleFilterChange} data-status="Cancelled">
+                        <span class="card-count">{cancelledCount}</span>
+                        <span class="card-label">Cancelled</span>
+                    </div>
+                </div>
+            </div>
+
+            <template if:true={hasPOs}>
+                <div class="table-container">
+                    <table class="po-table">
+                        <thead>
+                            <tr>
+                                <th>PO Number</th>
+                                <th>Supplier</th>
+                                <th>Order Date</th>
+                                <th>Status</th>
+                                <th class="text-right">Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={filteredPOs} for:item="po">
+                                <tr key={po.Id} class="po-row" onclick={handleViewDetails} data-id={po.Id}>
+                                    <td class="po-name font-bold">{po.Name}</td>
+                                    <td class="po-supplier">{po.SupplierName}</td>
+                                    <td class="po-date">
+                                        <lightning-formatted-date-time value={po.Order_Date__c} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                    </td>
+                                    <td>
+                                        <span class={po.badgeClass}>{po.Status__c}</span>
+                                    </td>
+                                    <td class="text-right font-mono font-bold">
+                                        <lightning-formatted-number value={po.Total_Amount__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+
+            <template if:false={hasPOs}>
+                <template if:false={isLoading}>
+                    <c-empty-state 
+                        title="No Purchase Orders Found" 
+                        message="There are no purchase orders matching this status filter." 
+                        icon-name="utility:database">
+                    </c-empty-state>
+                </template>
+            </template>
+        </div>
+    </c-error-boundary>
+</template>

@@ -1,0 +1,29 @@
+<template>
+    <div class="chart-container">
+        <div class="panel-header slds-m-bottom_medium">
+            <h2 class="panel-title">Product Category Analytics</h2>
+        </div>
+
+        <template if:true={hasData}>
+            <div class="chart-box">
+                <div class="bars-container">
+                    <template for:each={chartData} for:item="item">
+                        <div key={item.category} class="bar-col">
+                            <div class="bar-value-label">{item.value}</div>
+                            <div class="bar-track">
+                                <div class={item.colorClass} style={item.heightStyle}></div>
+                            </div>
+                            <div class="bar-label" title={item.label}>{item.label}</div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+        <template if:false={hasData}>
+            <div class="no-data">
+                <lightning-icon icon-name="utility:graph" size="medium" class="slds-m-bottom_x-small"></lightning-icon>
+                <p>No category stock data available.</p>
+            </div>
+        </template>
+    </div>
+</template>

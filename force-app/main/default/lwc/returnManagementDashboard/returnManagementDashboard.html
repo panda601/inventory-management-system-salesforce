@@ -1,0 +1,475 @@
+<template>
+    <c-error-boundary onretry={handleRefresh}>
+        <div class="dashboard-root slds-is-relative">
+            <!-- Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+            </template>
+
+            <!-- Header -->
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_medium dashboard-header">
+                <div>
+                    <h2 class="title-text font-bold">Product Returns Management (RMA)</h2>
+                    <p class="subtitle-text text-muted">Track returns, replacements, and process requests end-to-end</p>
+                </div>
+                <div class="header-actions slds-grid slds-grid_vertical-align-center slds-wrap">
+                    <button class="slds-button slds-button_neutral refresh-btn slds-m-right_small" onclick={handleRefresh} title="Refresh Data">
+                        <lightning-icon icon-name="utility:refresh" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                        Refresh
+                    </button>
+                    <!-- Create Return Request Button (Visible to Sales & Admin) -->
+                    <template if:true={isSales}>
+                        <button class="slds-button slds-button_brand action-btn" onclick={openCreateModal}>
+                            <lightning-icon icon-name="utility:add" size="xx-small" variant="inverse" class="slds-m-right_xx-small"></lightning-icon>
+                            Create Return Request
+                        </button>
+                    </template>
+                    <template if:true={isAdmin}>
+                        <button class="slds-button slds-button_brand action-btn" onclick={openCreateModal}>
+                            <lightning-icon icon-name="utility:add" size="xx-small" variant="inverse" class="slds-m-right_xx-small"></lightning-icon>
+                            Create Return Request
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- ADMIN KPI CARDS -->
+            <template if:true={isAdminVariant}>
+                <div class="slds-grid slds-wrap slds-gutters_direct-small slds-m-bottom_large metrics-row">
+                    <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                        <div class="metric-card pending-card">
+                            <div class="metric-icon-wrapper text-warning">
+                                <lightning-icon icon-name="utility:clock" size="small"></lightning-icon>
+                            </div>
+                            <div class="metric-details">
+                                <span class="metric-label">Pending Returns</span>
+                                <h3 class="metric-value">{pendingReturnsCount}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                        <div class="metric-card review-card">
+                            <div class="metric-icon-wrapper text-info">
+                                <lightning-icon icon-name="utility:search" size="small"></lightning-icon>
+                            </div>
+                            <div class="metric-details">
+                                <span class="metric-label">Under Review</span>
+                                <h3 class="metric-value">{underReviewCount}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                        <div class="metric-card replacement-card">
+                            <div class="metric-icon-wrapper text-success">
+                                <lightning-icon icon-name="utility:shipment" size="small"></lightning-icon>
+                            </div>
+                            <div class="metric-details">
+                                <span class="metric-label">Replacement Sent</span>
+                                <h3 class="metric-value">{replacementSentCount}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                        <div class="metric-card rejected-card">
+                            <div class="metric-icon-wrapper text-error">
+                                <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                            </div>
+                            <div class="metric-details">
+                                <span class="metric-label">Rejected</span>
+                                <h3 class="metric-value">{rejectedCount}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-2 slds-medium-size_1-5 slds-m-bottom_small">
+                        <div class="metric-card refund-card">
+                            <div class="metric-icon-wrapper text-neutral">
+                                <lightning-icon icon-name="utility:moneybag" size="small"></lightning-icon>
+                            </div>
+                            <div class="metric-details">
+                                <span class="metric-label">Refunded</span>
+                                <h3 class="metric-value">{refundRequestsCount}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- MANAGER/ADMIN KPI CARDS (Default Variant) -->
+            <template if:true={isManagerOrAdmin}>
+                <template if:false={isAdminVariant}>
+                    <div class="slds-grid slds-wrap slds-gutters_direct-small slds-m-bottom_large metrics-row">
+                        <div class="slds-col slds-size_1-2 slds-medium-size_1-6 slds-m-bottom_small">
+                            <div class="metric-card pending-card">
+                                <div class="metric-icon-wrapper text-warning">
+                                    <lightning-icon icon-name="utility:clock" size="small"></lightning-icon>
+                                </div>
+                                <div class="metric-details">
+                                    <span class="metric-label">Pending Returns</span>
+                                    <h3 class="metric-value">{pendingReturnsCount}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-2 slds-medium-size_1-6 slds-m-bottom_small">
+                            <div class="metric-card review-card">
+                                <div class="metric-icon-wrapper text-info">
+                                    <lightning-icon icon-name="utility:search" size="small"></lightning-icon>
+                                </div>
+                                <div class="metric-details">
+                                    <span class="metric-label">Under Review</span>
+                                    <h3 class="metric-value">{underReviewCount}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-2 slds-medium-size_1-6 slds-m-bottom_small">
+                            <div class="metric-card approved-card">
+                                <div class="metric-icon-wrapper text-success">
+                                    <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                                </div>
+                                <div class="metric-details">
+                                    <span class="metric-label">Approved</span>
+                                    <h3 class="metric-value">{approvedCount}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-2 slds-medium-size_1-6 slds-m-bottom_small">
+                            <div class="metric-card rejected-card">
+                                <div class="metric-icon-wrapper text-error">
+                                    <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                                </div>
+                                <div class="metric-details">
+                                    <span class="metric-label">Rejected</span>
+                                    <h3 class="metric-value">{rejectedCount}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-2 slds-medium-size_1-6 slds-m-bottom_small">
+                            <div class="metric-card replacement-card">
+                                <div class="metric-icon-wrapper text-primary">
+                                    <lightning-icon icon-name="utility:package" size="small"></lightning-icon>
+                                </div>
+                                <div class="metric-details">
+                                    <span class="metric-label">Replacement Req</span>
+                                    <h3 class="metric-value">{replacementRequestsCount}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-2 slds-medium-size_1-6 slds-m-bottom_small">
+                            <div class="metric-card refund-card">
+                                <div class="metric-icon-wrapper text-neutral">
+                                    <lightning-icon icon-name="utility:moneybag" size="small"></lightning-icon>
+                                </div>
+                                <div class="metric-details">
+                                    <span class="metric-label">Refund Requests</span>
+                                    <h3 class="metric-value">{refundRequestsCount}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </template>
+
+            <!-- SALES EXECUTIVE KPI CARDS (3 Cards) -->
+            <template if:true={isSales}>
+                <div class="slds-grid slds-wrap slds-gutters_direct-small slds-m-bottom_large metrics-row">
+                    <div class="slds-col slds-size_1-1 slds-medium-size_1-3 slds-m-bottom_small">
+                        <div class="metric-card total-requests">
+                            <div class="metric-icon-wrapper text-info">
+                                <lightning-icon icon-name="utility:user" size="small"></lightning-icon>
+                            </div>
+                            <div class="metric-details">
+                                <span class="metric-label">My Return Requests</span>
+                                <h3 class="metric-value">{myReturnRequestsCount}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-1 slds-medium-size_1-3 slds-m-bottom_small">
+                        <div class="metric-card pending-card">
+                            <div class="metric-icon-wrapper text-warning">
+                                <lightning-icon icon-name="utility:clock" size="small"></lightning-icon>
+                            </div>
+                            <div class="metric-details">
+                                <span class="metric-label">Pending Returns</span>
+                                <h3 class="metric-value">{myPendingReturnsCount}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-1 slds-medium-size_1-3 slds-m-bottom_small">
+                        <div class="metric-card replacement-card">
+                            <div class="metric-icon-wrapper text-success">
+                                <lightning-icon icon-name="utility:shipment" size="small"></lightning-icon>
+                            </div>
+                            <div class="metric-details">
+                                <span class="metric-label">Replacement Status</span>
+                                <h3 class="metric-value">{myReplacementStatusCount}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Filter and Search controls -->
+            <div class="controls-panel slds-m-bottom_medium slds-grid slds-wrap slds-grid_align-spread slds-grid_vertical-align-center">
+                <!-- Filter Tabs -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_7-12 tabs-container slds-m-bottom_small">
+                    <ul class="filter-tabs">
+                        <template for:each={filterOptions} for:item="opt">
+                            <li key={opt.value} class={opt.activeClass}>
+                                <button class="tab-button" onclick={handleFilterSelect} data-value={opt.value}>
+                                    {opt.label}
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_4-12 slds-m-bottom_small">
+                    <lightning-input
+                        type="search"
+                        onchange={handleSearch}
+                        placeholder="Search by ID, Customer, Product..."
+                        variant="label-hidden"
+                        class="search-bar"
+                    ></lightning-input>
+                </div>
+            </div>
+
+            <!-- Returns Data Table -->
+            <template if:false={filteredRequests.length}>
+                <c-empty-state 
+                    title="No return requests found" 
+                    message="Adjust search keywords or filter tab criteria" 
+                    icon-name="utility:open_folder">
+                </c-empty-state>
+            </template>
+
+            <template if:true={filteredRequests.length}>
+                <!-- Desktop & Tablet Table View -->
+                <div class="table-container slds-m-bottom_medium desktop-tablet-view">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered custom-table">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col"><span class="slds-truncate font-bold">Request Number</span></th>
+                                <th scope="col"><span class="slds-truncate font-bold">Sales Order</span></th>
+                                <th scope="col"><span class="slds-truncate font-bold">Customer Name</span></th>
+                                <th scope="col"><span class="slds-truncate font-bold">Product</span></th>
+                                <th scope="col"><span class="slds-truncate font-bold">Quantity</span></th>
+                                <th scope="col"><span class="slds-truncate font-bold">Reason</span></th>
+                                <th scope="col"><span class="slds-truncate font-bold">Resolution Type</span></th>
+                                <th scope="col"><span class="slds-truncate font-bold">Status</span></th>
+                                <th scope="col"><span class="slds-truncate font-bold">Requested Date</span></th>
+                                <th scope="col"><span class="slds-truncate font-bold">Processed Info</span></th>
+                                <template if:true={isManagerOrAdmin}>
+                                    <th scope="col" class="slds-text-align_center"><span class="slds-truncate font-bold">Actions</span></th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={filteredRequests} for:item="req">
+                                <tr key={req.Id} class="slds-hint-parent">
+                                    <!-- Request ID -->
+                                    <th scope="row">
+                                        <div class="slds-truncate font-bold">
+                                            <a onclick={navigateToRecord} data-id={req.Id} data-object="Return_Request__c">{req.Name}</a>
+                                        </div>
+                                    </th>
+                                    <!-- Sales Order -->
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <template if:true={req.Sales_Order__c}>
+                                                <a onclick={navigateToRecord} data-id={req.Sales_Order__c} data-object="Sales_Order__c">{req.Sales_Order__r.Name}</a>
+                                            </template>
+                                        </div>
+                                    </td>
+                                    <!-- Customer -->
+                                    <td><div class="slds-truncate">{req.Customer_Name__c}</div></td>
+                                    <!-- Product -->
+                                    <td><div class="slds-truncate font-bold">{req.Product__r.Product_Name__c}</div></td>
+                                    <!-- Quantity -->
+                                    <td><div class="slds-truncate">{req.Quantity__c}</div></td>
+                                    <!-- Reason -->
+                                    <td><div class="slds-truncate">{req.Reason__c}</div></td>
+                                    <!-- Resolution Type -->
+                                    <td>
+                                        <div class="slds-truncate font-bold text-primary">{req.Resolution_Type__c}</div>
+                                    </td>
+                                    <!-- Status Badge -->
+                                    <td>
+                                        <span class={req.badgeClass}>{req.Status__c}</span>
+                                    </td>
+                                    <!-- Date Requested -->
+                                    <td><div class="slds-truncate">{req.formattedRequestedDate}</div></td>
+                                    <!-- Processed Info -->
+                                    <td>
+                                        <div class="slds-truncate processed-details">
+                                            <template if:true={req.Processed_Date__c}>
+                                                <span>On: {req.formattedProcessedDate}</span><br/>
+                                                <span class="processed-user">By: {req.processedByName}</span>
+                                            </template>
+                                            <template if:false={req.Processed_Date__c}>
+                                                <span class="text-muted">Unprocessed</span>
+                                            </template>
+                                        </div>
+                                    </td>
+                                    <!-- Action Buttons (Visible for Managers and Admins) -->
+                                    <template if:true={isManagerOrAdmin}>
+                                        <td class="slds-text-align_center actions-cell">
+                                            <div class="slds-grid slds-grid_align-center action-buttons-group">
+                                                <!-- Process Return Button (Replaces raw actions for high fidelity) -->
+                                                <template if:true={req.canApprove}>
+                                                    <button class="action-btn process-btn" 
+                                                            onclick={openProcessModal} 
+                                                            data-id={req.Id} 
+                                                            data-name={req.Name}
+                                                            title="Process Return Request">
+                                                        Process Return
+                                                    </button>
+                                                </template>
+                                                <template if:false={req.canApprove}>
+                                                    <span class="text-muted">Completed</span>
+                                                </template>
+                                            </div>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card View -->
+                <div class="mobile-view slds-m-bottom_medium">
+                    <template for:each={filteredRequests} for:item="req">
+                        <div key={req.Id} class="rma-card slds-card slds-p-around_medium slds-m-bottom_small">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                                <span class="font-bold">
+                                    <a onclick={navigateToRecord} data-id={req.Id} data-object="Return_Request__c">{req.Name}</a>
+                                </span>
+                                <span class={req.badgeClass}>{req.Status__c}</span>
+                            </div>
+                            <div class="card-detail slds-m-bottom_xx-small">
+                                <span class="label">Customer:</span>
+                                <span class="value">{req.Customer_Name__c}</span>
+                            </div>
+                            <div class="card-detail slds-m-bottom_xx-small">
+                                <span class="label">Product:</span>
+                                <span class="value font-bold">{req.Product__r.Product_Name__c}</span>
+                            </div>
+                            <div class="card-detail slds-m-bottom_xx-small">
+                                <span class="label">Resolution:</span>
+                                <span class="value font-bold text-primary">{req.Resolution_Type__c}</span>
+                            </div>
+                            <template if:true={isManagerOrAdmin}>
+                                <div class="slds-m-top_medium slds-text-align_right actions-area">
+                                    <template if:true={req.canApprove}>
+                                        <button class="action-btn process-btn" 
+                                                onclick={openProcessModal} 
+                                                data-id={req.Id} 
+                                                data-name={req.Name}
+                                                title="Process Return Request">
+                                            Process Return
+                                        </button>
+                                    </template>
+                                    <template if:false={req.canApprove}>
+                                        <span class="text-muted">Completed</span>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- 1. CREATE RETURN REQUEST MODAL -->
+            <template if:true={isCreateModalOpen}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeCreateModal}>
+                                <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 class="slds-text-heading_medium font-bold">Create Return Request</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <lightning-record-edit-form object-api-name="Return_Request__c" onsuccess={handleCreateSuccess}>
+                                <lightning-messages></lightning-messages>
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Sales_Order__c" required></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Sales_Order_Item__c"></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Product__c" required></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Quantity__c" required></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Customer_Name__c" required></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Customer_Email__c"></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Reason__c" required></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Resolution_Type__c" required></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-2 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Requested_Date__c"></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-1 slds-m-bottom_small">
+                                        <lightning-input-field field-name="Comments__c"></lightning-input-field>
+                                    </div>
+                                </div>
+                                <div class="slds-m-top_medium slds-text-align_right">
+                                    <lightning-button class="slds-m-right_small" label="Cancel" onclick={closeCreateModal}></lightning-button>
+                                    <lightning-button type="submit" variant="brand" label="Submit Request"></lightning-button>
+                                </div>
+                            </lightning-record-edit-form>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+
+            <!-- 2. PROCESS RETURN MODAL -->
+            <template if:true={isProcessModalOpen}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeProcessModal}>
+                                <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 class="slds-text-heading_medium font-bold">Process Return: {selectedRequestName}</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <div class="slds-form slds-form_stacked">
+                                <lightning-combobox
+                                    name="status"
+                                    label="Decision"
+                                    value={processStatus}
+                                    placeholder="Select Decision"
+                                    options={processActionOptions}
+                                    onchange={handleStatusChange}
+                                    required
+                                    class="slds-m-bottom_small"
+                                ></lightning-combobox>
+                            </div>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning-button class="slds-m-right_small" label="Cancel" onclick={closeProcessModal}></lightning-button>
+                            <lightning-button variant="brand" label="Save Decision" onclick={submitProcessReturn}></lightning-button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+        </div>
+    </c-error-boundary>
+</template>

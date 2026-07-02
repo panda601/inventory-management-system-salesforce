@@ -1,0 +1,67 @@
+<template>
+    <div class="map-view-container">
+        <div class="panel-header slds-m-bottom_medium">
+            <h2 class="panel-title">Inventory Map View</h2>
+        </div>
+
+        <template if:true={error}>
+            <div class="error-container slds-m-bottom_medium">
+                <span>Error loading map summaries: {error.body.message}</span>
+            </div>
+        </template>
+
+        <div class="slds-grid slds-wrap slds-gutters_direct-small">
+            <!-- Healthy Stock Card -->
+            <div class="slds-col slds-size_1-1 slds-small-size_1-2 slds-medium-size_1-4 slds-m-bottom_small">
+                <div class="map-card healthy">
+                    <div class="card-inner">
+                        <lightning-icon icon-name="utility:success" size="small" class="card-icon"></lightning-icon>
+                        <div class="card-details">
+                            <span class="card-label">Healthy Stock</span>
+                            <span class="card-count">{healthyStock} SKU(s)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Stock Card -->
+            <div class="slds-col slds-size_1-1 slds-small-size_1-2 slds-medium-size_1-4 slds-m-bottom_small">
+                <div class="map-card low-stock">
+                    <div class="card-inner">
+                        <lightning-icon icon-name="utility:warning" size="small" class="card-icon"></lightning-icon>
+                        <div class="card-details">
+                            <span class="card-label">Low Stock</span>
+                            <span class="card-count">{lowStock} SKU(s)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Out of Stock Card -->
+            <div class="slds-col slds-size_1-1 slds-small-size_1-2 slds-medium-size_1-4 slds-m-bottom_small">
+                <div class="map-card out-of-stock">
+                    <div class="card-inner">
+                        <lightning-icon icon-name="utility:ban" size="small" class="card-icon"></lightning-icon>
+                        <div class="card-details">
+                            <span class="card-label">Out Of Stock</span>
+                            <span class="card-count">{outOfStock} SKU(s)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Orders Card -->
+            <div class="slds-col slds-size_1-1 slds-small-size_1-2 slds-medium-size_1-4 slds-m-bottom_small">
+                <div class="map-card pending-orders">
+                    <div class="card-inner">
+                        <lightning-icon icon-name="utility:orders" size="small" class="card-icon"></lightning-icon>
+                        <div class="card-details">
+                            <span class="card-label">Pending Orders</span>
+                            <span class="card-count">{pendingOrders} Orders</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

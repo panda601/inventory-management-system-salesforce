@@ -1,0 +1,18 @@
+sequenceDiagram
+    autonumber
+    actor Sales as Sales Executive
+    participant SO as Sales Order
+    participant VR as Validation Rule VR_004
+    participant Flow as Sales_Order_Confirmed Flow
+    participant Prod as Product Stock
+    participant Ledger as Inventory Transaction Ledger
+
+    Sales->>SO: Sets status to 'Confirmed'
+    alt Quantity > Current Stock
+        SO->>VR: Blocks execution
+        VR-->>Sales: Displays 'Insufficient Stock' error message
+    else Quantity <= Current Stock
+        SO->>Flow: Triggers on update
+        Flow->>Prod: Decrements Current_Stock__c by SO Item Quantity
+        Flow->>Ledger: Creates 'Stock Out' transaction record
+    end

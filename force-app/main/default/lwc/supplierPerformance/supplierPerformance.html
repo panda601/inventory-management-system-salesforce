@@ -1,0 +1,62 @@
+<template>
+    <c-error-boundary onretry={handleRefresh}>
+        <div class="supplier-performance-container">
+            <article class="slds-card supplier-card-layout">
+                <div class="slds-card__header slds-grid">
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="standard:service_contract" size="small" class="supplier-title-icon"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                <span class="slds-text-heading_small font-bold">Supplier Performance Metrics</span>
+                            </h2>
+                        </div>
+                    </header>
+                </div>
+                
+                <div class="slds-card__body slds-card__body_inner card-body-layout">
+                    <template if:true={hasSuppliers}>
+                        <div class="table-container">
+                            <table class="supplier-table">
+                                <thead>
+                                    <tr>
+                                        <th>Supplier Name</th>
+                                        <th class="text-right">Avg Delivery (Days)</th>
+                                        <th class="text-right">Accuracy</th>
+                                        <th class="text-right">Late Deliveries</th>
+                                        <th class="text-right">Score (0-100)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={suppliersPerformance} for:item="sup">
+                                        <tr key={sup.supplierName} class="supplier-row">
+                                            <td class="sup-name font-bold">{sup.supplierName}</td>
+                                            <td class="text-right">{sup.avgDeliveryTime}</td>
+                                            <td class="text-right">{sup.orderAccuracy}%</td>
+                                            <td class="text-right text-danger">{sup.lateDeliveries}</td>
+                                            <td class="text-right">
+                                                <span class={sup.ratingClass}>{sup.rating}</span>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                    <template if:false={hasSuppliers}>
+                        <c-empty-state 
+                            title="No Supplier Data" 
+                            message="No supplier performance data available." 
+                            icon-name="utility:people">
+                        </c-empty-state>
+                    </template>
+                </div>
+                
+                <div class="slds-card__footer card-footer-layout">
+                    <button class="slds-button slds-button_neutral slds-button_stretch" onclick={navigateToSuppliers}>View Suppliers</button>
+                </div>
+            </article>
+        </div>
+    </c-error-boundary>
+</template>

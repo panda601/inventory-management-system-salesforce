@@ -1,0 +1,77 @@
+<template>
+    <c-error-boundary onretry={handleRefresh}>
+        <div class="txn-container slds-is-relative">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+            </template>
+            <!-- Header -->
+            <div class="txn-header slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-wrap">
+                <div>
+                    <h2 class="txn-title">Recent Transactions</h2>
+                    <p class="txn-subtitle">Latest stock adjustments and movements</p>
+                </div>
+                
+                <div class="btn-group slds-m-top_small slds-grid slds-grid_vertical-align-center">
+                    <template if:true={showViewAllButton}>
+                        <button class="slds-button slds-button_neutral rounded-btn" onclick={navigateToViewAll}>
+                            <lightning-icon icon-name="utility:open_folder" size="x-small" class="slds-m-right_xx-small btn-icon"></lightning-icon>
+                            <span>View All</span>
+                        </button>
+                    </template>
+                    <button class="refresh-button slds-m-left_xx-small" onclick={handleRefresh} title="Refresh Transactions">
+                        <lightning-icon icon-name="utility:refresh" size="x-small" class="refresh-icon"></lightning-icon>
+                    </button>
+                </div>
+            </div>
+
+            <template if:true={error}>
+                <div class="error-container slds-m-bottom_medium">
+                    <span>Error loading transactions: {error.body.message}</span>
+                </div>
+            </template>
+
+            <!-- Compact Data Table -->
+            <template if:true={filteredTransactions}>
+                <template if:true={filteredTransactions.length}>
+                    <div class="table-container">
+                        <table class="txn-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Product</th>
+                                    <th>Type</th>
+                                    <th class="text-right">Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={filteredTransactions} for:item="txn">
+                                    <tr key={txn.Id} class="txn-row" onclick={handleViewDetails} data-id={txn.Id}>
+                                        <td class="txn-date">
+                                            <lightning-formatted-date-time value={txn.Transaction_Date__c} month="short" day="2-digit" hour="2-digit" minute="2-digit"></lightning-formatted-date-time>
+                                        </td>
+                                        <td class="product-name font-bold" title={txn.Product__r.Product_Name__c}>
+                                            {txn.Product__r.Product_Name__c}
+                                        </td>
+                                        <td>
+                                            <span class={txn.badgeClass}>{txn.Transaction_Type__c}</span>
+                                        </td>
+                                        <td class="text-right font-mono font-bold txn-qty">
+                                            {txn.Quantity__c}
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template if:false={filteredTransactions.length}>
+                    <c-empty-state 
+                        title="No Transactions Found" 
+                        message="No recent stock transactions recorded." 
+                        icon-name="utility:description">
+                    </c-empty-state>
+                </template>
+            </template>
+        </div>
+    </c-error-boundary>
+</template>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Can View Profit Metrics</label>
+    <description>Allows a user to view revenue, procurement, and profit metrics in inventory dashboards.</description>
+</CustomPermission>

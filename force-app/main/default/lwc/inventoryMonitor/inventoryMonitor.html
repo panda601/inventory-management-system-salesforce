@@ -1,0 +1,125 @@
+<template>
+    <c-error-boundary onretry={refreshAll}>
+        <article class="slds-card monitor-card">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+            </template>
+
+            <div class="slds-card__header slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <lightning-icon icon-name="utility:warning" size="small" variant="warning"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <span class="font-bold">Inventory Monitor</span>
+                        </h2>
+                        <p class="slds-text-body_small text-muted">Stock levels and reorder alerts</p>
+                    </div>
+                </header>
+            </div>
+
+            <div class="slds-card__body slds-card__body_inner">
+                <h3 class="slds-text-title_caps font-bold slds-m-bottom_small warning-text">
+                    ⚠️ Low Stock Alerts ({lowStockAlerts.length})
+                </h3>
+
+                <template if:true={hasAlerts}>
+                    <div class="slds-grid slds-wrap slds-gutters_direct-small">
+                        <template for:each={lowStockAlerts} for:item="item">
+                            <div key={item.Id} class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-large-size_1-3 slds-m-bottom_small">
+                                <div class="alert-item-card">
+                                    <div class="item-header slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                                        <span class="product-name font-bold" title={item.Product_Name__c}>{item.Product_Name__c}</span>
+                                        <span class={item.badgeClass}>{item.status}</span>
+                                    </div>
+
+                                    <div class="item-body slds-m-vertical_small">
+                                        <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                            <span class="text-muted">Stock: <strong>{item.Current_Stock__c}</strong> / Min: {item.Minimum_Stock__c}</span>
+                                            <span class="font-bold text-dark">Health: {item.healthPct}%</span>
+                                        </div>
+                                        <div class="progress-bar-container">
+                                            <lightning-progress-bar value={item.healthPct} size="small" variant={item.progressBarVariant}></lightning-progress-bar>
+                                        </div>
+                                        <div class="recommendation-text slds-m-top_small slds-grid slds-grid_vertical-align-center">
+                                            <lightning-icon icon-name="utility:cart" size="xx-small" class="slds-m-right_xx-small cart-icon" variant="warning"></lightning-icon>
+                                            <span>Recommend Reorder: <strong>{item.recommendation}</strong> units</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-footer slds-grid slds-gutters_direct-xx-small slds-m-top_small">
+                                        <div class="slds-col slds-size_1-2">
+                                            <button class="slds-button slds-button_brand slds-button_stretch action-btn"
+                                                    onclick={handleOpenReorderModal}
+                                                    data-id={item.Id}
+                                                    data-name={item.Product_Name__c}
+                                                    data-qty={item.recommendation}>
+                                                Reorder
+                                            </button>
+                                        </div>
+                                        <div class="slds-col slds-size_1-2">
+                                            <button class="slds-button slds-button_neutral slds-button_stretch action-btn-neutral"
+                                                    onclick={handleCreatePO}>
+                                                Create PO
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <template if:false={hasAlerts}>
+                    <template if:false={isLoading}>
+                        <c-empty-state 
+                            title="No alerts found" 
+                            message="All products are healthy and above minimum stock levels." 
+                            icon-name="utility:success">
+                        </c-empty-state>
+                    </template>
+                </template>
+            </div>
+        </article>
+
+        <!-- CUSTOM DIALOG: CREATE PURCHASE ORDER WITH PREFILLS -->
+        <template if:true={isPOModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closePOModal}>
+                            <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium font-bold">Create Purchase Order</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-record-edit-form object-api-name="Purchase_Order__c">
+                            <lightning-messages></lightning-messages>
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-1 slds-m-bottom_small">
+                                    <lightning-input-field field-name="Supplier__c" value={prefillSupplierId} onchange={handleSupplierChange} required></lightning-input-field>
+                                </div>
+                                <div class="slds-col slds-size_1-1 slds-m-bottom_small">
+                                    <lightning-input label="Product" value={prefillProductName} disabled></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-2 slds-m-bottom_small slds-p-right_xx-small">
+                                    <lightning-input label="Suggested Quantity" type="number" value={prefillQuantity} onchange={handleQuantityChange} required></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-2 slds-m-bottom_small slds-p-left_xx-small">
+                                    <lightning-input label="Unit Price" type="number" formatter="currency" step="0.01" value={prefillUnitPrice} onchange={handlePriceChange} required></lightning-input>
+                                </div>
+                            </div>
+                            <div class="slds-m-top_medium slds-text-align_right">
+                                <lightning-button label="Cancel" onclick={closePOModal} class="slds-m-right_small"></lightning-button>
+                                <lightning-button variant="brand" label="Submit" onclick={submitCustomPO}></lightning-button>
+                            </div>
+                        </lightning-record-edit-form>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
+    </c-error-boundary>
+</template>

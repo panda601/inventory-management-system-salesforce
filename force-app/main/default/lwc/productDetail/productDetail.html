@@ -1,0 +1,261 @@
+<template>
+    <div class="detail-container">
+        <template if:true={hasProduct}>
+            <template if:true={showSpinner}>
+                <div class="spinner-container">
+                    <lightning-spinner alternative-text="Loading product details" size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:true={hasProductData}>
+                <!-- Detail Header -->
+                <div class="detail-header slds-m-bottom_medium">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                            <div class="product-avatar">
+                                <lightning-icon icon-name="standard:product" size="medium"></lightning-icon>
+                            </div>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="detail-title slds-grid slds-grid_vertical-align-center">
+                                <a href="#" class="product-name-link slds-m-right_small" onclick={handleProductNameClick}>{product.data.productName}</a>
+                                <span class={stockStatusClass}>{stockStatusLabel}</span>
+                            </h2>
+                            <span class="detail-sku">SKU: {product.data.sku}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-panel">
+                    <lightning-tabset variant="scoped" active-tab-value={activeTab}>
+                        <lightning-tab label="Overview" value="overview" onactive={handleTabSelect}>
+                            <!-- Overview Section -->
+                            <template if:true={isOverviewActive}>
+                                <div class="section-content">
+                                    <h3 class="section-title">Overview</h3>
+                                    <div class="info-list">
+                                        <div class="info-item">
+                                            <span class="label">Product Name</span>
+                                            <span class="value font-bold">
+                                                <a href="#" class="product-name-link" onclick={handleProductNameClick}>{product.data.productName}</a>
+                                            </span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="label">SKU</span>
+                                            <span class="value font-mono">{product.data.sku}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="label">Category</span>
+                                            <span class="value">{product.data.category}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="label">Cost Price</span>
+                                            <span class="value price-cost">
+                                                <template if:true={costPrice}>
+                                                    <lightning-formatted-number value={costPrice} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                                </template>
+                                                <template if:false={costPrice}>N/A</template>
+                                            </span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="label">Selling Price</span>
+                                            <span class="value price-val">
+                                                <lightning-formatted-number value={product.data.sellingPrice} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                            </span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="label">Status</span>
+                                            <span class="value">
+                                                <span class="status-badge active">{product.data.status}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </lightning-tab>
+
+                        <lightning-tab label="Inventory" value="inventory" onactive={handleTabSelect}>
+                            <!-- Inventory Section -->
+                            <template if:true={isInventoryActive}>
+                                <div class="section-content">
+                                    <h3 class="section-title">Inventory</h3>
+                                    
+                                    <template if:true={inventory.error}>
+                                        <p class="empty-state">{inventoryErrorMessage}</p>
+                                    </template>
+                                    
+                                    <template if:true={inventoryLoaded}>
+                                        <template if:true={hasInventory}>
+                                            <div class="info-list">
+                                                <div class="info-item">
+                                                    <span class="label">Stock On Hand</span>
+                                                    <span class="value font-bold">{inventory.data.Current_Stock__c} units</span>
+                                                </div>
+                                                <div class="info-item">
+                                                    <span class="label">Reorder Point</span>
+                                                    <span class="value">{inventory.data.Minimum_Stock__c} units</span>
+                                                </div>
+                                                <div class="info-item">
+                                                    <span class="label">Inventory Status</span>
+                                                    <span class="value">
+                                                        <span class={stockStatusClass}>{stockStatusLabel}</span>
+                                                    </span>
+                                                </div>
+                                                <div class="info-item">
+                                                    <span class="label">Available Quantity</span>
+                                                    <span class="value font-bold">{availableQuantity} units</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Progress Bar -->
+                                            <div class="progress-section slds-m-top_medium">
+                                                <span class="progress-label">Stock Capacity Margin ({stockPercentage}%)</span>
+                                                <lightning-progress-bar value={stockPercentage} size="medium" variant="success"></lightning-progress-bar>
+                                            </div>
+
+                                            <!-- Reorder Recommendation -->
+                                            <template if:true={showReorderRec}>
+                                                <div class="recommendation-panel slds-m-top_medium">
+                                                    <lightning-icon icon-name="utility:warning" size="x-small" variant="warning" class="slds-m-right_small"></lightning-icon>
+                                                    <span>Procure at least <strong>{recommendationQuantity}</strong> units immediately.</span>
+                                                </div>
+                                            </template>
+                                        </template>
+                                        
+                                        <template if:false={hasInventory}>
+                                            <div class="no-inventory">
+                                                <lightning-icon icon-name="utility:info_alt" size="small" class="slds-m-bottom_xx-small"></lightning-icon>
+                                                <p>No inventory information available.</p>
+                                            </div>
+                                        </template>
+                                    </template>
+                                    
+                                    <template if:false={inventoryLoaded}>
+                                        <div class="no-inventory">
+                                            <lightning-spinner alternative-text="Loading inventory details" size="small"></lightning-spinner>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </lightning-tab>
+
+                        <lightning-tab label="Supplier" value="supplier" onactive={handleTabSelect}>
+                            <!-- Supplier Section -->
+                            <template if:true={isSupplierActive}>
+                                <div class="section-content">
+                                    <h3 class="section-title">Supplier</h3>
+                                    <template if:true={hasSupplier}>
+                                        <div class="info-list">
+                                            <div class="info-item">
+                                                <span class="label">Supplier Name</span>
+                                                <span class="value font-bold">{supplierName}</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="label">Email</span>
+                                                <span class="value">
+                                                    <template if:true={supplier.data.Email__c}>
+                                                        <a href={supplierEmailHref} class="link">{supplier.data.Email__c}</a>
+                                                    </template>
+                                                    <template if:false={supplier.data.Email__c}>N/A</template>
+                                                </span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="label">Phone</span>
+                                                <span class="value">{supplier.data.Phone__c}</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="label">Status</span>
+                                                <span class="value">
+                                                    <span class="status-badge active">{supplier.data.Status__c}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template if:true={supplier.error}>
+                                        <p class="empty-state">{supplierErrorMessage}</p>
+                                    </template>
+                                    <template if:true={supplierLoaded}>
+                                        <template if:false={hasSupplier}>
+                                            <div class="no-supplier">
+                                                <lightning-icon icon-name="utility:info_alt" size="small" class="slds-m-bottom_xx-small"></lightning-icon>
+                                                <p>No supplier assigned.</p>
+                                            </div>
+                                        </template>
+                                    </template>
+                                    <template if:false={supplierLoaded}>
+                                        <div class="no-supplier">
+                                            <lightning-spinner alternative-text="Loading supplier details" size="small"></lightning-spinner>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </lightning-tab>
+
+                        <lightning-tab label="Transactions" value="transactions" onactive={handleTabSelect}>
+                            <!-- Transactions Section -->
+                            <template if:true={isTransactionsActive}>
+                                <div class="section-content">
+                                    <h3 class="section-title">Transactions</h3>
+                                    <template if:true={transactions.error}>
+                                        <p class="empty-state">{transactionsErrorMessage}</p>
+                                    </template>
+                                    <template if:true={hasTransactions}>
+                                        <div class="table-container">
+                                            <table class="transaction-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Type</th>
+                                                        <th>Quantity</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template for:each={transactions.data} for:item="txn">
+                                                        <tr key={txn.Id}>
+                                                            <td class="txn-date">
+                                                                <lightning-formatted-date-time value={txn.CreatedDate} year="numeric" month="short" day="2-digit" hour="2-digit" minute="2-digit"></lightning-formatted-date-time>
+                                                            </td>
+                                                            <td>
+                                                                <span class={txn.Transaction_Type__c}>{txn.Transaction_Type__c}</span>
+                                                            </td>
+                                                            <td class="txn-qty">{txn.Quantity__c}</td>
+                                                        </tr>
+                                                    </template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </template>
+                                    <template if:true={transactionsLoaded}>
+                                        <template if:false={hasTransactions}>
+                                            <p class="no-transactions">No transactions found.</p>
+                                        </template>
+                                    </template>
+                                    <template if:false={transactionsLoaded}>
+                                        <div class="no-transactions">
+                                            <lightning-spinner alternative-text="Loading transactions" size="small"></lightning-spinner>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </lightning-tab>
+                    </lightning-tabset>
+                </div>
+            </template>
+            <template if:true={product.error}>
+                <div class="error-container">
+                    <span>Error loading details: {productErrorMessage}</span>
+                </div>
+            </template>
+        </template>
+
+        <template if:false={hasProduct}>
+            <div class="placeholder-container">
+                <div class="placeholder-content">
+                    <lightning-icon icon-name="standard:product" size="large" class="placeholder-icon"></lightning-icon>
+                    <h3>Select a Product</h3>
+                    <p>Select any product from the catalog to inspect its detailed specifications, current stock status, suppliers, and recent transaction history.</p>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

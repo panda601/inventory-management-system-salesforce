@@ -1,0 +1,179 @@
+<template>
+    <c-error-boundary onretry={refreshDashboard}>
+        <div class="sales-dashboard-container slds-is-relative">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+        </template>
+        
+        <template if:true={error}>
+            <div class="error-container slds-m-bottom_medium">
+                <lightning-icon icon-name="utility:error" size="small" variant="error" class="slds-m-right_small"></lightning-icon>
+                <span>Error loading dashboard: {error.body.message}</span>
+            </div>
+        </template>
+
+        <!-- Row 1: Line (Revenue Trend) & Bar (SO Status) -->
+        <div class="slds-grid slds-wrap slds-gutters_direct-small slds-m-bottom_medium">
+            <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-m-bottom_small">
+                <article class="slds-card chart-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:trending" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <span class="slds-text-title_caps font-bold">Revenue Trend (Last 30 Days)</span>
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner chart-content-wrapper">
+                        <div class="chart-canvas-container">
+                            <canvas class="revenue-trend-chart" lwc:dom="manual"></canvas>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-m-bottom_small">
+                <article class="slds-card chart-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="standard:orders" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <span class="slds-text-title_caps font-bold">Sales Order Status</span>
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner chart-content-wrapper">
+                        <div class="chart-canvas-container">
+                            <canvas class="so-status-chart" lwc:dom="manual"></canvas>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <!-- Row 2: Horizontal Bar (Top Products by Revenue) & Donut (Returns Status) -->
+        <div class="slds-grid slds-wrap slds-gutters_direct-small slds-m-bottom_medium">
+            <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-m-bottom_small">
+                <article class="slds-card chart-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:outcome" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <span class="slds-text-title_caps font-bold">Top Products by Revenue</span>
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner chart-content-wrapper">
+                        <div class="chart-canvas-container">
+                            <canvas class="top-products-revenue-chart" lwc:dom="manual"></canvas>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-m-bottom_small">
+                <article class="slds-card chart-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="standard:record" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <span class="slds-text-title_caps font-bold">Returns Status</span>
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner chart-content-wrapper">
+                        <div class="chart-canvas-container">
+                            <canvas class="returns-status-chart" lwc:dom="manual"></canvas>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <!-- Row 3: Recent Orders (Compact Table) -->
+        <div class="slds-grid slds-wrap slds-gutters_direct-small">
+            <div class="slds-col slds-size_1-1">
+                <article class="slds-card">
+                    <div class="slds-card__header slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="standard:orders" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <span class="slds-text-title_caps font-bold">Recent Orders</span>
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <template if:true={hasRecentOrders}>
+                            <div class="table-container slds-scrollable_x">
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_compact">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col"><div class="slds-truncate font-bold">Order Name</div></th>
+                                            <th scope="col"><div class="slds-truncate font-bold">Customer</div></th>
+                                            <th scope="col" class="slds-text-align_right"><div class="slds-truncate font-bold">Order Date</div></th>
+                                            <th scope="col" class="slds-text-align_right"><div class="slds-truncate font-bold">Total Amount</div></th>
+                                            <th scope="col"><div class="slds-truncate font-bold">Status</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={recentOrders} for:item="ord">
+                                            <tr key={ord.Id} class="slds-hint-parent">
+                                                <td data-label="Order Name">
+                                                    <div class="slds-truncate font-bold text-primary">
+                                                        <a onclick={handleNavigateToRecord} data-id={ord.Id} data-object="Sales_Order__c">{ord.Name}</a>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Customer">
+                                                    <div class="slds-truncate">{ord.Customer_Name__c}</div>
+                                                </td>
+                                                <td data-label="Order Date" class="slds-text-align_right">
+                                                    <div class="slds-truncate">{ord.formattedDate}</div>
+                                                </td>
+                                                <td data-label="Total Amount" class="slds-text-align_right">
+                                                    <div class="slds-truncate font-bold">
+                                                        <lightning-formatted-number value={ord.Total_Amount__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Status">
+                                                    <span class={ord.badgeClass}>{ord.Status__c}</span>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>
+                        <template if:false={hasRecentOrders}>
+                            <c-empty-state 
+                                title="No recent orders found" 
+                                message="There are no sales orders in this list." 
+                                icon-name="utility:database">
+                            </c-empty-state>
+                        </template>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+    </c-error-boundary>
+</template>

@@ -1,0 +1,16 @@
+<template>
+    <div class="empty-state-container slds-align_absolute-center slds-p-around_large slds-text-align_center">
+        <div class="empty-state-card">
+            <div class="illustration-wrapper slds-m-bottom_medium">
+                <lightning-icon 
+                    icon-name={iconName} 
+                    alternative-text={title} 
+                    size="large"
+                    class="pulse-animation">
+                </lightning-icon>
+            </div>
+            <h3 class="empty-title slds-text-heading_small slds-m-bottom_x-small">{title}</h3>
+            <p class="empty-message">{message}</p>
+        </div>
+    </div>
+</template>

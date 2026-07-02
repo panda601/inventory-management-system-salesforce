@@ -1,0 +1,132 @@
+<template>
+    <c-error-boundary onretry={refreshLeaderboard}>
+        <div class="top-products-container">
+            <article class="slds-card products-card-layout">
+                <div class="slds-card__header slds-grid">
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="standard:product" size="small" class="products-title-icon"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                <span class="slds-text-heading_small font-bold">Top Selling Products</span>
+                            </h2>
+                        </div>
+                    </header>
+                </div>
+                
+                <div class="slds-card__body slds-card__body_inner card-body-layout">
+                    <template if:true={hasData}>
+                        <div class="table-container">
+                            <table class="products-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th class="text-right">Qty Sold</th>
+                                        <th class="text-right">Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={topSelling} for:item="item">
+                                        <tr key={item.productName} class="product-row">
+                                            <td class="prod-name font-bold">{item.productName}</td>
+                                            <td class="text-right font-mono">{item.quantitySold} units</td>
+                                            <td class="text-right font-mono font-bold">
+                                                <lightning-formatted-number value={item.totalSales} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                    <template if:false={hasData}>
+                        <c-empty-state 
+                            title="No Sales Data" 
+                            message="No sales data available." 
+                            icon-name="utility:graph">
+                        </c-empty-state>
+                    </template>
+                </div>
+                
+                <div class="slds-card__footer card-footer-layout">
+                    <button class="slds-button slds-button_neutral slds-button_stretch" onclick={openLeaderboardModal}>View Leaderboard</button>
+                </div>
+            </article>
+
+            <!-- Leaderboard Modal Dialog -->
+            <template if:true={isModalOpen}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-modal="true">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeLeaderboardModal}>
+                                <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 class="slds-modal__title slds-hyphenate font-bold">Product Performance Leaderboard</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <!-- Filters -->
+                            <div class="slds-grid slds-grid_align-center slds-m-bottom_large btn-group">
+                                <button class={topSellingBtnClass} onclick={handleFilterSelect} data-filter="top-selling">Top Selling</button>
+                                <button class={topRevenueBtnClass} onclick={handleFilterSelect} data-filter="top-revenue">Top Revenue</button>
+                                <button class={leastSellingBtnClass} onclick={handleFilterSelect} data-filter="least-selling">Least Selling</button>
+                            </div>
+
+                            <!-- Top Selling -->
+                            <template if:true={isTopSellingFilter}>
+                                <div class="leader-box animate-fade">
+                                    <h3 class="box-title font-bold slds-m-bottom_small">Top Selling (Quantity)</h3>
+                                    <ul class="leader-list">
+                                        <template for:each={topSelling} for:item="item">
+                                            <li key={item.productName} class="leader-item">
+                                                <span>{item.productName}</span>
+                                                <span class="badge positive">{item.quantitySold} units</span>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </template>
+
+                            <!-- Top Revenue -->
+                            <template if:true={isTopRevenueFilter}>
+                                <div class="leader-box animate-fade">
+                                    <h3 class="box-title font-bold slds-m-bottom_small">Top Revenue ($)</h3>
+                                    <ul class="leader-list">
+                                        <template for:each={topRevenue} for:item="item">
+                                            <li key={item.productName} class="leader-item">
+                                                <span>{item.productName}</span>
+                                                <span class="badge revenue">
+                                                    <lightning-formatted-number value={item.totalSales} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                                </span>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </template>
+
+                            <!-- Least Selling -->
+                            <template if:true={isLeastSellingFilter}>
+                                <div class="leader-box animate-fade">
+                                    <h3 class="box-title font-bold slds-m-bottom_small">Least Selling (Quantity)</h3>
+                                    <ul class="leader-list">
+                                        <template for:each={leastSelling} for:item="item">
+                                            <li key={item.productName} class="leader-item">
+                                                <span>{item.productName}</span>
+                                                <span class="badge negative">{item.quantitySold} units</span>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </template>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" onclick={closeLeaderboardModal}>Close</button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+        </div>
+    </c-error-boundary>
+</template>

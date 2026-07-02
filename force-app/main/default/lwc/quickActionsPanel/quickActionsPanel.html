@@ -1,0 +1,31 @@
+<template>
+    <div class="sticky-action-bar">
+        <div class="action-bar-content">
+            <span class="bar-title">Quick Actions</span>
+            <div class="buttons-row">
+                <template if:true={isManager}>
+                    <button class="action-btn product-btn" onclick={handleCreateProduct}>
+                        <lightning-icon icon-name="utility:add" size="x-small" class="btn-icon" variant="inverse"></lightning-icon>
+                        <span>Create Product</span>
+                    </button>
+                    <button class="action-btn supplier-btn" onclick={handleCreateSupplier}>
+                        <lightning-icon icon-name="utility:add" size="x-small" class="btn-icon" variant="inverse"></lightning-icon>
+                        <span>Create Supplier</span>
+                    </button>
+                    <button class="action-btn po-btn" onclick={handleCreatePO}>
+                        <lightning-icon icon-name="utility:add" size="x-small" class="btn-icon" variant="inverse"></lightning-icon>
+                        <span>Create Purchase Order</span>
+                    </button>
+                    <button class="action-btn txn-btn" onclick={handleCreateTxn}>
+                        <lightning-icon icon-name="utility:add" size="x-small" class="btn-icon" variant="inverse"></lightning-icon>
+                        <span>Create Inventory Transaction</span>
+                    </button>
+                </template>
+                <button class="action-btn so-btn" onclick={handleCreateSO}>
+                    <lightning-icon icon-name="utility:add" size="x-small" class="btn-icon" variant="inverse"></lightning-icon>
+                    <span>Create Sales Order</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</template>

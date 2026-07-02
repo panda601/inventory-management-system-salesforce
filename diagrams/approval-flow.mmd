@@ -1,0 +1,19 @@
+graph TD
+    A[Sales Executive] -->|Creates Return Request| B(Status: Submitted)
+    B -->|Triggers Notification Flow| C[Manager Task Created]
+    
+    D[Inventory Manager] -->|Inspects Items| E{Review Decision}
+    E -->|Reject| F(Status: Rejected)
+    E -->|Advance| G(Status: Under Review)
+    
+    G -->|Needs Final Decision| H[Admin Approval Center]
+    H -->|Select Resolution| I{Resolution Type}
+    
+    I -->|Repair| J(Status: Approved)
+    J -->|Flow| J1[Increments stock & logs 'Adjustment' transaction]
+    
+    I -->|Replacement| K(Status: Replacement Sent)
+    K -->|Flow| K1[Decrements stock & logs 'Stock Out' transaction]
+    
+    I -->|Refund| L(Status: Refunded)
+    L -->|Flow| L1[Logs refund status without stock mutation]

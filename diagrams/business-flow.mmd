@@ -1,0 +1,13 @@
+sequenceDiagram
+    autonumber
+    actor Manager as Inventory Manager
+    participant PO as Purchase Order
+    participant Flow as Purchase_Order_Received Flow
+    participant Prod as Product Stock
+    participant Ledger as Inventory Transaction Ledger
+
+    Manager->>PO: Set Status to 'Received'
+    PO->>Flow: Triggers on update
+    Flow->>Prod: Increments Current_Stock__c by PO Item Quantity
+    Flow->>Ledger: Creates 'Stock In' transaction record
+    Note over Prod,Ledger: Database updates committed atomically

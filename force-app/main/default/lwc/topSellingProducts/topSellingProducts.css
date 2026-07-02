@@ -1,0 +1,151 @@
+.top-products-container {
+    width: 100%;
+}
+
+.products-card-layout {
+    border: 1px solid #dddbda;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.products-title-icon {
+    --sds-c-icon-color-foreground: #0176d3;
+}
+
+.font-bold {
+    font-weight: 700 !important;
+}
+
+.card-body-layout {
+    padding: 0.75rem 1rem;
+    min-height: 200px;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.products-table th {
+    color: #514f4d;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+    padding: 8px 12px;
+    border-bottom: 2px solid #dddbda;
+    background: #f8fafc;
+}
+
+.products-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.product-row {
+    transition: background 0.15s ease;
+}
+
+.product-row:hover {
+    background: #f8fafc;
+}
+
+.prod-name {
+    color: #1a202c;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.font-mono {
+    font-family: monospace;
+}
+
+.card-footer-layout {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #dddbda;
+    background: #f8fafc;
+}
+
+.empty-products {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: #718096;
+}
+
+/* Modal and Leaderboard list styles */
+.btn-group .slds-button {
+    border-radius: 20px;
+    padding: 0.25rem 1rem;
+    font-weight: 600;
+}
+
+.leader-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.leader-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.leader-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #ffffff;
+}
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.badge.positive {
+    background: #def7ec;
+    color: #03543f;
+}
+
+.badge.revenue {
+    background: #e1effe;
+    color: #1e429f;
+}
+
+.badge.negative {
+    background: #fde8e8;
+    color: #9b1c1c;
+}
+
+.animate-fade {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,37 @@
+<template>
+    <div class="timeline-container">
+        <div class="panel-header slds-m-bottom_medium">
+            <h2 class="panel-title">Inventory Activity Timeline</h2>
+        </div>
+
+        <template if:true={hasEvents}>
+            <div class="timeline-wrapper">
+                <div class="timeline-line"></div>
+                <div class="timeline-list">
+                    <template for:each={timelineEvents} for:item="event">
+                        <div key={event.id} class="timeline-item">
+                            <div class="timeline-marker">
+                                <div class={event.iconClass}>
+                                    <lightning-icon icon-name={event.iconName} size="x-small" class="marker-icon"></lightning-icon>
+                                </div>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <span class="event-title">{event.title}</span>
+                                    <span class="event-date">{event.formattedDate}</span>
+                                </div>
+                                <div class="timeline-detail">{event.detail}</div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+        <template if:false={hasEvents}>
+            <div class="no-events">
+                <lightning-icon icon-name="utility:clock" size="medium" class="slds-m-bottom_x-small"></lightning-icon>
+                <p>No recent activity events recorded.</p>
+            </div>
+        </template>
+    </div>
+</template>

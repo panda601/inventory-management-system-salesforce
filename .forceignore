@@ -16,3 +16,5 @@
 
 # Local config definitions
 config/
+**/.eslintrc.json
+**/sharingRules/**

@@ -1,0 +1,134 @@
+.notification-card-container {
+    width: 100%;
+}
+
+.notification-card-layout {
+    border: 1px solid #dddbda;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.notification-title-icon {
+    --sds-c-icon-color-foreground: #0176d3;
+}
+
+.font-bold {
+    font-weight: 700 !important;
+}
+
+.notification-body-scroll {
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 0.75rem 1rem;
+}
+
+.notification-section {
+    margin-bottom: 1rem;
+}
+
+.section-heading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.warning-heading {
+    color: #b78103;
+    background: #fffbeb;
+}
+
+.error-heading {
+    color: #ba0517;
+    background: #fdf2f2;
+}
+
+.info-heading {
+    color: #0176d3;
+    background: #f0f7fd;
+}
+
+.heading-icon {
+    --sds-c-icon-color-foreground: currentColor;
+}
+
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.notification-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.notification-item-row:hover {
+    border-color: #b0adab;
+    background: #f8fafc;
+    transform: translateX(2px);
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.item-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #1a202c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-danger {
+    color: #e53e3e !important;
+}
+
+.item-meta {
+    font-size: 0.7rem;
+    color: #718096;
+}
+
+.chevron-icon {
+    --sds-c-icon-color-foreground: #a0aec0;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.empty-notifications {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: #718096;
+}
+
+.card-footer-layout {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #dddbda;
+    background: #f8fafc;
+}
