@@ -265,6 +265,11 @@
         <field>Inventory_Audit_Log__c.User__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product__c.Product_Image__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- Tab Settings -->
     <tabSettings>
         <tab>Return_Request__c</tab>

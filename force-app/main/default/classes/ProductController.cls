@@ -15,6 +15,7 @@ public with sharing class ProductController {
         @AuraEnabled public Decimal reorderPoint { get; set; }
         @AuraEnabled public Decimal availableQuantity { get; set; }
         @AuraEnabled public String status { get; set; }
+        @AuraEnabled public String productImage { get; set; }
     }
 
     @AuraEnabled(cacheable=true)
@@ -23,7 +24,7 @@ public with sharing class ProductController {
         String cat = (String.isNotBlank(categoryFilter) && categoryFilter != 'All') ? categoryFilter : null;
 
         if (key != null && cat != null) {
-            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c 
+            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
                     FROM Product__c 
                     WHERE Status__c = 'Active' 
                     AND (Name LIKE :key OR Product_Name__c LIKE :key OR SKU__c LIKE :key) 
@@ -31,21 +32,21 @@ public with sharing class ProductController {
                     WITH USER_MODE 
                     ORDER BY Name ASC];
         } else if (key != null) {
-            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c 
+            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
                     FROM Product__c 
                     WHERE Status__c = 'Active' 
                     AND (Name LIKE :key OR Product_Name__c LIKE :key OR SKU__c LIKE :key) 
                     WITH USER_MODE 
                     ORDER BY Name ASC];
         } else if (cat != null) {
-            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c 
+            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
                     FROM Product__c 
                     WHERE Status__c = 'Active' 
                     AND Category__c = :cat 
                     WITH USER_MODE 
                     ORDER BY Name ASC];
         } else {
-            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c 
+            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
                     FROM Product__c 
                     WHERE Status__c = 'Active' 
                     WITH USER_MODE 
@@ -60,7 +61,7 @@ public with sharing class ProductController {
         }
 
         List<Product__c> products = [
-            SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c
+            SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c
             FROM Product__c
             WHERE Id = :productId
             WITH USER_MODE
@@ -92,6 +93,7 @@ public with sharing class ProductController {
         result.reorderPoint = productRecord.Minimum_Stock__c;
         result.availableQuantity = productRecord.Current_Stock__c;
         result.status = productRecord.Status__c;
+        result.productImage = productRecord.Product_Image__c;
 
         ProductCostPriceInfo costInfo = getProductCostPrice(recordId);
         result.costPrice = costInfo == null ? null : costInfo.costPrice;

@@ -68,7 +68,8 @@ try {
         Current_Stock__c = 22, // Target is 25. PO (+5) and SO (-2) -> 25.
         Minimum_Stock__c = 10,
         Status__c = 'Active',
-        OwnerId = invManager.Id
+        OwnerId = invManager.Id,
+        Product_Image__c = 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=300&q=80'
     );
     Product__c prod2 = new Product__c(
         Name = 'HP ProBook 450',
@@ -79,7 +80,8 @@ try {
         Current_Stock__c = 18, // Target is 18. PO (+3) and SO (-2) -> 18. (Return replace sent has net change 0)
         Minimum_Stock__c = 10,
         Status__c = 'Active',
-        OwnerId = invManager.Id
+        OwnerId = invManager.Id,
+        Product_Image__c = 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=300&q=80'
     );
     Product__c prod3 = new Product__c(
         Name = 'Lenovo ThinkPad E14',
@@ -90,7 +92,8 @@ try {
         Current_Stock__c = 12, // Target is 12.
         Minimum_Stock__c = 10,
         Status__c = 'Active',
-        OwnerId = invManager.Id
+        OwnerId = invManager.Id,
+        Product_Image__c = 'https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?w=300&q=80'
     );
     Product__c prod4 = new Product__c(
         Name = 'Dell Keyboard',
@@ -101,7 +104,8 @@ try {
         Current_Stock__c = 13, // Target is 10. SO (-3) -> 10.
         Minimum_Stock__c = 10,
         Status__c = 'Active',
-        OwnerId = invManager.Id
+        OwnerId = invManager.Id,
+        Product_Image__c = 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300&q=80'
     );
     Product__c prod5 = new Product__c(
         Name = 'Logitech Mouse',
@@ -112,7 +116,8 @@ try {
         Current_Stock__c = 35, // Target is 30. SO (-5) -> 30. (Return submitted has net change 0)
         Minimum_Stock__c = 10,
         Status__c = 'Active',
-        OwnerId = invManager.Id
+        OwnerId = invManager.Id,
+        Product_Image__c = 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=300&q=80'
     );
     Product__c prod6 = new Product__c(
         Name = 'Samsung Monitor',
@@ -123,11 +128,24 @@ try {
         Current_Stock__c = 7, // Target is 8. Return Repair (+1) -> 8.
         Minimum_Stock__c = 10,
         Status__c = 'Active',
-        OwnerId = invManager.Id
+        OwnerId = invManager.Id,
+        Product_Image__c = 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300&q=80'
     );
     List<Product__c> products = new List<Product__c>{prod1, prod2, prod3, prod4, prod5, prod6};
     insert products;
     System.debug('Seeded 6 Products.');
+
+    // Search and update other products that might exist
+    List<Product__c> extraProducts = [SELECT Id, Name FROM Product__c WHERE Name IN ('Mac Book', 'Test Auto Product 1')];
+    for (Product__c p : extraProducts) {
+        if (p.Name == 'Mac Book') {
+            p.Product_Image__c = 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300&q=80';
+        }
+        // Test Auto Product 1 has no image to verify fallback.
+    }
+    if (!extraProducts.isEmpty()) {
+        update extraProducts;
+    }
 
     // 4. Seed 5 Purchase Orders
     // PO 1: Dell Technologies - Received Qty 5

@@ -9,19 +9,19 @@
 
             <template if:true={hasProductData}>
                 <!-- Detail Header -->
-                <div class="detail-header slds-m-bottom_medium">
-                    <div class="slds-media slds-media_center">
-                        <div class="slds-media__figure">
-                            <div class="product-avatar">
-                                <lightning-icon icon-name="standard:product" size="medium"></lightning-icon>
-                            </div>
-                        </div>
-                        <div class="slds-media__body">
-                            <h2 class="detail-title slds-grid slds-grid_vertical-align-center">
-                                <a href="#" class="product-name-link slds-m-right_small" onclick={handleProductNameClick}>{product.data.productName}</a>
-                                <span class={stockStatusClass}>{stockStatusLabel}</span>
-                            </h2>
+                <div class="detail-header slds-m-bottom_medium slds-text-align_center">
+                    <div class="product-detail-img-wrapper slds-m-bottom_small">
+                        <img src={productImageSrc} alt={product.data.productName} class="product-detail-img" />
+                    </div>
+                    <div class="product-detail-text-body">
+                        <h2 class="detail-title slds-m-bottom_xx-small">
+                            <a href="#" class="product-name-link" onclick={handleProductNameClick}>{product.data.productName}</a>
+                        </h2>
+                        <div class="slds-m-bottom_xx-small">
                             <span class="detail-sku">SKU: {product.data.sku}</span>
+                        </div>
+                        <div>
+                            <span class={stockStatusClass}>{stockStatusLabel}</span>
                         </div>
                     </div>
                 </div>

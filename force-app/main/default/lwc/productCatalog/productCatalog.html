@@ -44,6 +44,9 @@
                     <div class="compact-list">
                         <template for:each={sortedProducts} for:item="prod">
                             <div key={prod.Id} class="compact-item">
+                                <div class="product-img-container">
+                                    <img src={prod.productImageSrc} alt={prod.Product_Name__c} class="product-thumbnail" loading="lazy" />
+                                </div>
                                 <div class="product-info-left">
                                     <a href="#" class="product-name-link" onclick={handleProductNameClick} data-id={prod.Id}>{prod.Product_Name__c}</a>
                                     <span class="product-sku-sub">SKU: {prod.SKU__c}</span>

@@ -22,9 +22,16 @@ public class ProductControllerTest {
         InventoryTestSupport.TestUsers users = InventoryTestSupport.createUsers();
         InventoryTestSupport.SeedData data = InventoryTestSupport.seedCoreData(users);
 
+        System.runAs(users.adminUser) {
+            Product__c p = [SELECT Id FROM Product__c WHERE Id = :data.productId];
+            p.Product_Image__c = 'https://example.com/image.png';
+            update p;
+        }
+
         System.runAs(users.managerUser) {
             ProductController.ProductDetailView detailView = ProductController.getProduct(data.productId);
             System.assertNotEquals(null, detailView, 'Manager must retrieve product detail view.');
+            System.assertEquals('https://example.com/image.png', detailView.productImage, 'Image must be returned.');
             System.assertEquals(50, ProductController.getProductCostPrice(data.productId).costPrice, 'Manager must retrieve the current cost price.');
             System.assertNotEquals(null, ProductController.getProductSupplier(data.productId), 'Manager must retrieve supplier details.');
             System.assertEquals(1, ProductController.getProductTransactions(data.productId).size(), 'Manager must retrieve product transactions.');

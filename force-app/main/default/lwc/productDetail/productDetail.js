@@ -99,6 +99,15 @@ export default class ProductDetail extends NavigationMixin(LightningElement) {
         return !!(this.product && this.product.data);
     }
 
+    get productImageSrc() {
+        const fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 100 100"><rect width="100%" height="100%" fill="%23f8f9fa" stroke="%23dddbda" stroke-width="1"/><rect x="25" y="25" width="50" height="50" rx="4" fill="none" stroke="%23b0adab" stroke-width="2"/><circle cx="50" cy="45" r="10" fill="none" stroke="%23b0adab" stroke-width="2"/><path d="M30 65 L45 50 L55 60 L70 45 L70 65 Z" fill="%23cbd5e0"/><text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="8" fill="%23706e6b">No Image</text></svg>`;
+
+        if (this.product && this.product.data && this.product.data.productImage) {
+            return this.product.data.productImage;
+        }
+        return fallbackImage;
+    }
+
     get showSpinner() {
         return this.hasProduct && this.product && !this.product.data && !this.product.error;
     }

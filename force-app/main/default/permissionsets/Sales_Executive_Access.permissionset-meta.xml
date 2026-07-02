@@ -170,6 +170,11 @@
         <field>Return_Request__c.SLA_Due_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product__c.Product_Image__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- Tab Settings -->
     <tabSettings>
         <tab>Return_Request__c</tab>
