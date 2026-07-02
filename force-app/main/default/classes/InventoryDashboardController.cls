@@ -338,6 +338,7 @@ public with sharing class InventoryDashboardController {
         if (Schema.sObjectType.Sales_Order_Item__c.isAccessible()) {
             List<AggregateResult> itemGroup = [
                 SELECT Product__r.Product_Name__c prodName, 
+                       MAX(Product__c) prodId,
                        MAX(Product__r.Product_Image__c) prodImg,
                        SUM(Quantity__c) totalQty, 
                        SUM(Line_Total__c) totalAmount
@@ -347,13 +348,29 @@ public with sharing class InventoryDashboardController {
                 GROUP BY Product__r.Product_Name__c
                 ORDER BY SUM(Line_Total__c) DESC
             ];
+
+            List<Id> prodIds = new List<Id>();
+            for (AggregateResult ar : itemGroup) {
+                Id prodId = (Id)ar.get('prodId');
+                if (prodId != null) {
+                    prodIds.add(prodId);
+                }
+            }
+            Map<Id, String> fileUrls = ProductController.getProductImageUrls(prodIds);
             
             for (AggregateResult ar : itemGroup) {
                 ProductSalesBreakdown item = new ProductSalesBreakdown();
                 item.productName = ar.get('prodName') != null ? (String)ar.get('prodName') : 'Unknown';
                 item.quantitySold = ar.get('totalQty') != null ? (Decimal)ar.get('totalQty') : 0;
                 item.totalSales = ar.get('totalAmount') != null ? (Decimal)ar.get('totalAmount') : 0;
-                item.productImage = ar.get('prodImg') != null ? (String)ar.get('prodImg') : null;
+                
+                Id prodId = (Id)ar.get('prodId');
+                String fileUrl = prodId != null ? fileUrls.get(prodId) : null;
+                if (fileUrl != null) {
+                    item.productImage = fileUrl;
+                } else {
+                    item.productImage = ar.get('prodImg') != null ? (String)ar.get('prodImg') : null;
+                }
                 summary.productSales.add(item);
             }
         }
@@ -448,8 +465,14 @@ public with sharing class InventoryDashboardController {
             return listPerformance;
         }
 
-        List<Product__c> products = [SELECT Id, Name, Product_Name__c, Price__c FROM Product__c WHERE Status__c = 'Active' WITH SECURITY_ENFORCED LIMIT 10];
+        List<Product__c> products = [SELECT Id, Name, Product_Name__c, Price__c, Product_Image__c FROM Product__c WHERE Status__c = 'Active' WITH SECURITY_ENFORCED LIMIT 10];
         
+        List<Id> prodIds = new List<Id>();
+        for (Product__c p : products) {
+            prodIds.add(p.Id);
+        }
+        Map<Id, String> fileUrls = ProductController.getProductImageUrls(prodIds);
+
         for (Product__c p : products) {
             ProductPerformance perf = new ProductPerformance();
             perf.productName = String.isNotBlank(p.Product_Name__c) ? p.Product_Name__c : p.Name;
@@ -460,6 +483,9 @@ public with sharing class InventoryDashboardController {
             perf.cost = perf.revenue * 0.6; // 60% standard margin cost
             perf.profit = perf.revenue - perf.cost;
             perf.margin = 40.0;
+            
+            String fileUrl = fileUrls.get(p.Id);
+            perf.productImage = fileUrl != null ? fileUrl : p.Product_Image__c;
             
             listPerformance.add(perf);
         }

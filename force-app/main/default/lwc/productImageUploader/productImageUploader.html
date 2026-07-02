@@ -1,0 +1,54 @@
+<template>
+    <lightning-card title="Product Image" icon-name="utility:image" class="image-uploader-card">
+        <div class="slds-p-around_medium slds-text-align_center uploader-content-wrapper slds-is-relative">
+            <!-- Spinner -->
+            <template if:true={isLoading}>
+                <div class="spinner-overlay">
+                    <lightning-spinner alternative-text="Updating image..." size="small" variant="brand"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Image View -->
+            <div class="product-preview-container slds-m-bottom_medium">
+                <img src={imageUrl} alt="Product Image" class="product-preview-image" onerror={handleImageError} />
+            </div>
+
+            <!-- Actions Container -->
+            <template if:true={isAdmin}>
+                <div class="actions-wrapper slds-m-top_small">
+                    <!-- Standard File Upload (Upload or Replace) -->
+                    <div class="upload-component-container">
+                        <lightning-file-upload
+                            label={uploadLabel}
+                            name="fileUploader"
+                            accept={acceptedFormats}
+                            record-id={recordId}
+                            onuploadfinished={handleUploadFinished}
+                            multiple="false"
+                            class="slds-m-bottom_small">
+                        </lightning-file-upload>
+                    </div>
+                    
+                    <!-- Delete Button (Only displays if image exists and is not the placeholder) -->
+                    <template if:true={hasImage}>
+                        <lightning-button 
+                            label="Delete Image" 
+                            variant="destructive-text" 
+                            onclick={handleDeleteImage} 
+                            icon-name="utility:delete"
+                            class="delete-btn-action">
+                        </lightning-button>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Read Only Message for Manager/Sales -->
+            <template if:false={isAdmin}>
+                <div class="read-only-badge slds-m-top_small">
+                    <lightning-icon icon-name="utility:lock" size="xx-small" class="lock-icon slds-m-right_xx-small"></lightning-icon>
+                    <span class="slds-text-color_weak slds-text-body_small font-bold">Read-Only View</span>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

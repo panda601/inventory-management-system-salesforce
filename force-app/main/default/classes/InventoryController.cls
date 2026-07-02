@@ -16,11 +16,26 @@ public with sharing class InventoryController {
 
     @AuraEnabled(cacheable=true)
     public static List<Product__c> getMonitorData() {
-        return [SELECT Id, Name, Product_Name__c, SKU__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c
+        List<Product__c> products = [SELECT Id, Name, Product_Name__c, SKU__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c
                 FROM Product__c
                 WHERE Status__c = 'Active'
                 WITH SECURITY_ENFORCED
                 ORDER BY Current_Stock__c ASC];
+
+        if (!products.isEmpty()) {
+            List<Id> prodIds = new List<Id>();
+            for (Product__c p : products) {
+                prodIds.add(p.Id);
+            }
+            Map<Id, String> fileUrls = ProductController.getProductImageUrls(prodIds);
+            for (Product__c p : products) {
+                String fileUrl = fileUrls.get(p.Id);
+                if (fileUrl != null) {
+                    p.Product_Image__c = fileUrl;
+                }
+            }
+        }
+        return products;
     }
 
     @AuraEnabled(cacheable=true)
@@ -426,6 +441,14 @@ public with sharing class InventoryController {
                 WITH USER_MODE
                 ORDER BY Product_Name__c ASC
             ];
+
+            Map<Id, String> fileUrls = ProductController.getProductImageUrls(new List<Id>(productIds));
+            for (Product__c p : wrapper.productsSupplied) {
+                String fileUrl = fileUrls.get(p.Id);
+                if (fileUrl != null) {
+                    p.Product_Image__c = fileUrl;
+                }
+            }
         } else {
             wrapper.productsSupplied = new List<Product__c>();
         }

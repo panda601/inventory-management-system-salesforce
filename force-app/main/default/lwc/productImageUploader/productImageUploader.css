@@ -1,0 +1,102 @@
+.image-uploader-card {
+    display: block;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.uploader-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+}
+
+.spinner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-preview-container {
+    width: 160px;
+    height: 160px;
+    min-width: 160px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.25s ease;
+}
+
+.product-preview-container:hover {
+    border-color: #0f766e;
+}
+
+.product-preview-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.actions-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.upload-component-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Custom styled file uploader buttons */
+.upload-component-container ::voter-deep .slds-file-selector__button {
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f766e;
+    font-weight: 700;
+}
+
+.upload-component-container ::voter-deep .slds-file-selector__button:hover {
+    background-color: #eff6ff;
+    border-color: #0d9488;
+}
+
+.delete-btn-action {
+    --sds-c-button-text-destructive-color: #991b1b;
+}
+
+.read-only-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    color: #64748b;
+}
+
+.lock-icon {
+    --sds-c-icon-color-foreground: #64748b;
+}
+
+.font-bold {
+    font-weight: 700;
+}

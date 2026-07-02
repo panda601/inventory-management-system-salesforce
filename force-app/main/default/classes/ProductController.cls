@@ -23,8 +23,9 @@ public with sharing class ProductController {
         String key = String.isNotBlank(searchKey) ? '%' + searchKey + '%' : null;
         String cat = (String.isNotBlank(categoryFilter) && categoryFilter != 'All') ? categoryFilter : null;
 
+        List<Product__c> results;
         if (key != null && cat != null) {
-            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
+            results = [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
                     FROM Product__c 
                     WHERE Status__c = 'Active' 
                     AND (Name LIKE :key OR Product_Name__c LIKE :key OR SKU__c LIKE :key) 
@@ -32,26 +33,41 @@ public with sharing class ProductController {
                     WITH USER_MODE 
                     ORDER BY Name ASC];
         } else if (key != null) {
-            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
+            results = [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
                     FROM Product__c 
                     WHERE Status__c = 'Active' 
                     AND (Name LIKE :key OR Product_Name__c LIKE :key OR SKU__c LIKE :key) 
                     WITH USER_MODE 
                     ORDER BY Name ASC];
         } else if (cat != null) {
-            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
+            results = [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
                     FROM Product__c 
                     WHERE Status__c = 'Active' 
                     AND Category__c = :cat 
                     WITH USER_MODE 
                     ORDER BY Name ASC];
         } else {
-            return [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
+            results = [SELECT Id, Name, Product_Name__c, SKU__c, Category__c, Price__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c 
                     FROM Product__c 
                     WHERE Status__c = 'Active' 
                     WITH USER_MODE 
                     ORDER BY Name ASC];
         }
+
+        if (!results.isEmpty()) {
+            List<Id> prodIds = new List<Id>();
+            for (Product__c p : results) {
+                prodIds.add(p.Id);
+            }
+            Map<Id, String> fileUrls = getProductImageUrls(prodIds);
+            for (Product__c p : results) {
+                String fileUrl = fileUrls.get(p.Id);
+                if (fileUrl != null) {
+                    p.Product_Image__c = fileUrl;
+                }
+            }
+        }
+        return results;
     }
 
     @AuraEnabled(cacheable=true)
@@ -68,7 +84,16 @@ public with sharing class ProductController {
             LIMIT 1
         ];
 
-        return products.isEmpty() ? null : products[0];
+        if (!products.isEmpty()) {
+            Product__c p = products[0];
+            Map<Id, String> fileUrls = getProductImageUrls(new List<Id>{p.Id});
+            String fileUrl = fileUrls.get(p.Id);
+            if (fileUrl != null) {
+                p.Product_Image__c = fileUrl;
+            }
+            return p;
+        }
+        return null;
     }
 
     @AuraEnabled(cacheable=true)
@@ -209,6 +234,64 @@ public with sharing class ProductController {
     @AuraEnabled(cacheable=true)
     public static List<Inventory_Transaction__c> getTransactions(Id recordId) {
         return getProductTransactions(recordId);
+    }
+
+    public static Map<Id, String> getProductImageUrls(List<Id> productIds) {
+        Map<Id, String> productToImageMap = new Map<Id, String>();
+        
+        for (Id prodId : productIds) {
+            productToImageMap.put(prodId, null);
+        }
+        
+        if (productIds.isEmpty()) {
+            return productToImageMap;
+        }
+        
+        List<ContentDocumentLink> cdls = [
+            SELECT LinkedEntityId, ContentDocumentId 
+            FROM ContentDocumentLink 
+            WHERE LinkedEntityId IN :productIds
+            WITH USER_MODE
+        ];
+        
+        if (cdls.isEmpty()) {
+            return productToImageMap;
+        }
+        
+        Map<Id, List<Id>> docToProdsMap = new Map<Id, List<Id>>();
+        for (ContentDocumentLink cdl : cdls) {
+            if (!docToProdsMap.containsKey(cdl.ContentDocumentId)) {
+                docToProdsMap.put(cdl.ContentDocumentId, new List<Id>());
+            }
+            docToProdsMap.get(cdl.ContentDocumentId).add(cdl.LinkedEntityId);
+        }
+        
+        List<ContentVersion> cvs = [
+            SELECT Id, ContentDocumentId, FileExtension, LastModifiedDate
+            FROM ContentVersion
+            WHERE ContentDocumentId IN :docToProdsMap.keySet()
+            AND IsLatest = true
+            AND FileExtension IN ('jpg', 'jpeg', 'png', 'webp')
+            WITH USER_MODE
+            ORDER BY LastModifiedDate DESC
+        ];
+        
+        Set<Id> populatedProducts = new Set<Id>();
+        
+        for (ContentVersion cv : cvs) {
+            List<Id> prods = docToProdsMap.get(cv.ContentDocumentId);
+            if (prods != null) {
+                for (Id prodId : prods) {
+                    if (!populatedProducts.contains(prodId)) {
+                        String downloadUrl = '/sfc/servlet.shepherd/version/download/' + cv.Id;
+                        productToImageMap.put(prodId, downloadUrl);
+                        populatedProducts.add(prodId);
+                    }
+                }
+            }
+        }
+        
+        return productToImageMap;
     }
 
     @TestVisible

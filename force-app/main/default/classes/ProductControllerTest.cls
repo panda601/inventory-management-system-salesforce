@@ -64,4 +64,87 @@ public class ProductControllerTest {
             System.assertNotEquals(null, ProductController.getProducts('Test', 'Electronics'));
         }
     }
+
+    @isTest
+    static void testProductImageFeatures() {
+        InventoryTestSupport.TestUsers users = InventoryTestSupport.createUsers();
+        InventoryTestSupport.SeedData data = InventoryTestSupport.seedCoreData(users);
+
+        System.runAs(users.adminUser) {
+            System.assertEquals(true, ProductImageController.isProductImageAdmin(), 'Admin user must be an image admin.');
+
+            ContentVersion cv = new ContentVersion(
+                Title = 'Product Image File',
+                PathOnClient = 'image.png',
+                VersionData = Blob.valueOf('Fake image binary data'),
+                IsMajorVersion = true
+            );
+            insert cv;
+
+            Id docId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id].ContentDocumentId;
+
+            ContentDocumentLink cdl = new ContentDocumentLink(
+                LinkedEntityId = data.productId,
+                ContentDocumentId = docId,
+                ShareType = 'V'
+            );
+            insert cdl;
+
+            Map<Id, String> fileUrls = ProductController.getProductImageUrls(new List<Id>{data.productId});
+            System.assertNotEquals(null, fileUrls.get(data.productId), 'File URL should be mapped for the product.');
+            System.assert(fileUrls.get(data.productId).contains(cv.Id), 'File URL should contain ContentVersion ID.');
+
+            List<Product__c> prods = ProductController.getProducts('Test', 'Electronics');
+            System.assert(prods.size() > 0);
+            System.assert(prods[0].Product_Image__c.contains('/sfc/servlet.shepherd/version/download/'), 'Image URL should be overwritten by Salesforce File.');
+
+            Product__c prodDetail = ProductController.getProductDetail(data.productId);
+            System.assert(prodDetail.Product_Image__c.contains('/sfc/servlet.shepherd/version/download/'), 'Image URL in details should be overwritten.');
+
+            ContentVersion cvNew = new ContentVersion(
+                Title = 'New Product Image File',
+                PathOnClient = 'new_image.jpg',
+                VersionData = Blob.valueOf('Fake new image binary data'),
+                IsMajorVersion = true
+            );
+            insert cvNew;
+
+            Id newDocId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cvNew.Id].ContentDocumentId;
+
+            ContentDocumentLink cdlNew = new ContentDocumentLink(
+                LinkedEntityId = data.productId,
+                ContentDocumentId = newDocId,
+                ShareType = 'V'
+            );
+            insert cdlNew;
+
+            ProductImageController.deleteOldImages(data.productId, newDocId);
+
+            List<ContentDocument> remainingDocs = [SELECT Id FROM ContentDocument WHERE Id = :docId];
+            System.assertEquals(0, remainingDocs.size(), 'Replaced image document should be deleted.');
+
+            ProductImageController.deleteProductImage(data.productId);
+
+            List<ContentDocument> allDocs = [SELECT Id FROM ContentDocument WHERE Id = :newDocId];
+            System.assertEquals(0, allDocs.size(), 'Deleted image document should be deleted.');
+        }
+
+        System.runAs(users.salesUser) {
+            System.assertEquals(false, ProductImageController.isProductImageAdmin(), 'Sales Executive must not be an image admin.');
+
+            try {
+                ProductImageController.deleteProductImage(data.productId);
+                System.assert(false, 'Sales Executive must be blocked from deleting.');
+            } catch (AuraHandledException e) {
+                System.assert(true);
+            }
+
+            try {
+                ProductImageController.deleteOldImages(data.productId, '069000000000000AAA');
+                System.assert(false, 'Sales Executive must be blocked from replacing.');
+            } catch (AuraHandledException e) {
+                System.assert(true);
+            }
+        }
+    }
 }
