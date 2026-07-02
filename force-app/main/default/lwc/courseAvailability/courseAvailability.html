@@ -1,0 +1,209 @@
+<template>
+    <div class="courses-container">
+        <!-- Header Controls (Visible only on Catalog list view) -->
+        <template if:false={showDetailPage}>
+            <div class="slds-grid slds-wrap slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_medium header-wrapper">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <h3 class="courses-title">Course Catalog</h3>
+                    <p class="courses-subtitle">Select your academic program to begin registration.</p>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 controls-group">
+                    <div class="search-input-wrapper">
+                        <lightning-input 
+                            type="search" 
+                            variant="label-hidden" 
+                            placeholder="Search programs..." 
+                            value={searchKey}
+                            onchange={handleSearchChange}
+                            class="search-bar">
+                        </lightning-input>
+                    </div>
+                    <lightning-button-icon 
+                        icon-name="utility:refresh" 
+                        variant="border-filled" 
+                        alternative-text="Refresh Catalog" 
+                        title="Refresh Catalog"
+                        onclick={handleRefresh}
+                        class="slds-m-left_small refresh-btn">
+                    </lightning-button-icon>
+                </div>
+            </div>
+
+            <!-- Program Type Pills -->
+            <div class="filter-pill-row slds-m-bottom_medium">
+                <template for:each={typeOptions} for:item="opt">
+                    <button
+                        key={opt.value}
+                        data-value={opt.value}
+                        class={opt.pillClass}
+                        onclick={handleTypeChange}>
+                        {opt.label}
+                    </button>
+                </template>
+            </div>
+
+            <!-- Stored Course Banner (Visual confirmation of STEP 4) -->
+            <template if:true={storedCourseId}>
+                <div class="stored-course-banner slds-m-bottom_medium" role="alert">
+                    <lightning-icon icon-name="utility:check" size="xx-small" class="slds-m-right_x-small banner-icon"></lightning-icon>
+                    <span>Stored Selection ID: <strong>{storedCourseId}</strong></span>
+                </div>
+            </template>
+        </template>
+
+        <!-- Spinner Loading State -->
+        <template if:true={isLoading}>
+            <div class="spinner-container">
+                <lightning-spinner alternative-text="Updating course catalog..." size="medium" variant="brand"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Catalog List View -->
+        <template if:false={showDetailPage}>
+            <template if:true={hasCourses}>
+                <div class="course-grid-container">
+                    <template for:each={filteredCourses} for:item="c">
+                        <!-- Compact Course Card -->
+                        <article key={c.id} class="course-card-compact">
+                            <div class="card-header">
+                                <span class="course-code">{c.code}</span>
+                                <span class={c.availabilityClass}>{c.remaining} Seats Available</span>
+                            </div>
+
+                            <h4 class="course-title">{c.name}</h4>
+
+                            <!-- Compact Metrics -->
+                            <div class="compact-metrics">
+                                <div class="metric-item">
+                                    <lightning-icon icon-name="utility:clock" size="xx-small" class="metric-icon"></lightning-icon>
+                                    <span class="metric-value">{c.duration}</span>
+                                </div>
+                                <div class="metric-item">
+                                    <lightning-icon icon-name="utility:event" size="xx-small" class="metric-icon"></lightning-icon>
+                                    <span class="metric-value">{c.totalSemesters}</span>
+                                </div>
+                                <div class="metric-item font-bold">
+                                    <lightning-icon icon-name="utility:money" size="xx-small" class="metric-icon fee-icon"></lightning-icon>
+                                    <span class="fee-text">${c.formattedFees}</span>
+                                </div>
+                            </div>
+
+                            <!-- Card Action Buttons -->
+                            <div class="action-buttons-row">
+                                <button class="details-link-btn" data-id={c.id} onclick={handleOpenDetails}>
+                                    View Details
+                                </button>
+                            </div>
+                        </article>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Empty State -->
+            <template if:false={hasCourses}>
+                <div class="empty-state">
+                    <lightning-icon icon-name="utility:search" size="large" class="empty-icon"></lightning-icon>
+                    <h4>No courses found</h4>
+                    <p>Try adjusting your search terms or filters.</p>
+                </div>
+            </template>
+        </template>
+
+        <!-- Dedicated Course Detail Page view -->
+        <template if:true={showDetailPage}>
+            <div class="detail-page-container animate-slide-up">
+                <!-- Back Navigation -->
+                <div class="slds-m-bottom_medium">
+                    <button class="back-btn" onclick={handleCloseDetails}>
+                        <lightning-icon icon-name="utility:back" size="xx-small" class="back-icon slds-m-right_xx-small"></lightning-icon>
+                        Back to Catalog
+                    </button>
+                </div>
+
+                <!-- Section 1: Name, Icon/Image, Description -->
+                <div class="detail-section slds-m-bottom_medium text-center">
+                    <div class="icon-container slds-m-bottom_small">
+                        <lightning-icon icon-name={selectedCourse.icon} size="large" class="course-header-icon"></lightning-icon>
+                    </div>
+                    <h2 class="detail-course-name">{selectedCourse.name}</h2>
+                    <div class="slds-m-top_x-small detail-badges">
+                        <span class="detail-badge code-badge">{selectedCourse.code}</span>
+                        <span class="detail-badge type-badge">{selectedCourse.type}</span>
+                    </div>
+                    <p class="detail-description slds-m-top_medium">{selectedCourse.description}</p>
+                </div>
+
+                <!-- Section 2: Eligibility, Duration, Total Semesters -->
+                <div class="detail-section slds-m-bottom_medium">
+                    <h3 class="detail-section-title">Program Specifications</h3>
+                    <div class="quick-facts-grid slds-m-top_small">
+                        <div class="fact-card">
+                            <span class="fact-label">Duration</span>
+                            <span class="fact-value">{selectedCourse.duration}</span>
+                        </div>
+                        <div class="fact-card">
+                            <span class="fact-label">Total Semesters</span>
+                            <span class="fact-value">{selectedCourse.totalSemesters}</span>
+                        </div>
+                        <div class="fact-card full-width-fact">
+                            <span class="fact-label">Eligibility Criteria</span>
+                            <span class="fact-value">{selectedCourse.eligibility}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Semester Structure -->
+                <div class="detail-section slds-m-bottom_medium">
+                    <h3 class="detail-section-title">Semester Structure</h3>
+                    <div class="semester-structure-box slds-m-top_small">
+                        <p class="structure-desc slds-m-bottom_small">{selectedCourse.semesterStructure}</p>
+                        <div class="semester-pills-flow">
+                            <template for:each={selectedCourse.semesterList} for:item="sem">
+                                <span key={sem} class="semester-pill">{sem}</span>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Total Fee & Fee Per Semester -->
+                <div class="detail-section slds-m-bottom_medium">
+                    <h3 class="detail-section-title">Financial Summary</h3>
+                    <div class="financial-cards-grid slds-m-top_small">
+                        <div class="fee-card total-fee">
+                            <span class="fee-label">Total Fee</span>
+                            <span class="fee-value">${selectedCourse.formattedFees}</span>
+                        </div>
+                        <div class="fee-card semester-fee">
+                            <span class="fee-label">Fee Per Semester</span>
+                            <span class="fee-value">${selectedCourse.formattedFeePerSemester}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 5: Career Opportunities -->
+                <div class="detail-section slds-m-bottom_large">
+                    <h3 class="detail-section-title">Career Opportunities</h3>
+                    <p class="career-text slds-m-top_small">{selectedCourse.careerPath}</p>
+                </div>
+
+                <!-- Apply Now Action Area at the bottom -->
+                <div class="detail-action-footer slds-m-top_large">
+                    <template if:true={applySuccess}>
+                        <div class="success-message slds-m-bottom_small" role="alert">
+                            <lightning-icon icon-name="utility:success" size="x-small" variant="success" class="slds-m-right_xx-small"></lightning-icon>
+                            Selection Saved! Course ID: <strong>{storedCourseId}</strong>
+                        </div>
+                    </template>
+                    
+                    <button 
+                        class="apply-btn-detail" 
+                        disabled={selectedCourse.isFull}
+                        onclick={handleApplyNow}>
+                        <template if:true={selectedCourse.isFull}>Course Full</template>
+                        <template if:false={selectedCourse.isFull}>Apply Now</template>
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

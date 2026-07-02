@@ -1,0 +1,401 @@
+/* Main Container styling */
+.tracker-container {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02);
+}
+
+/* Header Typography */
+.tracker-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 2px 0;
+}
+
+.tracker-subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0;
+}
+
+.app-number {
+    font-weight: 700;
+    color: #1B365D;
+}
+
+.current-badge {
+    background-color: #f1f5f9;
+    color: #334155;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+}
+
+/* Progress Timeline UI */
+.timeline-container {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    overflow-x: auto;
+}
+
+.timeline-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    width: 100%;
+    min-width: max-content;
+    padding: 0 32px;
+    box-sizing: border-box;
+}
+
+.timeline-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    text-align: center;
+    min-width: 104px;
+}
+
+/* Connective lines between circles */
+.timeline-step .step-line-before,
+.timeline-step .step-line-after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    height: 3px;
+    background-color: #cbd5e1;
+    z-index: 1;
+}
+
+.timeline-step .step-line-before {
+    left: 0;
+    width: 50%;
+}
+
+.timeline-step .step-line-after {
+    right: 0;
+    width: 50%;
+}
+
+/* Hide outer ends of line */
+.timeline-step:first-child .step-line-before {
+    display: none;
+}
+
+.timeline-step:last-child .step-line-after {
+    display: none;
+}
+
+.step-circle-wrapper {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 8px;
+}
+
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 3px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.step-text-container {
+    padding: 0 4px;
+}
+
+.step-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    margin: 0 0 2px 0;
+}
+
+.step-status-tag {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+/* Completed Step colors */
+.timeline-step.step-completed .step-circle {
+    background-color: #10b981;
+    border-color: #10b981;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+}
+
+.timeline-step.step-completed .step-line-before,
+.timeline-step.step-completed .step-line-after {
+    background-color: #10b981;
+}
+
+.timeline-step.step-completed .step-label {
+    color: #0f172a;
+}
+
+.timeline-step.step-completed .step-status-tag {
+    color: #10b981;
+}
+
+/* Active Step colors */
+.timeline-step.step-active .step-circle {
+    background-color: #ffffff;
+    border-color: #1B365D;
+    box-shadow: 0 4px 12px rgba(27, 54, 93, 0.15);
+}
+
+.timeline-step.step-active .step-line-before {
+    background-color: #10b981;
+}
+
+.timeline-step.step-active .step-label {
+    color: #1B365D;
+}
+
+.timeline-step.step-active .step-status-tag {
+    color: #1B365D;
+}
+
+.timeline-step.step-active .step-circle lightning-icon {
+    --slds-c-icon-color-foreground: #1B365D;
+}
+
+/* Pending Step colors */
+.timeline-step.step-pending .step-circle lightning-icon {
+    --slds-c-icon-color-foreground: #94a3b8;
+}
+
+/* Rejected Step colors */
+.timeline-step.step-rejected .step-circle {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+}
+
+.timeline-step.step-rejected .step-label {
+    color: #b91c1c;
+}
+
+.timeline-step.step-rejected .step-status-tag {
+    color: #ef4444;
+}
+
+.timeline-step.step-rejected .step-circle lightning-icon {
+    --slds-c-icon-color-foreground: #ffffff;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+    .timeline-row {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 20px;
+    }
+    
+    .timeline-step {
+        flex-direction: row;
+        text-align: left;
+        min-width: 100%;
+        margin-bottom: 24px;
+        padding-left: 50px;
+    }
+    
+    .timeline-step:last-child {
+        margin-bottom: 0;
+    }
+    
+    .timeline-step .step-circle-wrapper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        margin-bottom: 0;
+    }
+    
+    .timeline-step .step-line-before,
+    .timeline-step .step-line-after {
+        left: 18px;
+        width: 3px;
+        height: 50%;
+        top: auto;
+    }
+    
+    .timeline-step .step-line-before {
+        top: 0;
+        height: 20px;
+    }
+    
+    .timeline-step .step-line-after {
+        top: 40px;
+        height: calc(100% + 24px);
+    }
+}
+
+/* Warning Rejection Banner */
+.rejection-banner {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    padding: 16px 20px;
+}
+
+.rejection-banner lightning-icon {
+    --slds-c-icon-color-foreground: #ef4444;
+}
+
+.rejection-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #991b1b;
+    margin: 0 0 2px 0;
+}
+
+.rejection-desc {
+    font-size: 13px;
+    color: #b91c1c;
+    margin: 0;
+}
+
+/* Info detail Cards */
+.info-card {
+    background-color: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    padding: 20px;
+    height: 100%;
+}
+
+.status-header-text {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.text-primary {
+    color: #4f46e5;
+}
+
+.text-approved {
+    color: #10b981;
+}
+
+.text-rejected {
+    color: #ef4444;
+}
+
+.status-desc-text {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Checklist Side Card */
+.sub-status-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    height: 100%;
+}
+
+.sub-status-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 8px;
+}
+
+.checklist-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.checklist-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f8fafc;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.checklist-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.checklist-label {
+    font-size: 13px;
+    color: #475569;
+    font-weight: 500;
+}
+
+/* Checklists Custom Badges */
+.badge-success {
+    background-color: #dcfce7;
+    color: #166534;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.badge-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.badge-info {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.badge-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}

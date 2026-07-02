@@ -1,0 +1,371 @@
+<template>
+    <div class="wizard-container">
+        <!-- Progress Stepper -->
+        <template if:false={isSuccessStep}>
+            <div class="slds-m-bottom_xx-large stepper-container">
+                <div class="stepper-bar">
+                    <template for:each={stepperSteps} for:item="step">
+                        <div key={step.label} class="step-wrapper-item" style={step.wrapperStyle}>
+                            <div class={step.itemClass}>
+                                <div class="step-circle">{step.circle}</div>
+                                <span class="step-label">{step.label}</span>
+                            </div>
+                            <template if:true={step.showLine}>
+                                <div class={step.lineClass} style="flex: 1; height: 3px; margin: 0 12px; margin-top: -18px;"></div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+        <!-- Loading overlay -->
+        <template if:true={isLoading}>
+            <div class="spinner-overlay">
+                <lightning-spinner alternative-text="Processing..." size="medium" variant="brand"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- STEP 1: Personal Info -->
+        <template if:true={isStepOne}>
+            <div class="step-card">
+                <div class="step-header text-center">
+                    <div class="step-icon-container">
+                        <lightning-icon icon-name="utility:user" size="medium" class="step-header-icon"></lightning-icon>
+                    </div>
+                    <h2 class="step-title slds-m-top_small">Personal Information</h2>
+                    <p class="step-subtitle">Please enter your personal details to begin the application.</p>
+                    <template if:true={selectedCourseName}>
+                        <div class="selected-course-badge slds-m-top_small">
+                            Selected Course: <strong>{selectedCourseName}</strong>
+                        </div>
+                    </template>
+                </div>
+                <div class="step-content">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_medium">
+                            <lightning-input 
+                                label="First Name" 
+                                name="firstName" 
+                                value={firstName} 
+                                required 
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_medium">
+                            <lightning-input 
+                                label="Last Name" 
+                                name="lastName" 
+                                value={lastName} 
+                                required 
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_medium">
+                            <lightning-input 
+                                type="email" 
+                                label="Email Address" 
+                                name="email" 
+                                value={email} 
+                                required 
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_medium">
+                            <lightning-input 
+                                type="tel" 
+                                label="Phone Number" 
+                                name="phone" 
+                                value={phone} 
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_medium">
+                            <lightning-input 
+                                type="date" 
+                                label="Date of Birth" 
+                                name="dob" 
+                                value={dob} 
+                                required 
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+                            <lightning-textarea 
+                                label="Address" 
+                                name="address" 
+                                value={address} 
+                                required 
+                                onchange={handleInputChange}>
+                            </lightning-textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-footer">
+                    <lightning-button label="Cancel" onclick={handleClose} class="slds-m-right_small"></lightning-button>
+                    <lightning-button label="Next" variant="brand" onclick={goToStepTwo} class="action-button-brand"></lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <!-- STEP 2: Document Upload -->
+        <template if:true={isStepTwo}>
+            <div class="step-card">
+                <div class="step-header text-center">
+                    <div class="step-icon-container">
+                        <lightning-icon icon-name="utility:upload" size="medium" class="step-header-icon"></lightning-icon>
+                    </div>
+                    <h2 class="step-title slds-m-top_small">Upload Documents</h2>
+                    <p class="step-subtitle">Upload the required documentation to support your application.</p>
+                </div>
+                <div class="step-content">
+                    <template if:true={applicationName}>
+                        <div class="slds-m-bottom_large draft-info-banner">
+                            <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_small info-icon"></lightning-icon>
+                            <div>
+                                <strong>Draft Saved:</strong> Application reference: <strong>{applicationName}</strong>.
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Overall Upload Progress Bar -->
+                    <div class="slds-m-bottom_large upload-progress-card">
+                        <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                            <span class="progress-title">Overall Upload Progress</span>
+                            <span class="progress-ratio">{uploadedCount} of {totalRequiredCount} Uploaded</span>
+                        </div>
+                        <lightning-progress-bar value={uploadProgressPercent} size="medium" variant="circular"></lightning-progress-bar>
+                    </div>
+
+                    <div class="document-list">
+                        <template for:each={documents} for:item="doc">
+                            <div key={doc.type} class="document-row">
+                                <div class="document-row-info">
+                                    <div class="document-name-section">
+                                        <template if:true={doc.uploaded}>
+                                            <div class="preview-thumbnail-container">
+                                                <template if:true={doc.isImage}>
+                                                    <img src={doc.previewUrl} alt={doc.type} class="inline-thumbnail"/>
+                                                </template>
+                                                <template if:false={doc.isImage}>
+                                                    <div class="pdf-icon-wrapper">
+                                                        <lightning-icon icon-name="doctype:pdf" size="medium"></lightning-icon>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                        <template if:false={doc.uploaded}>
+                                            <div class="status-icon-pending">
+                                                <lightning-icon icon-name="utility:open_folder" variant="warning" size="x-small"></lightning-icon>
+                                            </div>
+                                        </template>
+                                        <div class="slds-m-left_small document-details">
+                                            <div class="doc-header-row slds-grid slds-grid_vertical-align-center">
+                                                <span class="doc-title">{doc.type}</span>
+                                                <template if:true={doc.uploaded}>
+                                                    <span class={doc.badgeClass}>{doc.verificationStatus}</span>
+                                                </template>
+                                            </div>
+                                            <template if:true={doc.uploaded}>
+                                                <div class="uploaded-file-info slds-m-top_xx-small">
+                                                    <a href={doc.previewUrl} target="_blank" class="download-link slds-grid slds-grid_vertical-align-center">
+                                                        <lightning-icon icon-name="utility:download" size="xx-small" class="slds-m-right_xx-small download-icon"></lightning-icon>
+                                                        <span class="doc-filename">{doc.fileName}</span>
+                                                    </a>
+                                                </div>
+                                            </template>
+                                            <template if:false={doc.uploaded}>
+                                                <p class="doc-required-tag">Required document</p>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="document-row-action">
+                                    <template if:true={hasValidApplicationId}>
+                                        <lightning-file-upload
+                                            label={doc.label}
+                                            name={doc.type}
+                                            accept={acceptedFormats}
+                                            record-id={applicationId}
+                                            onuploadfinished={handleUploadFinished}
+                                            data-type={doc.type}
+                                            class="file-uploader">
+                                        </lightning-file-upload>
+                                    </template>
+                                    <template if:false={hasValidApplicationId}>
+                                        <lightning-button label="Preparing Upload" disabled></lightning-button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                <div class="step-footer">
+                    <lightning-button label="Back" onclick={goBackToStepOne} class="slds-m-right_small"></lightning-button>
+                    <lightning-button label="Next" variant="brand" onclick={goToStepThree} class="action-button-brand"></lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <!-- STEP 3: Review Details -->
+        <template if:true={isStepThree}>
+            <div class="step-card">
+                <div class="step-header text-center">
+                    <div class="step-icon-container">
+                        <lightning-icon icon-name="utility:preview" size="medium" class="step-header-icon"></lightning-icon>
+                    </div>
+                    <h2 class="step-title slds-m-top_small">Review Application</h2>
+                    <p class="step-subtitle">Review all your information carefully before proceeding to payment.</p>
+                </div>
+                <div class="step-content">
+                    <!-- Application Summary Overview Section -->
+                    <div class="slds-box slds-m-bottom_medium university-summary-box">
+                        <div class="slds-grid slds-grid_vertical-align-center">
+                            <lightning-icon icon-name="utility:education" size="small" class="slds-m-right_small summary-box-icon"></lightning-icon>
+                            <div>
+                                <h3 class="summary-box-title">Application Reference: <strong>{applicationName}</strong></h3>
+                                <p class="summary-box-desc">Status: Draft (Pending Submission)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <lightning-accordion allow-multiple-sections-open active-section-name="personal">
+                        <!-- Applicant Summary -->
+                        <lightning-accordion-section name="personal" label="Personal Details">
+                            <div class="slds-grid slds-wrap review-grid">
+                                <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                    <span class="review-label">Name</span>
+                                    <span class="review-value">{firstName} {lastName}</span>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                    <span class="review-label">Email Address</span>
+                                    <span class="review-value">{email}</span>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                    <span class="review-label">Phone Number</span>
+                                    <span class="review-value">{phone}</span>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                    <span class="review-label">Date of Birth</span>
+                                    <span class="review-value">{dob}</span>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-m-bottom_small">
+                                    <span class="review-label">Address</span>
+                                    <span class="review-value">{address}</span>
+                                </div>
+                            </div>
+                        </lightning-accordion-section>
+  
+                        <!-- Selected Course Summary -->
+                        <lightning-accordion-section name="course" label="Selected Program">
+                            <div class="course-summary-card">
+                                <span class="course-code">{selectedCourseCode}</span>
+                                <h4 class="course-name">{selectedCourseName}</h4>
+                                <p class="course-fees-summary">Course Tuition: <strong>${selectedCourseFees}</strong></p>
+                            </div>
+                        </lightning-accordion-section>
+  
+                        <!-- Uploaded Documents Summary -->
+                        <lightning-accordion-section name="files" label="Uploaded Files">
+                            <div class="slds-grid slds-wrap review-docs">
+                                <template for:each={documents} for:item="doc">
+                                    <div key={doc.type} class="slds-col slds-size_1-of-1 slds-m-bottom_small review-doc-item">
+                                        <lightning-icon icon-name="utility:attach" size="xx-small" class="slds-m-right_x-small"></lightning-icon>
+                                        <span class="bold-text">{doc.type}:</span>
+                                        <span class="slds-m-left_x-small secondary-text">{doc.fileName} <template if:true={doc.uploaded}>(Uploaded)</template></span>
+                                    </div>
+                                </template>
+                            </div>
+                        </lightning-accordion-section>
+                    </lightning-accordion>
+                </div>
+                <div class="step-footer">
+                    <lightning-button label="Back" onclick={goBackToStepTwo} class="slds-m-right_small"></lightning-button>
+                    <lightning-button label="Proceed to Payment" variant="brand" onclick={goToStepPayment} class="action-button-brand"></lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <!-- STEP 4: Payment -->
+        <template if:true={isStepPayment}>
+            <div class="step-card animate-fade-in">
+                <div class="step-header text-center">
+                    <div class="step-icon-container">
+                        <lightning-icon icon-name="utility:money" size="medium" class="step-header-icon"></lightning-icon>
+                    </div>
+                    <h2 class="step-title slds-m-top_small">Tuition Fee Payment</h2>
+                    <p class="step-subtitle">Please select a payment method and submit to complete your enrollment.</p>
+                </div>
+                <div class="step-content">
+                    <div class="slds-m-bottom_large draft-info-banner">
+                        <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_small info-icon"></lightning-icon>
+                        <div>
+                            <strong>Course:</strong> {selectedCourseName} ({selectedCourseCode})
+                        </div>
+                    </div>
+                    
+                    <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center payment-box" style="max-width: 500px; margin: 0 auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
+                        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium slds-text-align_center">
+                            <span class="payment-box-label" style="display: block; font-weight: 600; color: #64748b; font-size: 13px; text-transform: uppercase;">Course Tuition Fee</span>
+                            <span class="payment-box-amount" style="color: #1b365d; font-weight: 800; font-size: 28px; display: block; margin-top: 4px;">${selectedCourseFees}</span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+                            <lightning-input
+                                type="number"
+                                label="Payment Amount"
+                                value={paymentAmount}
+                                formatter="currency"
+                                disabled
+                                class="slds-m-bottom_small">
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+                            <lightning-input
+                                type="text"
+                                label="Payment Status"
+                                value="Pending"
+                                disabled
+                                class="slds-m-bottom_small">
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+                            <lightning-combobox
+                                name="paymentMethod"
+                                label="Select Payment Method"
+                                value={paymentMethod}
+                                options={paymentMethodOptions}
+                                onchange={handlePaymentMethodChange}
+                                required>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-footer">
+                    <lightning-button label="Back" onclick={goBackToStepThree} class="slds-m-right_small"></lightning-button>
+                    <lightning-button label="Submit Application" variant="brand" onclick={handlePayAndSubmit} class="action-button-brand"></lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <!-- SUCCESS SCREEN -->
+        <template if:true={isSuccessStep}>
+            <div class="step-card success-card">
+                <div class="success-content">
+                    <div class="success-icon-badge">
+                        <lightning-icon icon-name="utility:like" variant="inverse" size="large"></lightning-icon>
+                    </div>
+                    <h2 class="success-title">{successTitle}</h2>
+                    <p class="success-message">
+                        {successMessage}
+                    </p>
+                    <lightning-button 
+                        label="Return to Dashboard" 
+                        variant="brand" 
+                        onclick={handleClose}
+                        class="action-button-brand success-finish-btn">
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

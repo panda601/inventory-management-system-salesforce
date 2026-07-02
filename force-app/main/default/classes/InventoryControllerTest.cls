@@ -199,4 +199,26 @@ public class InventoryControllerTest {
             }
         }
     }
+
+    @isTest
+    static void testGetSupplierDetail() {
+        InventoryTestSupport.TestUsers users = InventoryTestSupport.createUsers();
+        InventoryTestSupport.SeedData data = InventoryTestSupport.seedCoreData(users);
+
+        System.runAs(users.managerUser) {
+            InventoryController.SupplierDetailWrapper details = InventoryController.getSupplierDetail(data.supplierId);
+            System.assertNotEquals(null, details, 'Details wrapper should not be null.');
+            System.assertNotEquals(null, details.supplier, 'Supplier record should not be null.');
+            System.assertEquals(data.supplierId, details.supplier.Id, 'Supplier record Id should match.');
+            System.assert(details.purchaseOrders.size() > 0, 'Should have at least one purchase order.');
+            System.assert(details.productsSupplied.size() > 0, 'Should have at least one supplied product.');
+            
+            InventoryController.SupplierDetailWrapper nullDetails = InventoryController.getSupplierDetail(null);
+            System.assertEquals(null, nullDetails, 'Null recordId should return null details.');
+
+            Id fakeId = Id.valueOf('001000000000000AAA');
+            InventoryController.SupplierDetailWrapper fakeDetails = InventoryController.getSupplierDetail(fakeId);
+            System.assertEquals(null, fakeDetails, 'Fake recordId should return null.');
+        }
+    }
 }

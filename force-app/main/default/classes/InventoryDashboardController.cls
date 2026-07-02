@@ -46,6 +46,7 @@ public with sharing class InventoryDashboardController {
         @AuraEnabled public String productName {get;set;}
         @AuraEnabled public Decimal quantitySold {get;set;}
         @AuraEnabled public Decimal totalSales {get;set;}
+        @AuraEnabled public String productImage {get;set;}
     }
 
     // New Data Classes for Priority 2 & 4
@@ -64,6 +65,7 @@ public with sharing class InventoryDashboardController {
         @AuraEnabled public Decimal cost {get;set;}
         @AuraEnabled public Decimal profit {get;set;}
         @AuraEnabled public Decimal margin {get;set;}
+        @AuraEnabled public String productImage {get;set;}
     }
 
     public class InventoryHealthData {
@@ -336,6 +338,7 @@ public with sharing class InventoryDashboardController {
         if (Schema.sObjectType.Sales_Order_Item__c.isAccessible()) {
             List<AggregateResult> itemGroup = [
                 SELECT Product__r.Product_Name__c prodName, 
+                       MAX(Product__r.Product_Image__c) prodImg,
                        SUM(Quantity__c) totalQty, 
                        SUM(Line_Total__c) totalAmount
                 FROM Sales_Order_Item__c
@@ -350,6 +353,7 @@ public with sharing class InventoryDashboardController {
                 item.productName = ar.get('prodName') != null ? (String)ar.get('prodName') : 'Unknown';
                 item.quantitySold = ar.get('totalQty') != null ? (Decimal)ar.get('totalQty') : 0;
                 item.totalSales = ar.get('totalAmount') != null ? (Decimal)ar.get('totalAmount') : 0;
+                item.productImage = ar.get('prodImg') != null ? (String)ar.get('prodImg') : null;
                 summary.productSales.add(item);
             }
         }

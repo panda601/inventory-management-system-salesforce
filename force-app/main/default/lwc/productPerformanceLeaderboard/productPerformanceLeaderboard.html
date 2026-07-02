@@ -33,8 +33,13 @@
                                 <h3 class="box-title">Top Selling (Qty)</h3>
                                 <div class="leader-list">
                                     <template for:each={topSelling} for:item="item">
-                                        <div key={item.productName} class="leader-item">
-                                            <span class="product-name" title={item.productName}>{item.productName}</span>
+                                        <div key={item.productName} class="leader-item slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                                            <div class="slds-grid slds-grid_vertical-align-center">
+                                                <div class="product-img-container-mini slds-m-right_small">
+                                                    <img src={item.productImageSrc} alt={item.productName} class="product-thumbnail-mini" onerror={handleImageError} />
+                                                </div>
+                                                <span class="product-name" title={item.productName}>{item.productName}</span>
+                                            </div>
                                             <span class="score-badge positive">{item.quantitySold} units</span>
                                         </div>
                                     </template>
@@ -50,8 +55,13 @@
                                 <h3 class="box-title">Top Revenue ($)</h3>
                                 <div class="leader-list">
                                     <template for:each={topRevenue} for:item="item">
-                                        <div key={item.productName} class="leader-item">
-                                            <span class="product-name" title={item.productName}>{item.productName}</span>
+                                        <div key={item.productName} class="leader-item slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                                            <div class="slds-grid slds-grid_vertical-align-center">
+                                                <div class="product-img-container-mini slds-m-right_small">
+                                                    <img src={item.productImageSrc} alt={item.productName} class="product-thumbnail-mini" onerror={handleImageError} />
+                                                </div>
+                                                <span class="product-name" title={item.productName}>{item.productName}</span>
+                                            </div>
                                             <span class="score-badge revenue">
                                                 <lightning-formatted-number value={item.totalSales} format-style="currency" currency-code="USD"></lightning-formatted-number>
                                             </span>
@@ -69,8 +79,13 @@
                                 <h3 class="box-title">Least Selling (Qty)</h3>
                                 <div class="leader-list">
                                     <template for:each={leastSelling} for:item="item">
-                                        <div key={item.productName} class="leader-item">
-                                            <span class="product-name" title={item.productName}>{item.productName}</span>
+                                        <div key={item.productName} class="leader-item slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                                            <div class="slds-grid slds-grid_vertical-align-center">
+                                                <div class="product-img-container-mini slds-m-right_small">
+                                                    <img src={item.productImageSrc} alt={item.productName} class="product-thumbnail-mini" onerror={handleImageError} />
+                                                </div>
+                                                <span class="product-name" title={item.productName}>{item.productName}</span>
+                                            </div>
                                             <span class="score-badge negative">{item.quantitySold} units</span>
                                         </div>
                                     </template>

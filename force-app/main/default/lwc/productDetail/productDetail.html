@@ -11,7 +11,7 @@
                 <!-- Detail Header -->
                 <div class="detail-header slds-m-bottom_medium slds-text-align_center">
                     <div class="product-detail-img-wrapper slds-m-bottom_small">
-                        <img src={productImageSrc} alt={product.data.productName} class="product-detail-img" />
+                        <img src={productImageSrc} alt={product.data.productName} class="product-detail-img" onerror={handleImageError} />
                     </div>
                     <div class="product-detail-text-body">
                         <h2 class="detail-title slds-m-bottom_xx-small">

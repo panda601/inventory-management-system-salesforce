@@ -1,0 +1,790 @@
+<template>
+    <div class="dashboard-container">
+        <!-- Spinner Loading State -->
+        <template if:true={isLoading}>
+            <div class="spinner-overlay">
+                <lightning-spinner alternative-text="Refreshing dashboard data" size="medium" variant="brand"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- ==================== STATE 1: PORTAL LANDING ==================== -->
+        <template if:true={isPortalState}>
+            <!-- Welcome Banner -->
+            <div class="welcome-banner slds-m-bottom_large slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_8-of-12">
+                    <h1 class="welcome-title">Student Admission Portal</h1>
+                    <p class="welcome-subtitle">Explore academic programs, apply online, and track your enrollment journey.</p>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 header-actions slds-m-top_small slds-medium-m-top_none slds-text-align_right">
+                    <template if:true={latestApp}>
+                        <lightning-button 
+                            label="Go to My Dashboard" 
+                            variant="brand" 
+                            icon-name="utility:dashboard"
+                            class="action-button-brand"
+                            onclick={handleGoToDashboard}>
+                        </lightning-button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Quick Actions Section -->
+            <div class="section-container slds-m-bottom_large">
+                <h3 class="section-title slds-m-bottom_medium">Quick Actions</h3>
+                <div class="quick-actions-grid">
+                    <!-- Action 1: Browse Courses -->
+                    <div class="quick-action-card" onclick={handleNewApplication}>
+                        <div class="action-icon action-apply">
+                            <lightning-icon icon-name="utility:education" size="small"></lightning-icon>
+                        </div>
+                        <div class="action-details">
+                            <h4>Browse Courses</h4>
+                            <p>Explore available academic programs and view specifications.</p>
+                        </div>
+                    </div>
+
+                    <!-- Action 2: Track Application (Only visible if latestApp exists) -->
+                    <template if:true={latestApp}>
+                        <div class="quick-action-card" onclick={handleScrollToTracker}>
+                            <div class="action-icon action-track">
+                                <lightning-icon icon-name="utility:record" size="small"></lightning-icon>
+                            </div>
+                            <div class="action-details">
+                                <h4>Track Application</h4>
+                                <p>Check the status of your active application: {latestApp.Name}</p>
+                            </div>
+                        </div>
+
+                        <!-- Action 3: View Documents (Only visible if latestApp exists) -->
+                        <div class="quick-action-card" onclick={handleScrollViewDocuments}>
+                            <div class="action-icon action-docs">
+                                <lightning-icon icon-name="utility:file" size="small"></lightning-icon>
+                            </div>
+                            <div class="action-details">
+                                <h4>Uploaded Documents</h4>
+                                <p>Manage files and view verification status for your application.</p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- My Applications List Section -->
+            <div class="section-container slds-m-bottom_large">
+                <h3 class="section-title slds-m-bottom_medium">My Applications</h3>
+                <template if:true={hasApplications}>
+                    <div class="table-container slds-scrollable_x">
+                        <table class="slds-table slds-table_cell-buffer custom-table">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col"><div class="slds-truncate header-cell">Application No.</div></th>
+                                    <th scope="col"><div class="slds-truncate header-cell">Course</div></th>
+                                    <th scope="col"><div class="slds-truncate header-cell">Date Applied</div></th>
+                                    <th scope="col"><div class="slds-truncate header-cell">Status</div></th>
+                                    <th scope="col"><div class="slds-truncate header-cell">Action</div></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={applications} for:item="app">
+                                    <tr key={app.Id} class="table-row-hover">
+                                        <th scope="row">
+                                            <div class="slds-truncate app-number-cell">{app.Name}</div>
+                                        </th>
+                                        <td>
+                                            <div class="slds-truncate text-cell font-semibold">{app.Applied_Course__r.Name}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate text-cell secondary-text">{app.formattedDate}</div>
+                                        </td>
+                                        <td>
+                                            <span class={app.statusClass}>{app.Application_Status__c}</span>
+                                        </td>
+                                        <td>
+                                            <lightning-button 
+                                                label="Manage" 
+                                                variant="neutral" 
+                                                size="small"
+                                                onclick={handleGoToDashboard}>
+                                            </lightning-button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template if:false={hasApplications}>
+                    <div class="empty-state">
+                        <div class="empty-icon-wrapper">
+                            <lightning-icon icon-name="utility:file" size="large" class="empty-icon"></lightning-icon>
+                        </div>
+                        <h4>No Applications Yet</h4>
+                        <p>Browse the course catalog below and select a program to start your enrollment process.</p>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Course Catalog Grid Section -->
+            <div class="catalog-anchor section-container slds-m-bottom_large">
+                <h3 class="section-title slds-m-bottom_medium">Course Catalog</h3>
+                <template if:true={courses.length}>
+                    <div class="course-grid-container">
+                        <template for:each={courses} for:item="c">
+                            <!-- Compact Course Card -->
+                            <article key={c.id} class="course-card-compact">
+                                <div class="card-header">
+                                    <span class="course-code">{c.code}</span>
+                                    <span class={c.availabilityClass}>{c.remaining} Seats Left</span>
+                                </div>
+
+                                <h4 class="course-title">{c.name}</h4>
+
+                                <!-- Compact Metrics -->
+                                <div class="compact-metrics">
+                                    <div class="metric-item">
+                                        <lightning-icon icon-name="utility:clock" size="xx-small" class="metric-icon"></lightning-icon>
+                                        <span class="metric-value">{c.duration}</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <lightning-icon icon-name="utility:event" size="xx-small" class="metric-icon"></lightning-icon>
+                                        <span class="metric-value">{c.totalSemesters}</span>
+                                    </div>
+                                    <div class="metric-item font-bold">
+                                        <lightning-icon icon-name="utility:money" size="xx-small" class="metric-icon fee-icon"></lightning-icon>
+                                        <span class="fee-text">${c.formattedFees}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Card Action Buttons -->
+                                <div class="action-buttons-row">
+                                    <button class="details-link-btn" data-id={c.id} onclick={handleViewDetails}>
+                                        View Details
+                                    </button>
+                                </div>
+                            </article>
+                        </template>
+                    </div>
+                </template>
+                <template if:false={courses.length}>
+                    <div class="empty-state">
+                        <lightning-icon icon-name="utility:search" size="large" class="empty-icon"></lightning-icon>
+                        <h4>No Programs Found</h4>
+                        <p>There are no programs currently open for registration.</p>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- ==================== STATE 2: COURSE DETAILS ==================== -->
+        <template if:true={isDetailsState}>
+            <div class="detail-page-container animate-slide-up">
+                <!-- Back Navigation -->
+                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_medium">
+                    <button class="back-btn" onclick={handleCloseDetails}>
+                        <lightning-icon icon-name="utility:back" size="xx-small" class="back-icon slds-m-right_xx-small"></lightning-icon>
+                        Back to Catalog
+                    </button>
+                    <span class="detail-badge code-badge font-bold">{selectedCourse.code}</span>
+                </div>
+
+                <!-- Course Header Banner -->
+                <div class="welcome-banner slds-m-bottom_large slds-grid slds-grid_vertical-align-center">
+                    <div class="icon-container slds-m-right_large" style="border-color: #ffffff; background: rgba(255, 255, 255, 0.1); width: 54px; height: 54px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%;">
+                        <lightning-icon icon-name={selectedCourse.icon} size="large" class="course-header-icon" style="--lwc-colorTextIcon: #ffffff;"></lightning-icon>
+                    </div>
+                    <div>
+                        <h1 class="welcome-title">{selectedCourse.name}</h1>
+                        <p class="welcome-subtitle">{selectedCourse.type} Program • {selectedCourse.duration}</p>
+                    </div>
+                </div>
+
+                <!-- Two-Column Layout -->
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <!-- Left: Information Blocks -->
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_8-of-12">
+                        <!-- Overview -->
+                        <div class="section-container slds-m-bottom_large">
+                            <h3 class="detail-section-title">Program Description</h3>
+                            <p class="detail-description slds-m-top_small">{selectedCourse.description}</p>
+                            <p class="detail-description slds-m-top_small">{selectedCourse.overview}</p>
+                        </div>
+
+                        <!-- Specifications -->
+                        <div class="section-container slds-m-bottom_large">
+                            <h3 class="detail-section-title">Program Specifications</h3>
+                            <div class="quick-facts-grid slds-m-top_small">
+                                <div class="fact-card">
+                                    <span class="fact-label">Duration</span>
+                                    <span class="fact-value">{selectedCourse.duration}</span>
+                                </div>
+                                <div class="fact-card">
+                                    <span class="fact-label">Total Semesters</span>
+                                    <span class="fact-value">{selectedCourse.totalSemesters}</span>
+                                </div>
+                                <div class="fact-card full-width-fact">
+                                    <span class="fact-label">Eligibility Criteria</span>
+                                    <span class="fact-value">{selectedCourse.eligibility}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Semester Structure -->
+                        <div class="section-container slds-m-bottom_large">
+                            <h3 class="detail-section-title">Semester Structure</h3>
+                            <div class="semester-structure-box slds-m-top_small">
+                                <p class="structure-desc slds-m-bottom_small">{selectedCourse.semesterStructure}</p>
+                                <div class="semester-pills-flow">
+                                    <template for:each={selectedCourse.semesterList} for:item="sem">
+                                        <span key={sem} class="semester-pill">{sem}</span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Career Opportunities -->
+                        <div class="section-container slds-m-bottom_large">
+                            <h3 class="detail-section-title">Career Opportunities</h3>
+                            <p class="career-text slds-m-top_small">{selectedCourse.careerPath}</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Fee Block & Call To Action -->
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_4-of-12">
+                        <div class="section-container slds-m-bottom_large" style="border: 1px solid #cbd5e1; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+                            <h3 class="detail-section-title">Enrollment & Fees</h3>
+                            
+                            <div class="financial-cards-grid slds-m-top_small slds-m-bottom_large">
+                                <div class="fee-card total-fee">
+                                    <span class="fee-label">Total Fees</span>
+                                    <span class="fee-value">${selectedCourse.formattedFees}</span>
+                                </div>
+                                <div class="fee-card semester-fee">
+                                    <span class="fee-label">Per Semester</span>
+                                    <span class="fee-value">${selectedCourse.formattedFeePerSemester}</span>
+                                </div>
+                            </div>
+
+                            <div class="detail-grid slds-m-bottom_large">
+                                <div class="detail-row">
+                                    <span class="detail-label">Availability</span>
+                                    <span class={selectedCourse.availabilityClass} style="padding: 4px 10px; font-size: 11px;">{selectedCourse.remaining} Seats Left</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Capacity</span>
+                                    <span class="detail-value">{selectedCourse.capacity} Total Seats</span>
+                                </div>
+                            </div>
+
+                            <!-- Apply Now Action Button -->
+                            <button 
+                                class="apply-btn-detail" 
+                                disabled={selectedCourse.isFull}
+                                onclick={handleApplyNow}
+                                style="padding: 14px 20px; font-size: 14px; font-weight: 800; border-radius: 10px; width: 100%;">
+                                <template if:true={selectedCourse.isFull}>Course Full</template>
+                                <template if:false={selectedCourse.isFull}>Apply Now</template>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ==================== STATE 3: ADMISSION WIZARD ==================== -->
+        <template if:true={isWizardState}>
+            <div class="wizard-overlay slds-p-around_large animate-slide-up">
+                <div class="slds-grid slds-grid_align-spread slds-m-bottom_medium">
+                    <div>
+                        <h2 class="section-title" style="font-size: 20px;">Academic Application Wizard</h2>
+                        <template if:true={preselectedCourseName}>
+                            <p class="wizard-course-hint">Course: <strong>{preselectedCourseName}</strong></p>
+                        </template>
+                    </div>
+                    <lightning-button 
+                        label="Back to Dashboard" 
+                        variant="neutral" 
+                        icon-name="utility:back" 
+                        onclick={handleCloseWizard}>
+                    </lightning-button>
+                </div>
+                <div style="border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                    <c-application-wizard
+                        preselected-course-id={preselectedCourseId}
+                        preselected-course-type={preselectedCourseType}
+                        preselected-course-name={preselectedCourseName}
+                        preselected-course-code={preselectedCourseCode}
+                        preselected-course-fees={preselectedCourseFees}
+                        app-id={wizardAppId}
+                        payment-mode={paymentMode}
+                        onclosewizard={handleCloseWizard}>
+                    </c-application-wizard>
+                </div>
+            </div>
+        </template>
+
+        <!-- ==================== STATE 4: STUDENT DASHBOARD ==================== -->
+        <template if:true={isDashboardState}>
+            <!-- Admissions Operations Center Styled Title (Admin Theme Matching) -->
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_large header-wrapper">
+                <div>
+                    <h1 class="portal-title">Student Admission Portal</h1>
+                    <p class="portal-subtitle">Track your application progress, manage uploaded files, and review tuition records.</p>
+                </div>
+                <div class="header-actions">
+                    <lightning-button-icon 
+                        icon-name="utility:refresh" 
+                        variant="border-filled" 
+                        alternative-text="Refresh Dashboard" 
+                        title="Refresh Dashboard"
+                        class="slds-m-right_small refresh-btn"
+                        onclick={handleRefresh}>
+                    </lightning-button-icon>
+                    <lightning-button 
+                        label="Back to Portal" 
+                        variant="neutral" 
+                        icon-name="utility:home"
+                        onclick={handleGoToPortal}
+                        style="--slds-c-button-neutral-color-background: #ffffff; --slds-c-button-neutral-color-border: #cbd5e1; --slds-c-button-neutral-color-text: #475569;">
+                    </lightning-button>
+                </div>
+            </div>
+
+            <template if:true={latestApp}>
+                <!-- KPI Board (4 cards, Admin layout style) -->
+                <div class="kpi-grid-container slds-m-bottom_large">
+                    <!-- Application Status KPI -->
+                    <div class="kpi-card card-total">
+                        <div class="kpi-icon-container">
+                            <lightning-icon icon-name="utility:survey" variant="inverse" size="small"></lightning-icon>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Application Status</span>
+                            <h2 class="kpi-value" style="font-size: 18px;">{latestApp.Application_Status__c}</h2>
+                        </div>
+                    </div>
+
+                    <!-- Document Status KPI -->
+                    <div class="kpi-card card-backlog">
+                        <div class="kpi-icon-container">
+                            <lightning-icon icon-name="utility:open_folder" variant="inverse" size="small"></lightning-icon>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Document Status</span>
+                            <h2 class="kpi-value" style="font-size: 18px;">{latestApp.Document_Status__c}</h2>
+                        </div>
+                    </div>
+
+                    <!-- Tuition Paid KPI -->
+                    <div class="kpi-card card-approved">
+                        <div class="kpi-icon-container">
+                            <lightning-icon icon-name="utility:money" variant="inverse" size="small"></lightning-icon>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Tuition Paid</span>
+                            <h2 class="kpi-value" style="font-size: 18px;">${formattedPaidAmount}</h2>
+                        </div>
+                    </div>
+
+                    <!-- Payment Status KPI -->
+                    <div class="kpi-card card-pending">
+                        <div class="kpi-icon-container">
+                            <lightning-icon icon-name="utility:clock" variant="inverse" size="small"></lightning-icon>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Payment Status</span>
+                            <h2 class="kpi-value" style="font-size: 18px;">{paymentStatusLabel}</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 1 & Section 8 Grid (Profile Card & Notifications) -->
+                <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_large">
+                    <!-- Left: Profile Card (Section 1) -->
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                        <div class="panel-box" style="height: 100%;">
+                            <div class="panel-header slds-m-bottom_medium">
+                                <h3 class="panel-title">Student Profile Card</h3>
+                                <p class="panel-subtitle">Personal and academic identification details.</p>
+                            </div>
+                            <div class="slds-media slds-media_center slds-m-bottom_medium slds-m-top_small">
+                                <div class="slds-media__figure">
+                                    <div class="icon-container" style="width: 44px; height: 44px; background-color: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <lightning-icon icon-name="utility:user" size="small" style="--lwc-colorTextIcon: #1b365d;"></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="profile-name" style="font-size: 16px; font-weight: 800; color: #1B365D;">{studentName}</h2>
+                                    <p style="font-size: 11px; color: #64748b;">Registered Portal Student</p>
+                                </div>
+                            </div>
+                            <div class="detail-grid">
+                                <div class="detail-row">
+                                    <span class="detail-label">Application Number</span>
+                                    <span class="detail-value font-semibold">{latestApp.Name}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Course Name</span>
+                                    <span class="detail-value font-semibold">{latestApp.Applied_Course__r.Name}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Record Type</span>
+                                    <span class="detail-value font-semibold">{latestApp.RecordType.Name}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Notifications (Section 8) -->
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                        <div class="panel-box" style="height: 100%;">
+                            <div class="panel-header slds-m-bottom_medium">
+                                <h3 class="panel-title">System Notifications</h3>
+                                <p class="panel-subtitle">Real-time status updates and action items.</p>
+                            </div>
+                            <div class="slds-m-top_small" style="max-height: 160px; overflow-y: auto;">
+                                <template for:each={notifications} for:item="note">
+                                    <div key={note.id} class="slds-media slds-media_center slds-p-vertical_small" style="border-bottom: 1px solid #f1f5f9;">
+                                        <div class="slds-media__figure">
+                                            <lightning-icon icon-name={note.icon} size="small" class={note.iconClass}></lightning-icon>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p style="font-size: 12px; font-weight: 700; color: #334155; margin:0;">{note.title}</p>
+                                            <p style="font-size: 11px; color: #64748b; margin:0;">{note.message}</p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scoped Tabset to prevent excessive scrolling -->
+                <lightning-tabset variant="scoped" active-tab-value={activeTab}>
+                    <!-- TAB 1: OVERVIEW & TRACKER (Section 2) -->
+                    <lightning-tab label="Overview" value="overview" onactive={handleTabActive}>
+                        <!-- Section 2: Application Tracker -->
+                        <div class="section-container slds-m-top_medium slds-m-bottom_large">
+                            <div class="slds-grid slds-wrap slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_medium">
+                                <div>
+                                    <h3 class="section-title">Application Tracker</h3>
+                                    <p class="portal-subtitle">Tracking <strong>{latestApp.Name}</strong> for <strong>{latestApp.Applied_Course__r.Name}</strong></p>
+                                </div>
+                                <div class="tracker-metrics slds-grid slds-wrap slds-grid_vertical-align-center slds-m-top_small">
+                                    <div class="slds-m-right_medium">
+                                        <span class="metric-label">Current Stage: </span>
+                                        <span class={latestApp.statusClass}>{currentStage}</span>
+                                    </div>
+                                    <div class="slds-m-right_medium">
+                                        <span class="metric-label">Progress: </span>
+                                        <span class="metric-value font-semibold">{progressPercent}%</span>
+                                    </div>
+                                    <div>
+                                        <span class="metric-label">Last Updated: </span>
+                                        <span class="metric-value font-semibold">{lastUpdated}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Status Timeline -->
+                            <div class="slds-m-top_medium">
+                                <c-application-status-tracker record-id={latestAppId}></c-application-status-tracker>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Summary details -->
+                        <div class="section-container slds-m-bottom_large">
+                            <h3 class="section-title slds-m-bottom_medium">My Application Summary</h3>
+                            <div class="detail-grid">
+                                <div class="detail-row">
+                                    <span class="detail-label">Application Number</span>
+                                    <span class="detail-value">{latestApp.Name}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Course Name</span>
+                                    <span class="detail-value">{latestApp.Applied_Course__r.Name}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Record Type</span>
+                                    <span class="detail-value">{latestApp.RecordType.Name}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Application Status</span>
+                                    <span class={latestApp.statusClass}>{latestApp.Application_Status__c}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Admission Status</span>
+                                    <span class={latestApp.admStatusClass}>{latestApp.Admission_Status__c}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- TAB 2: MY COURSE (Section 3) -->
+                    <lightning-tab label="My Course" value="course" onactive={handleTabActive}>
+                        <div class="section-container slds-m-top_medium">
+                            <h3 class="section-title slds-m-bottom_medium">My Course Specifications</h3>
+                            <div class="detail-grid">
+                                <div class="detail-row">
+                                    <span class="detail-label">Course Name</span>
+                                    <span class="detail-value font-semibold">{latestApp.Applied_Course__r.Name}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Duration</span>
+                                    <span class="detail-value">{courseDuration}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Total Semesters</span>
+                                    <span class="detail-value">{totalSemesters} Semesters</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Fee Structure</span>
+                                    <span class="detail-value font-semibold">Total Program Fee: ${formattedTotalCourseFees} | Fee Per Semester: ${formattedFeePerSemester}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Syllabus overview</span>
+                                    <span class="detail-value">
+                                        <a href={syllabusLink} target="_blank" class="slds-text-link font-semibold">Download Syllabus PDF</a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- TAB 3: MY DOCUMENTS (Section 4) -->
+                    <lightning-tab label="My Documents" value="documents" onactive={handleTabActive}>
+                        <div class="section-container slds-m-top_medium">
+                            <h3 class="section-title slds-m-bottom_medium">My Documents</h3>
+                            <template if:true={hasUploadedDocs}>
+                                <div class="table-container slds-scrollable_x">
+                                    <table class="slds-table slds-table_cell-buffer custom-table">
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th scope="col"><div class="slds-truncate header-cell">Document Name</div></th>
+                                                <th scope="col"><div class="slds-truncate header-cell">Document Type</div></th>
+                                                <th scope="col"><div class="slds-truncate header-cell">Verification Status</div></th>
+                                                <th scope="col"><div class="slds-truncate header-cell">Upload Date</div></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={uploadedDocs} for:item="doc">
+                                                <tr key={doc.id} class="table-row-hover">
+                                                    <th scope="row">
+                                                        <div class="slds-truncate app-number-cell">
+                                                            {doc.name}
+                                                        </div>
+                                                    </th>
+                                                    <td>
+                                                        <div class="slds-truncate text-cell">
+                                                            {doc.type}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div>
+                                                            <span class={doc.statusClass}>{doc.status}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate text-cell secondary-text">
+                                                            {doc.uploadDate}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+
+                            <template if:false={hasUploadedDocs}>
+                                <div class="empty-state">
+                                    <div class="empty-icon-wrapper">
+                                        <lightning-icon icon-name="utility:file" size="large" class="empty-icon"></lightning-icon>
+                                    </div>
+                                    <h4>No Documents Uploaded</h4>
+                                    <p>Your uploaded files and verification status will appear here after they submit your application.</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- TAB 4: PAYMENTS & SEMESTER FEES (Sections 5 & 6) -->
+                    <lightning-tab label="Payments" value="payments" onactive={handleTabActive}>
+                        <div class="slds-grid slds-wrap slds-gutters slds-m-top_medium">
+                            <!-- Left: Semester Tracker (Section 6) -->
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_7-of-12">
+                                <div class="section-container slds-m-bottom_large">
+                                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_medium">
+                                        <h3 class="section-title">Semester Fee Tracker</h3>
+                                        <template if:true={showPaymentAction}>
+                                            <button class="pay-tuition-btn-small" onclick={handlePayTuition}>
+                                                <lightning-icon icon-name="utility:money" size="xx-small" class="pay-btn-icon"></lightning-icon>
+                                                Complete Payment
+                                            </button>
+                                        </template>
+                                    </div>
+
+                                    <!-- Fees Payment Progress -->
+                                    <div class="slds-m-bottom_large" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px;">
+                                        <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                            <span class="font-semibold" style="font-size: 13px; color: #475569;">Fees Payment Progress</span>
+                                            <span class="font-semibold" style="font-size: 13px; color: #1B365D;">Paid: ${formattedPaidAmount} / Total: ${formattedTotalCourseFees}</span>
+                                        </div>
+                                        <lightning-progress-bar value={paymentProgressPercent} size="large" variant="circular"></lightning-progress-bar>
+                                        <div class="slds-m-top_x-small slds-grid slds-grid_align-spread" style="font-size: 12px; color: #64748b;">
+                                            <span>Remaining: ${formattedRemainingAmount}</span>
+                                            <span>{paymentProgressPercent}% Completed</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="table-container slds-scrollable_x">
+                                        <table class="slds-table slds-table_cell-buffer custom-table">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th scope="col"><div class="slds-truncate header-cell">Semester</div></th>
+                                                    <th scope="col"><div class="slds-truncate header-cell">Fee Amount</div></th>
+                                                    <th scope="col"><div class="slds-truncate header-cell">Paid</div></th>
+                                                    <th scope="col"><div class="slds-truncate header-cell">Pending</div></th>
+                                                    <th scope="col"><div class="slds-truncate header-cell">Due Date</div></th>
+                                                    <th scope="col"><div class="slds-truncate header-cell">Status</div></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={feeSemesters} for:item="sem">
+                                                    <tr key={sem.name} class="table-row-hover">
+                                                        <th scope="row">
+                                                            <div class="slds-truncate app-number-cell font-semibold">{sem.name}</div>
+                                                        </th>
+                                                        <td><div class="slds-truncate text-cell font-semibold">{sem.amount}</div></td>
+                                                        <td><div class="slds-truncate text-cell text-success font-semibold">{sem.paid}</div></td>
+                                                        <td><div class="slds-truncate text-cell text-danger font-semibold">{sem.pending}</div></td>
+                                                        <td><div class="slds-truncate text-cell secondary-text">{sem.dueDate}</div></td>
+                                                        <td>
+                                                            <div>
+                                                                <span class={sem.badgeClass}>{sem.status}</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Payment Center (Section 5) -->
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_5-of-12">
+                                <div class="section-container slds-m-bottom_large">
+                                    <h3 class="section-title slds-m-bottom_medium">Payment Status Overview</h3>
+                                    <div class="detail-grid slds-m-bottom_large">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Total Course Fee</span>
+                                            <span class="detail-value font-semibold">${formattedTotalCourseFees}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Paid Amount</span>
+                                            <span class="detail-value text-success font-semibold">${formattedPaidAmount}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Remaining Amount</span>
+                                            <span class="detail-value text-danger font-semibold">${formattedRemainingAmount}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Overall Status</span>
+                                            <span class={paymentStatusClass}>{paymentStatusLabel}</span>
+                                        </div>
+                                    </div>
+
+                                    <h3 class="section-title slds-m-bottom_medium">Payment History</h3>
+                                    <template if:true={payments.length}>
+                                        <div class="table-container slds-scrollable_x">
+                                            <table class="slds-table slds-table_cell-buffer custom-table">
+                                                <thead>
+                                                    <tr class="slds-line-height_reset">
+                                                        <th scope="col"><div class="slds-truncate header-cell">Payment No.</div></th>
+                                                        <th scope="col"><div class="slds-truncate header-cell">Amount</div></th>
+                                                        <th scope="col"><div class="slds-truncate header-cell">Status</div></th>
+                                                        <th scope="col"><div class="slds-truncate header-cell">Payment Date</div></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template for:each={payments} for:item="pay">
+                                                        <tr key={pay.id} class="table-row-hover">
+                                                            <th scope="row">
+                                                                <div class="slds-truncate app-number-cell font-semibold">{pay.name}</div>
+                                                            </th>
+                                                            <td><div class="slds-truncate text-cell font-semibold">{pay.amount}</div></td>
+                                                            <td>
+                                                                <div>
+                                                                    <span class={pay.statusClass}>{pay.status}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td><div class="slds-truncate text-cell secondary-text">{pay.paymentDate}</div></td>
+                                                        </tr>
+                                                    </template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </template>
+                                    <template if:false={payments.length}>
+                                        <div class="empty-state" style="padding: 20px;">
+                                            <p style="color: #64748b; font-size: 13px;">No payments processed yet.</p>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- TAB 5: ADMISSION SUMMARY (Section 7) -->
+                    <lightning-tab label="Admission" value="admission" onactive={handleTabActive}>
+                        <div class="section-container slds-m-top_medium">
+                            <h3 class="section-title slds-m-bottom_medium">Admission Summary</h3>
+                            <div class="detail-grid">
+                                <div class="detail-row">
+                                    <span class="detail-label">Admission Number</span>
+                                    <template if:true={admissionRecord}>
+                                        <span class="detail-value font-semibold text-success">{admissionRecord.Name}</span>
+                                    </template>
+                                    <template if:false={admissionRecord}>
+                                        <span class="detail-value secondary-text">Pending</span>
+                                    </template>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Enrollment Number</span>
+                                    <template if:true={admissionRecord}>
+                                        <span class="detail-value font-semibold text-success">{admissionRecord.Enrollment_Number__c}</span>
+                                    </template>
+                                    <template if:false={admissionRecord}>
+                                        <span class="detail-value secondary-text">Pending</span>
+                                    </template>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Admission Status</span>
+                                    <span class={latestApp.admStatusClass}>{latestApp.Admission_Status__c}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-tab>
+                </lightning-tabset>
+            </template>
+
+            <template if:false={latestApp}>
+                <div class="section-container slds-m-top_medium">
+                    <div class="empty-state">
+                        <div class="empty-icon-wrapper">
+                            <lightning-icon icon-name="utility:education" size="large" class="empty-icon"></lightning-icon>
+                        </div>
+                        <h4>No Active Applications</h4>
+                        <p>You do not have any active applications. Start by selecting a course in the portal catalog.</p>
+                        <lightning-button
+                            label="Browse Catalog"
+                            variant="brand"
+                            icon-name="utility:search"
+                            onclick={handleGoToPortal}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </template>
+        </template>
+    </div>
+</template>

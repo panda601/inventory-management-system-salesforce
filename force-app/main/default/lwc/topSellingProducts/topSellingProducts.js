@@ -33,18 +33,31 @@ export default class TopSellingProducts extends NavigationMixin(LightningElement
         }
     }
 
+    fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 100 100"><rect width="100%" height="100%" fill="%23f8f9fa" stroke="%23dddbda" stroke-width="1"/><rect x="25" y="25" width="50" height="50" rx="4" fill="none" stroke="%23b0adab" stroke-width="2"/><circle cx="50" cy="45" r="10" fill="none" stroke="%23b0adab" stroke-width="2"/><path d="M30 65 L45 50 L55 60 L70 45 L70 65 Z" fill="%23cbd5e0"/></svg>`;
+
+    handleImageError(event) {
+        event.target.src = this.fallbackImage;
+    }
+
     get productSales() {
         return this.salesSummary.productSales || [];
     }
 
+    get productSalesWithImages() {
+        return this.productSales.map(item => ({
+            ...item,
+            productImageSrc: item.productImage || this.fallbackImage
+        }));
+    }
+
     get topSelling() {
-        const list = [...this.productSales];
+        const list = [...this.productSalesWithImages];
         list.sort((a, b) => b.quantitySold - a.quantitySold);
         return list.slice(0, 5);
     }
 
     get topRevenue() {
-        const list = [...this.productSales];
+        const list = [...this.productSalesWithImages];
         list.sort((a, b) => b.totalSales - a.totalSales);
         return list.slice(0, 5);
     }
@@ -59,7 +72,8 @@ export default class TopSellingProducts extends NavigationMixin(LightningElement
             const name = p.Product_Name__c || p.Name;
             return {
                 productName: name,
-                quantitySold: soldMap[name] || 0
+                quantitySold: soldMap[name] || 0,
+                productImageSrc: p.Product_Image__c || this.fallbackImage
             };
         });
 

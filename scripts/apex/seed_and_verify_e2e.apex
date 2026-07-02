@@ -27,30 +27,45 @@ try {
         Name = 'Dell Technologies',
         Supplier_Name__c = 'Dell Technologies',
         Status__c = 'Active',
+        Email__c = 'support@dell.com',
+        Phone__c = '+1-800-888-3355',
+        Address__c = 'One Dell Way, Round Rock, TX 78682',
         OwnerId = invManager.Id
     );
     Supplier__c hpSupp = new Supplier__c(
         Name = 'HP India',
         Supplier_Name__c = 'HP India',
         Status__c = 'Active',
+        Email__c = 'contact@hp.com',
+        Phone__c = '+91-80-2512-9000',
+        Address__c = 'No. 24, Salarpuria Arena, Hosur Road, Bangalore, KA 560030',
         OwnerId = invManager.Id
     );
     Supplier__c lenovoSupp = new Supplier__c(
         Name = 'Lenovo India',
         Supplier_Name__c = 'Lenovo India',
         Status__c = 'Active',
+        Email__c = 'info@lenovo.com',
+        Phone__c = '+91-80-3053-3000',
+        Address__c = 'Ferns Icon, Level 2, Outer Ring Road, Bangalore, KA 560037',
         OwnerId = invManager.Id
     );
     Supplier__c logitechSupp = new Supplier__c(
         Name = 'Logitech Pvt Ltd',
         Supplier_Name__c = 'Logitech Pvt Ltd',
         Status__c = 'Active',
+        Email__c = 'sales@logitech.com',
+        Phone__c = '+41-21-863-5111',
+        Address__c = 'EPFL - Innovation Park, Daniel Borel Innovation Center, Lausanne 1015',
         OwnerId = invManager.Id
     );
     Supplier__c samsungSupp = new Supplier__c(
         Name = 'Samsung India',
         Supplier_Name__c = 'Samsung India',
         Status__c = 'Active',
+        Email__c = 'helpdesk@samsung.com',
+        Phone__c = '+91-124-488-8000',
+        Address__c = '6th Floor, DLF Centre, Sansad Marg, New Delhi, DL 110001',
         OwnerId = invManager.Id
     );
     List<Supplier__c> suppliers = new List<Supplier__c>{dellSupp, hpSupp, lenovoSupp, logitechSupp, samsungSupp};

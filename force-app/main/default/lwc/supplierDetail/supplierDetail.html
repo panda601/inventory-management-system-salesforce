@@ -1,0 +1,195 @@
+<template>
+    <div class="supplier-detail-container slds-is-relative">
+        <!-- Spinner -->
+        <template if:true={isLoading}>
+            <div class="spinner-container">
+                <lightning-spinner alternative-text="Loading supplier details" size="medium" variant="brand"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Main Content -->
+        <template if:true={hasData}>
+            <!-- Header Card -->
+            <header class="supplier-header-card slds-m-bottom_medium animate-fade">
+                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-wrap">
+                    <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="standard:service_contract" size="large" class="header-icon"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <h1 class="supplier-title slds-truncate font-bold" title={supplierName}>
+                                {supplierName}
+                            </h1>
+                            <p class="supplier-subtitle">Supplier Record: <span class="font-mono">{supplierCode}</span></p>
+                        </div>
+                    </div>
+                    <div class="slds-m-top_small slds-m-left_auto badge-container">
+                        <span class={statusBadgeClass}>{status}</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Grid Layout -->
+            <div class="slds-grid slds-wrap slds-gutters_direct-small animate-fade">
+                <!-- Left Panel: Supplier Info Card -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-3 slds-m-bottom_medium">
+                    <div class="info-card">
+                        <h2 class="card-title font-bold slds-m-bottom_medium">Contact Information</h2>
+                        <div class="info-list">
+                            <div class="info-item">
+                                <span class="label">Email</span>
+                                <span class="value font-bold">
+                                    <template if:true={email}>
+                                        <a href={emailHref} class="link-btn">{email}</a>
+                                    </template>
+                                    <template if:false={email}>N/A</template>
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Phone</span>
+                                <span class="value font-bold">{phone}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Address</span>
+                                <span class="value address-val">{address}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Created Date</span>
+                                <span class="value">
+                                    <lightning-formatted-date-time value={createdDate} year="numeric" month="short" day="2-digit" hour="2-digit" minute="2-digit"></lightning-formatted-date-time>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Related Lists Tabs -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_2-3 slds-m-bottom_medium">
+                    <div class="related-card">
+                        <lightning-tabset variant="scoped">
+                            <!-- Purchase Orders Tab -->
+                            <lightning-tab label="Purchase Orders" value="purchase_orders">
+                                <template if:true={hasPurchaseOrders}>
+                                    <div class="table-container">
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="Order Name">Order Name</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="Order Date">Order Date</div>
+                                                    </th>
+                                                    <th class="slds-text-align_right" scope="col">
+                                                        <div class="slds-truncate" title="Total Amount">Total Amount</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="Status">Status</div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={purchaseOrders} for:item="po">
+                                                    <tr key={po.Id} class="slds-hint-parent">
+                                                        <th scope="row">
+                                                            <div class="slds-truncate">
+                                                                <a href="#" onclick={handleRecordNavigate} data-id={po.Id} data-object="Purchase_Order__c" class="link-btn font-bold">{po.Name}</a>
+                                                            </div>
+                                                        </th>
+                                                        <td>
+                                                            <div class="slds-truncate">
+                                                                <lightning-formatted-date-time value={po.Order_Date__c} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                                            </div>
+                                                        </td>
+                                                        <td class="slds-text-align_right font-mono font-bold">
+                                                            <lightning-formatted-number value={po.Total_Amount__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                                        </td>
+                                                        <td>
+                                                            <div class="slds-truncate">
+                                                                <span class={po.badgeClass}>{po.Status__c}</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </template>
+                                <template if:false={hasPurchaseOrders}>
+                                    <div class="empty-list-panel">
+                                        <lightning-icon icon-name="utility:open_folder" size="medium" class="slds-m-bottom_small empty-icon"></lightning-icon>
+                                        <p class="empty-title">No Purchase Orders</p>
+                                        <p class="empty-desc">No purchase orders have been placed with this supplier yet.</p>
+                                    </div>
+                                </template>
+                            </lightning-tab>
+
+                            <!-- Supplied Products Tab -->
+                            <lightning-tab label="Products Supplied" value="products">
+                                <template if:true={hasProductsSupplied}>
+                                    <div class="table-container">
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="Product Name">Product Name</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="SKU">SKU</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="Category">Category</div>
+                                                    </th>
+                                                    <th class="slds-text-align_right" scope="col">
+                                                        <div class="slds-truncate" title="Price">Price</div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={productsSupplied} for:item="prod">
+                                                    <tr key={prod.Id} class="slds-hint-parent">
+                                                        <th scope="row">
+                                                            <div class="slds-truncate">
+                                                                <a href="#" onclick={handleRecordNavigate} data-id={prod.Id} data-object="Product__c" class="link-btn font-bold">{prod.Product_Name__c}</a>
+                                                            </div>
+                                                        </th>
+                                                        <td class="font-mono">
+                                                            <div class="slds-truncate">{prod.SKU__c}</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="slds-truncate">{prod.Category__c}</div>
+                                                        </td>
+                                                        <td class="slds-text-align_right font-mono font-bold">
+                                                            <lightning-formatted-number value={prod.Price__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </template>
+                                <template if:false={hasProductsSupplied}>
+                                    <div class="empty-list-panel">
+                                        <lightning-icon icon-name="utility:list" size="medium" class="slds-m-bottom_small empty-icon"></lightning-icon>
+                                        <p class="empty-title">No Products Supplied</p>
+                                        <p class="empty-desc">No products are mapped as supplied by this vendor.</p>
+                                    </div>
+                                </template>
+                            </lightning-tab>
+                        </lightning-tabset>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- No Data Empty State -->
+        <template if:true={showEmptyState}>
+            <div class="empty-container animate-fade">
+                <lightning-icon icon-name="utility:info_alt" size="large" variant="warning" class="slds-m-bottom_medium"></lightning-icon>
+                <h3 class="slds-text-heading_medium font-bold slds-m-bottom_x-small text-dark">No Supplier Details Available</h3>
+                <p class="slds-text-body_regular text-muted slds-m-bottom_medium">The supplier details could not be found or are inaccessible.</p>
+                <button class="slds-button slds-button_neutral refresh-btn-action" onclick={handleRefresh}>Retry Loading</button>
+            </div>
+        </template>
+    </div>
+</template>

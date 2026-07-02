@@ -16,7 +16,7 @@ public with sharing class InventoryController {
 
     @AuraEnabled(cacheable=true)
     public static List<Product__c> getMonitorData() {
-        return [SELECT Id, Name, Product_Name__c, SKU__c, Current_Stock__c, Minimum_Stock__c, Status__c
+        return [SELECT Id, Name, Product_Name__c, SKU__c, Current_Stock__c, Minimum_Stock__c, Status__c, Product_Image__c
                 FROM Product__c
                 WHERE Status__c = 'Active'
                 WITH SECURITY_ENFORCED
@@ -369,5 +369,67 @@ public with sharing class InventoryController {
     @TestVisible
     private static Boolean canApproveRefund() {
         return resolveCurrentUserRole() == ROLE_ADMIN;
+    }
+
+    public class SupplierDetailWrapper {
+        @AuraEnabled public Supplier__c supplier {get; set;}
+        @AuraEnabled public List<Purchase_Order__c> purchaseOrders {get; set;}
+        @AuraEnabled public List<Product__c> productsSupplied {get; set;}
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static SupplierDetailWrapper getSupplierDetail(Id recordId) {
+        if (recordId == null) {
+            return null;
+        }
+        
+        SupplierDetailWrapper wrapper = new SupplierDetailWrapper();
+        
+        List<Supplier__c> suppliers = [
+            SELECT Id, Name, Supplier_Name__c, Email__c, Phone__c, Address__c, Status__c, CreatedDate
+            FROM Supplier__c
+            WHERE Id = :recordId
+            WITH USER_MODE
+            LIMIT 1
+        ];
+        
+        if (suppliers.isEmpty()) {
+            return null;
+        }
+        wrapper.supplier = suppliers[0];
+        
+        wrapper.purchaseOrders = [
+            SELECT Id, Name, Order_Date__c, Total_Amount__c, Status__c
+            FROM Purchase_Order__c
+            WHERE Supplier__c = :recordId
+            WITH USER_MODE
+            ORDER BY Order_Date__c DESC, CreatedDate DESC
+        ];
+        
+        Set<Id> productIds = new Set<Id>();
+        for (Purchase_Order_Item__c item : [
+            SELECT Product__c
+            FROM Purchase_Order_Item__c
+            WHERE Purchase_Order__r.Supplier__c = :recordId
+            WITH USER_MODE
+        ]) {
+            if (item.Product__c != null) {
+                productIds.add(item.Product__c);
+            }
+        }
+        
+        if (!productIds.isEmpty()) {
+            wrapper.productsSupplied = [
+                SELECT Id, Product_Name__c, SKU__c, Category__c, Price__c, Product_Image__c
+                FROM Product__c
+                WHERE Id IN :productIds
+                WITH USER_MODE
+                ORDER BY Product_Name__c ASC
+            ];
+        } else {
+            wrapper.productsSupplied = new List<Product__c>();
+        }
+        
+        return wrapper;
     }
 }

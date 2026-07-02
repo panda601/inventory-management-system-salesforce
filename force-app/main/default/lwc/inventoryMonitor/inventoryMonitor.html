@@ -30,7 +30,12 @@
                             <div key={item.Id} class="slds-col slds-size_1-1 slds-medium-size_1-2 slds-large-size_1-3 slds-m-bottom_small">
                                 <div class="alert-item-card">
                                     <div class="item-header slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
-                                        <span class="product-name font-bold" title={item.Product_Name__c}>{item.Product_Name__c}</span>
+                                        <div class="slds-grid slds-grid_vertical-align-center" style="max-width: 70%;">
+                                            <div class="product-img-container-mini slds-m-right_small">
+                                                <img src={item.productImageSrc} alt={item.Product_Name__c} class="product-thumbnail-mini" onerror={handleImageError} />
+                                            </div>
+                                            <span class="product-name font-bold" title={item.Product_Name__c}>{item.Product_Name__c}</span>
+                                        </div>
                                         <span class={item.badgeClass}>{item.status}</span>
                                     </div>
 

@@ -29,7 +29,14 @@
                                 <tbody>
                                     <template for:each={topSelling} for:item="item">
                                         <tr key={item.productName} class="product-row">
-                                            <td class="prod-name font-bold">{item.productName}</td>
+                                            <td class="prod-name font-bold">
+                                                <div class="slds-grid slds-grid_vertical-align-center">
+                                                    <div class="product-img-container-mini slds-m-right_small">
+                                                        <img src={item.productImageSrc} alt={item.productName} class="product-thumbnail-mini" onerror={handleImageError} />
+                                                    </div>
+                                                    <span>{item.productName}</span>
+                                                </div>
+                                            </td>
                                             <td class="text-right font-mono">{item.quantitySold} units</td>
                                             <td class="text-right font-mono font-bold">
                                                 <lightning-formatted-number value={item.totalSales} format-style="currency" currency-code="USD"></lightning-formatted-number>
@@ -79,8 +86,13 @@
                                     <h3 class="box-title font-bold slds-m-bottom_small">Top Selling (Quantity)</h3>
                                     <ul class="leader-list">
                                         <template for:each={topSelling} for:item="item">
-                                            <li key={item.productName} class="leader-item">
-                                                <span>{item.productName}</span>
+                                            <li key={item.productName} class="leader-item slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                                                <div class="slds-grid slds-grid_vertical-align-center">
+                                                    <div class="product-img-container-mini slds-m-right_small">
+                                                        <img src={item.productImageSrc} alt={item.productName} class="product-thumbnail-mini" onerror={handleImageError} />
+                                                    </div>
+                                                    <span>{item.productName}</span>
+                                                </div>
                                                 <span class="badge positive">{item.quantitySold} units</span>
                                             </li>
                                         </template>
@@ -94,8 +106,13 @@
                                     <h3 class="box-title font-bold slds-m-bottom_small">Top Revenue ($)</h3>
                                     <ul class="leader-list">
                                         <template for:each={topRevenue} for:item="item">
-                                            <li key={item.productName} class="leader-item">
-                                                <span>{item.productName}</span>
+                                            <li key={item.productName} class="leader-item slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                                                <div class="slds-grid slds-grid_vertical-align-center">
+                                                    <div class="product-img-container-mini slds-m-right_small">
+                                                        <img src={item.productImageSrc} alt={item.productName} class="product-thumbnail-mini" onerror={handleImageError} />
+                                                    </div>
+                                                    <span>{item.productName}</span>
+                                                </div>
                                                 <span class="badge revenue">
                                                     <lightning-formatted-number value={item.totalSales} format-style="currency" currency-code="USD"></lightning-formatted-number>
                                                 </span>
@@ -111,8 +128,13 @@
                                     <h3 class="box-title font-bold slds-m-bottom_small">Least Selling (Quantity)</h3>
                                     <ul class="leader-list">
                                         <template for:each={leastSelling} for:item="item">
-                                            <li key={item.productName} class="leader-item">
-                                                <span>{item.productName}</span>
+                                            <li key={item.productName} class="leader-item slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                                                <div class="slds-grid slds-grid_vertical-align-center">
+                                                    <div class="product-img-container-mini slds-m-right_small">
+                                                        <img src={item.productImageSrc} alt={item.productName} class="product-thumbnail-mini" onerror={handleImageError} />
+                                                    </div>
+                                                    <span>{item.productName}</span>
+                                                </div>
                                                 <span class="badge negative">{item.quantitySold} units</span>
                                             </li>
                                         </template>

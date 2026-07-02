@@ -27,6 +27,12 @@ export default class InventoryMonitor extends NavigationMixin(LightningElement) 
     subProduct;
     subPO;
 
+    fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 100 100"><rect width="100%" height="100%" fill="%23f8f9fa" stroke="%23dddbda" stroke-width="1"/><rect x="25" y="25" width="50" height="50" rx="4" fill="none" stroke="%23b0adab" stroke-width="2"/><circle cx="50" cy="45" r="10" fill="none" stroke="%23b0adab" stroke-width="2"/><path d="M30 65 L45 50 L55 60 L70 45 L70 65 Z" fill="%23cbd5e0"/></svg>`;
+
+    handleImageError(event) {
+        event.target.src = this.fallbackImage;
+    }
+
     @wire(getMonitorData)
     wiredData(result) {
         this.wiredMonitorResult = result;
@@ -56,13 +62,16 @@ export default class InventoryMonitor extends NavigationMixin(LightningElement) 
                     progressBarVariant = 'warning';
                 }
 
+                const productImageSrc = prod.Product_Image__c || this.fallbackImage;
+
                 return {
                     ...prod,
                     status,
                     badgeClass,
                     recommendation,
                     healthPct,
-                    progressBarVariant
+                    progressBarVariant,
+                    productImageSrc
                 };
             });
             this.error = undefined;

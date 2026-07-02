@@ -1,0 +1,93 @@
+<template>
+    <lightning-card title="Application Documents" icon-name="utility:attach">
+        <div class="slds-p-around_medium container">
+            <!-- Spinner -->
+            <template if:true={isLoading}>
+                <div class="spinner-container">
+                    <lightning-spinner alternative-text="Loading documents..." size="small" variant="brand"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Documents Grid -->
+            <template if:true={hasDocuments}>
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <template for:each={documents} for:item="doc">
+                        <div key={doc.document.Id} class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12 slds-m-bottom_medium">
+                            <div class="document-card">
+                                <!-- Thumbnail rendition or DocType icon fallback -->
+                                <div class="card-preview">
+                                    <template if:true={doc.hasThumbnail}>
+                                        <img src={doc.thumbnailUrl} alt={doc.document.Name} class="preview-image" />
+                                    </template>
+                                    <template if:false={doc.hasThumbnail}>
+                                        <div class="preview-fallback">
+                                            <lightning-icon icon-name={doc.iconName} size="large"></lightning-icon>
+                                        </div>
+                                    </template>
+                                </div>
+                                
+                                <!-- Document metadata & action buttons -->
+                                <div class="card-details">
+                                    <h4 class="doc-title bold-text slds-truncate" title={doc.document.Name}>{doc.document.Name}</h4>
+                                    <p class="doc-meta">Type: {doc.document.Document_Type__c}</p>
+                                    <p class="doc-meta">Uploaded: {doc.uploadDate}</p>
+                                    
+                                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-top_small">
+                                        <span class={doc.statusClass}>{doc.document.Verification_Status__c}</span>
+                                        
+                                        <div class="card-actions">
+                                            <template if:true={doc.contentDocumentId}>
+                                                <lightning-button-icon 
+                                                    icon-name="utility:preview" 
+                                                    variant="border-filled" 
+                                                    alternative-text="Preview" 
+                                                    title="Preview Document"
+                                                    onclick={handlePreview}
+                                                    data-cd-id={doc.contentDocumentId}
+                                                    class="slds-m-right_xx-small action-icon">
+                                                </lightning-button-icon>
+                                                <lightning-button-icon 
+                                                    icon-name="utility:open" 
+                                                    variant="border-filled" 
+                                                    alternative-text="Open Record" 
+                                                    title="Open Document Record"
+                                                    onclick={handleOpen}
+                                                    data-cd-id={doc.contentDocumentId}
+                                                    class="slds-m-right_xx-small action-icon">
+                                                </lightning-button-icon>
+                                                <lightning-button-icon 
+                                                    icon-name="utility:download" 
+                                                    variant="border-filled" 
+                                                    alternative-text="Download" 
+                                                    title="Download Document"
+                                                    onclick={handleDownload}
+                                                    data-cd-id={doc.contentDocumentId}
+                                                    class="action-icon">
+                                                </lightning-button-icon>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    
+                                    <template if:true={doc.isRejected}>
+                                        <div class="rejection-box slds-m-top_small">
+                                            <span class="rejection-title">Rejection Reason:</span>
+                                            <p class="rejection-text">{doc.document.Rejection_Reason__c}</p>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Empty State -->
+            <template if:false={hasDocuments}>
+                <div class="empty-state">
+                    <lightning-icon icon-name="utility:file" size="medium" class="empty-icon"></lightning-icon>
+                    <p>No documents uploaded for this application yet.</p>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

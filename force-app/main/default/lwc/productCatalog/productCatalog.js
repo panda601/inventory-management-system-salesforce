@@ -47,12 +47,16 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
         ];
     }
 
+    fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f8f9fa" stroke="%23dddbda" stroke-width="1"/><rect x="25" y="25" width="50" height="50" rx="4" fill="none" stroke="%23b0adab" stroke-width="2"/><circle cx="50" cy="45" r="10" fill="none" stroke="%23b0adab" stroke-width="2"/><path d="M30 65 L45 50 L55 60 L70 45 L70 65 Z" fill="%23cbd5e0"/><text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="8" fill="%23706e6b">No Image</text></svg>`;
+
+    handleImageError(event) {
+        event.target.src = this.fallbackImage;
+    }
+
     get sortedProducts() {
         if (!this.products || !this.products.data) {
             return [];
         }
-        
-        const fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f8f9fa" stroke="%23dddbda" stroke-width="1"/><rect x="25" y="25" width="50" height="50" rx="4" fill="none" stroke="%23b0adab" stroke-width="2"/><circle cx="50" cy="45" r="10" fill="none" stroke="%23b0adab" stroke-width="2"/><path d="M30 65 L45 50 L55 60 L70 45 L70 65 Z" fill="%23cbd5e0"/><text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="8" fill="%23706e6b">No Image</text></svg>`;
 
         let clonedProducts = this.products.data.map(prod => {
             const current = prod.Current_Stock__c || 0;
@@ -68,7 +72,7 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
                 badgeClass = 'status-badge low-stock';
             }
             
-            const productImageSrc = prod.Product_Image__c ? prod.Product_Image__c : fallbackImage;
+            const productImageSrc = prod.Product_Image__c ? prod.Product_Image__c : this.fallbackImage;
             
             return {
                 ...prod,

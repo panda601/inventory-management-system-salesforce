@@ -99,13 +99,17 @@ export default class ProductDetail extends NavigationMixin(LightningElement) {
         return !!(this.product && this.product.data);
     }
 
-    get productImageSrc() {
-        const fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 100 100"><rect width="100%" height="100%" fill="%23f8f9fa" stroke="%23dddbda" stroke-width="1"/><rect x="25" y="25" width="50" height="50" rx="4" fill="none" stroke="%23b0adab" stroke-width="2"/><circle cx="50" cy="45" r="10" fill="none" stroke="%23b0adab" stroke-width="2"/><path d="M30 65 L45 50 L55 60 L70 45 L70 65 Z" fill="%23cbd5e0"/><text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="8" fill="%23706e6b">No Image</text></svg>`;
+    fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 100 100"><rect width="100%" height="100%" fill="%23f8f9fa" stroke="%23dddbda" stroke-width="1"/><rect x="25" y="25" width="50" height="50" rx="4" fill="none" stroke="%23b0adab" stroke-width="2"/><circle cx="50" cy="45" r="10" fill="none" stroke="%23b0adab" stroke-width="2"/><path d="M30 65 L45 50 L55 60 L70 45 L70 65 Z" fill="%23cbd5e0"/><text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="8" fill="%23706e6b">No Image</text></svg>`;
 
+    handleImageError(event) {
+        event.target.src = this.fallbackImage;
+    }
+
+    get productImageSrc() {
         if (this.product && this.product.data && this.product.data.productImage) {
             return this.product.data.productImage;
         }
-        return fallbackImage;
+        return this.fallbackImage;
     }
 
     get showSpinner() {
@@ -212,7 +216,7 @@ export default class ProductDetail extends NavigationMixin(LightningElement) {
     }
 
     get supplierLoaded() {
-        return !!(this.supplier && (this.supplier.data || this.supplier.error));
+        return this.supplier !== undefined && this.supplier !== null && ('data' in this.supplier || 'error' in this.supplier);
     }
 
     get hasTransactions() {
@@ -220,11 +224,11 @@ export default class ProductDetail extends NavigationMixin(LightningElement) {
     }
 
     get transactionsLoaded() {
-        return !!(this.transactions && (this.transactions.data || this.transactions.error));
+        return this.transactions !== undefined && this.transactions !== null && ('data' in this.transactions || 'error' in this.transactions);
     }
 
     get inventoryLoaded() {
-        return !!(this.inventory && (this.inventory.data || this.inventory.error));
+        return this.inventory !== undefined && this.inventory !== null && ('data' in this.inventory || 'error' in this.inventory);
     }
 
     get hasInventory() {
