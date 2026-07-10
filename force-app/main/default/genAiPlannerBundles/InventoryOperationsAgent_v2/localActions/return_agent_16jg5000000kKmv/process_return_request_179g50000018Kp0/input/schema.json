@@ -1,0 +1,28 @@
+{
+  "required" : [ ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "requestId" : {
+      "title" : "Request Id",
+      "description" : "Return Request ID",
+      "lightning:type" : "lightning__recordIdType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    },
+    "resolutionType" : {
+      "title" : "Resolution Type",
+      "description" : "Resolution type",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    },
+    "status" : {
+      "title" : "Status",
+      "description" : "Status to update",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}

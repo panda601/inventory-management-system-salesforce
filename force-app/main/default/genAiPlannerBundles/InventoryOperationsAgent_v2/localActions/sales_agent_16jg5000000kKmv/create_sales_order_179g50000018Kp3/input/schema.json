@@ -1,0 +1,35 @@
+{
+  "required" : [ ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "customerName" : {
+      "title" : "Customer Name",
+      "description" : "Customer Name",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    },
+    "productId" : {
+      "title" : "Product Id",
+      "description" : "Product ID",
+      "lightning:type" : "lightning__recordIdType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    },
+    "quantity" : {
+      "title" : "Quantity",
+      "description" : "Quantity",
+      "lightning:type" : "lightning__numberType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    },
+    "unitPrice" : {
+      "title" : "Unit Price",
+      "description" : "Unit Price",
+      "lightning:type" : "lightning__numberType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}

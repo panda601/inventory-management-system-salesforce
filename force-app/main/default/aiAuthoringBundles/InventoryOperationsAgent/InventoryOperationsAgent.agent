@@ -1,0 +1,434 @@
+system:
+    instructions: |
+        You are the Inventory Operations Agent, the central orchestrator for the Inventory Management System (IMS).
+        Greet the user and guide them to manage their inventory, purchase orders, sales orders, suppliers, returns, analytics, and settings.
+        Always route requests to the correct specialized spoke topic (Inventory, Purchase, Sales, Supplier, Return, Admin, Analytics, Notification, or Product Image).
+        Never execute business logic directly in the topic selector.
+    messages:
+        welcome: "Hello! I am your Inventory Operations Agent. How can I help you manage your inventory, sales, procurement, or returns today?"
+        error: "I apologize, but I encountered an error processing that request. Please try again or ask for assistance."
+
+config:
+    developer_name: "InventoryOperationsAgent"
+    agent_type: "AgentforceServiceAgent"
+    default_agent_user: "agentforce_service_agent@00dg500000bb8wx1024279150.ext"
+    agent_label: "Inventory Operations Agent"
+    description: "Master router agent for managing inventory, procurement, sales, returns, and analytics."
+
+variables:
+    EndUserId: linked string
+        source: @MessagingSession.MessagingEndUserId
+        description: "Messaging End User ID"
+    RoutableId: linked string
+        source: @MessagingSession.Id
+        description: "Messaging Session ID"
+    ContactId: linked string
+        source: @MessagingEndUser.ContactId
+        description: "Contact ID"
+
+language:
+    default_locale: "en_US"
+    additional_locales: ""
+    all_additional_locales: False
+
+start_agent topic_selector:
+    label: "Topic Selector"
+    description: "Routes user requests to the appropriate specialized spoke topic."
+    reasoning:
+        instructions: ->
+            | Greet the user and route them based on their intent:
+            | - Inventory inquiries, product details, stock levels -> inventory_agent
+            | - Purchase orders, procurement, PO details -> purchase_agent
+            | - Sales orders, stock availability -> sales_agent
+            | - Supplier details, lookup, performance -> supplier_agent
+            | - Return requests, RMA status, refund approvals -> return_agent
+            | - User roles, permissions, health audits -> admin_agent
+            | - Revenue, profit, loss, top products -> analytics_agent
+            | - Low stock alerts, pending orders, warnings -> notification_agent
+            | - Upload, replace, delete product images -> product_image_agent
+        actions:
+            go_to_inventory: @utils.transition to @topic.inventory_agent
+                description: "User wants to view products, current stock, or inventory details"
+            go_to_purchase: @utils.transition to @topic.purchase_agent
+                description: "User wants to create, view, approve, receive, or cancel a purchase order"
+            go_to_sales: @utils.transition to @topic.sales_agent
+                description: "User wants to create, view, or check a sales order"
+            go_to_supplier: @utils.transition to @topic.supplier_agent
+                description: "User wants to search or manage suppliers and supplier performance"
+            go_to_return: @utils.transition to @topic.return_agent
+                description: "User wants to log, approve, or reject return requests"
+            go_to_admin: @utils.transition to @topic.admin_agent
+                description: "User wants to check system health, object health, role, or permissions"
+            go_to_analytics: @utils.transition to @topic.analytics_agent
+                description: "User wants to analyze profit, loss, revenue, or product performance"
+            go_to_notification: @utils.transition to @topic.notification_agent
+                description: "User wants to check low stock warnings or pending item notifications"
+            go_to_product_image: @utils.transition to @topic.product_image_agent
+                description: "User wants to upload, replace, or delete product images"
+
+topic inventory_agent:
+    label: "Inventory Agent"
+    description: "Manages product lookup, stock levels, and inventory transactions."
+    actions:
+        get_product_detail:
+            description: "Retrieve SKU, price, stock, and details of a product by ID"
+            inputs:
+                productId: object
+                    complex_data_type_name: "lightning__recordIdType"
+                    description: "Product record ID to look up"
+            outputs:
+                productId: object
+                    complex_data_type_name: "lightning__recordIdType"
+                    description: "Product Record ID"
+                name: string
+                    description: "Product record Name"
+                productName: string
+                    description: "Product Name value"
+                sku: string
+                    description: "Product SKU"
+                category: string
+                    description: "Category"
+                costPrice: number
+                    description: "Cost Price"
+                sellingPrice: number
+                    description: "Selling Price"
+                stockOnHand: number
+                    description: "Stock On Hand"
+                reorderPoint: number
+                    description: "Reorder point"
+                availableQuantity: number
+                    description: "Available stock"
+                status: string
+                    description: "Product status"
+                productImage: string
+                    description: "Product Image download URL"
+            target: "apex://IMS_GetProductDetail"
+
+        get_inventory_health:
+            description: "Retrieve aggregated stock summary metrics"
+            inputs:
+                placeholder: string
+                    description: "Dummy input placeholder"
+            outputs:
+                totalProducts: object
+                    complex_data_type_name: "lightning__integerType"
+                    description: "Total products count"
+                availableStock: number
+                    description: "Available stock units sum"
+                lowStock: object
+                    complex_data_type_name: "lightning__integerType"
+                    description: "Low stock count"
+                outOfStock: object
+                    complex_data_type_name: "lightning__integerType"
+                    description: "Out of stock count"
+            target: "apex://IMS_GetInventoryHealth"
+
+    reasoning:
+        instructions: ->
+            | Help the user view product details, stock levels, or physical transactions.
+            | Use get_product_detail for product-specific inquiries.
+            | Use get_inventory_health to see overall inventory numbers.
+        actions:
+            invoke_get_product_detail: @actions.get_product_detail
+                with productId = ...
+            invoke_get_inventory_health: @actions.get_inventory_health
+                with placeholder = "dummy"
+            back_to_menu: @utils.transition to @topic.topic_selector
+                description: "Return to the main menu"
+
+topic purchase_agent:
+    label: "Purchase Agent"
+    description: "Manages procurement and purchase orders."
+    actions:
+        create_purchase_order:
+            description: "Create a new purchase order and purchase order item in draft status"
+            inputs:
+                supplierId: object
+                    complex_data_type_name: "lightning__recordIdType"
+                    description: "Supplier ID"
+                productId: object
+                    complex_data_type_name: "lightning__recordIdType"
+                    description: "Product ID"
+                quantity: number
+                    description: "Quantity"
+                unitPrice: number
+                    description: "Unit Price"
+            outputs:
+                output: object
+                    complex_data_type_name: "lightning__recordIdType"
+                    description: "Purchase Order Record ID"
+            target: "apex://IMS_CreatePurchaseOrder"
+
+    reasoning:
+        instructions: ->
+            | Handle purchase order inquiries, creations, and updates.
+            | When creating a PO, collect supplier ID, product ID, quantity, and unit price, and use Create Purchase Order.
+            | Emphasize that PO status updates to 'Received' trigger stock-in flow automations automatically.
+        actions:
+            invoke_create_purchase_order: @actions.create_purchase_order
+                with supplierId = ...
+                with productId = ...
+                with quantity = ...
+                with unitPrice = ...
+            back_to_menu: @utils.transition to @topic.topic_selector
+                description: "Return to the main menu"
+
+topic sales_agent:
+    label: "Sales Agent"
+    description: "Manages customer orders and product availability."
+    actions:
+        create_sales_order:
+            description: "Create a new sales order and sales order item in draft status"
+            inputs:
+                customerName: string
+                    description: "Customer Name"
+                productId: object
+                    complex_data_type_name: "lightning__recordIdType"
+                    description: "Product ID"
+                quantity: number
+                    description: "Quantity"
+                unitPrice: number
+                    description: "Unit Price"
+            outputs:
+                output: object
+                    complex_data_type_name: "lightning__recordIdType"
+                    description: "Sales Order Record ID"
+            target: "apex://IMS_CreateSalesOrder"
+
+        get_product_availability:
+            description: "Check stock on hand and availability details for a product"
+            inputs:
+                productId: object
+                    complex_data_type_name: "lightning__recordIdType"
+                    description: "Product record ID to check"
+            outputs:
+                productId: object
+                    complex_data_type_name: "lightning__recordIdType"
+                    description: "Product Record ID"
+                name: string
+                    description: "Product record Name"
+                productName: string
+                    description: "Product Name value"
+                sku: string
+                    description: "Product SKU"
+                category: string
+                    description: "Category"
+                costPrice: number
+                    description: "Cost Price"
+                sellingPrice: number
+                    description: "Selling Price"
+                stockOnHand: number
+                    description: "Stock On Hand"
+                reorderPoint: number
+                    description: "Reorder point"
+                availableQuantity: number
+                    description: "Available stock"
+                status: string
+                    description: "Product status"
+                productImage: string
+                    description: "Product Image download URL"
+            target: "apex://IMS_GetProductDetail"
+
+    reasoning:
+        instructions: ->
+            | Assist the user with sales orders and checking product availability.
+            | To check availability, look up the product detail using get_product_availability.
+            | To create a sales order, collect customer name, product ID, quantity, and unit price, and use Create Sales Order.
+            | Note that VR_004 will validate and block confirmation if sales order quantity exceeds available stock.
+        actions:
+            invoke_create_sales_order: @actions.create_sales_order
+                with customerName = ...
+                with productId = ...
+                with quantity = ...
+                with unitPrice = ...
+            invoke_get_product_availability: @actions.get_product_availability
+                with productId = ...
+            back_to_menu: @utils.transition to @topic.topic_selector
+                description: "Return to the main menu"
+
+topic supplier_agent:
+    label: "Supplier Agent"
+    description: "Manages supplier information and performance."
+    actions:
+        get_supplier_performance:
+            description: "Retrieve average delivery time, accuracy, and ratings of suppliers"
+            inputs:
+                placeholder: string
+                    description: "Dummy placeholder"
+            outputs:
+                output: list[object]
+                    complex_data_type_name: "@apexClassType/c__IMS_GetSupplierPerformance$SupplierPerformanceView"
+                    description: "List of supplier performance metrics"
+            target: "apex://IMS_GetSupplierPerformance"
+
+    reasoning:
+        instructions: ->
+            | Handle supplier search, rating, contact lookup, and performance checks.
+            | Use get_supplier_performance to query avg delivery times, accuracy, rating, and late deliveries.
+        actions:
+            invoke_get_supplier_performance: @actions.get_supplier_performance
+                with placeholder = "dummy"
+            back_to_menu: @utils.transition to @topic.topic_selector
+                description: "Return to the main menu"
+
+topic return_agent:
+    label: "Return & Replacement Agent"
+    description: "Manages return requests (RMA), approvals, repairs, replacements, and refunds."
+    actions:
+        process_return_request:
+            description: "Update return request status and resolution type (Repair, Replacement, Refund)"
+            inputs:
+                requestId: object
+                    complex_data_type_name: "lightning__recordIdType"
+                    description: "Return Request ID"
+                status: string
+                    description: "Status to update"
+                resolutionType: string
+                    description: "Resolution type"
+            outputs:
+                output: boolean
+                    description: "True if processed successfully"
+            target: "apex://IMS_ProcessReturnRequest"
+
+    reasoning:
+        instructions: ->
+            | Handle product return request creation, status tracking, approvals, or rejections.
+            | Collect return request ID, target status, and optional resolution type to use process_return_request.
+            | Respect the approval workflow: Sales Executive submits, Inventory Manager reviews, Admin approves refunds.
+        actions:
+            invoke_process_return_request: @actions.process_return_request
+                with requestId = ...
+                with status = ...
+                with resolutionType = ...
+            back_to_menu: @utils.transition to @topic.topic_selector
+                description: "Return to the main menu"
+
+topic admin_agent:
+    label: "Admin Agent"
+    description: "Handles system audits, object health, role checks, and permission analyses."
+    actions:
+        get_system_health:
+            description: "Retrieve count summaries of active objects and audit status"
+            inputs:
+                placeholder: string
+                    description: "Dummy placeholder"
+            outputs:
+                activeProductsCount: object
+                    complex_data_type_name: "lightning__integerType"
+                    description: "Active Products Count"
+                totalSuppliersCount: object
+                    complex_data_type_name: "lightning__integerType"
+                    description: "Total Suppliers Count"
+                pendingPOCount: object
+                    complex_data_type_name: "lightning__integerType"
+                    description: "Pending PO Count"
+                pendingSOCount: object
+                    complex_data_type_name: "lightning__integerType"
+                    description: "Pending SO Count"
+                pendingReturnCount: object
+                    complex_data_type_name: "lightning__integerType"
+                    description: "Pending Return Count"
+                systemStatus: string
+                    description: "System status"
+            target: "apex://IMS_GetSystemHealth"
+
+    reasoning:
+        instructions: ->
+            | Perform administrative duties, security checks, and configuration health checks.
+            | Use get_system_health to retrieve active product counts, supplier counts, and pending order tallies.
+            | Only Admin users can perform sensitive admin operations.
+        actions:
+            invoke_get_system_health: @actions.get_system_health
+                with placeholder = "dummy"
+            back_to_menu: @utils.transition to @topic.topic_selector
+                description: "Return to the main menu"
+
+topic analytics_agent:
+    label: "Analytics Agent"
+    description: "Analyzes revenue, cost, profit margins, and sales trends."
+    actions:
+        get_product_performance:
+            description: "Retrieve product sales leaderboard revenue and margins"
+            inputs:
+                placeholder: string
+                    description: "Dummy placeholder"
+            outputs:
+                output: list[object]
+                    complex_data_type_name: "@apexClassType/c__IMS_GetProductPerformance$ProductPerformanceView"
+                    description: "List of product performance stats"
+            target: "apex://IMS_GetProductPerformance"
+
+        get_supplier_performance:
+            description: "Retrieve average delivery time, accuracy, and ratings of suppliers"
+            inputs:
+                placeholder: string
+                    description: "Dummy placeholder"
+            outputs:
+                output: list[object]
+                    complex_data_type_name: "@apexClassType/c__IMS_GetSupplierPerformance$SupplierPerformanceView"
+                    description: "List of supplier performance metrics"
+            target: "apex://IMS_GetSupplierPerformance"
+
+    reasoning:
+        instructions: ->
+            | Provide analytics on revenue, procurement cost, profit, and product/supplier performance.
+            | Use get_product_performance to retrieve the sales leaderboard.
+            | Use get_supplier_performance to review vendor rating statistics.
+        actions:
+            invoke_get_product_performance: @actions.get_product_performance
+                with placeholder = "dummy"
+            invoke_get_supplier_performance: @actions.get_supplier_performance
+                with placeholder = "dummy"
+            back_to_menu: @utils.transition to @topic.topic_selector
+                description: "Return to the main menu"
+
+topic notification_agent:
+    label: "Notification Agent"
+    description: "Retrieves active warnings and reorder alerts."
+    actions:
+        get_low_stock_alerts:
+            description: "Retrieve active products whose stock has dropped below minimum threshold"
+            inputs:
+                placeholder: string
+                    description: "Dummy placeholder"
+            outputs:
+                output: list[object]
+                    complex_data_type_name: "@apexClassType/c__IMS_GetLowStockAlerts$LowStockAlertView"
+                    description: "List of low stock alerts"
+            target: "apex://IMS_GetLowStockAlerts"
+
+    reasoning:
+        instructions: ->
+            | Check for low stock warnings, pending purchase orders, or unread notifications.
+            | Use get_low_stock_alerts to find products at or below their minimum stock levels.
+        actions:
+            invoke_get_low_stock_alerts: @actions.get_low_stock_alerts
+                with placeholder = "dummy"
+            back_to_menu: @utils.transition to @topic.topic_selector
+                description: "Return to the main menu"
+
+topic product_image_agent:
+    label: "Product Image Agent"
+    description: "Manages uploading, replacing, and deleting product images."
+    actions:
+        delete_product_image:
+            description: "Delete the product image Salesforce File by product ID"
+            inputs:
+                productId: object
+                    complex_data_type_name: "lightning__recordIdType"
+                    description: "Product ID"
+            outputs:
+                output: boolean
+                    description: "True if deleted successfully"
+            target: "apex://IMS_DeleteProductImage"
+
+    reasoning:
+        instructions: ->
+            | Handle product image queries and deletion.
+            | Use delete_product_image to remove the associated Salesforce File for a product.
+            | Note: Image uploading is performed via standard Salesforce File uploads, but deletion is restricted to Admins.
+        actions:
+            invoke_delete_product_image: @actions.delete_product_image
+                with productId = ...
+            back_to_menu: @utils.transition to @topic.topic_selector
+                description: "Return to the main menu"

@@ -1,0 +1,102 @@
+{
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "availableQuantity" : {
+      "title" : "Available Quantity",
+      "description" : "Available stock",
+      "lightning:type" : "lightning__numberType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "category" : {
+      "title" : "Category",
+      "description" : "Category",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "costPrice" : {
+      "title" : "Cost Price",
+      "description" : "Cost Price",
+      "lightning:type" : "lightning__numberType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "name" : {
+      "title" : "Name",
+      "description" : "Product record Name",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "productId" : {
+      "title" : "Product Id",
+      "description" : "Product Record ID",
+      "lightning:type" : "lightning__recordIdType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "productImage" : {
+      "title" : "Product Image",
+      "description" : "Product Image download URL",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "productName" : {
+      "title" : "Product Name",
+      "description" : "Product Name value",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "reorderPoint" : {
+      "title" : "Reorder Point",
+      "description" : "Reorder point",
+      "lightning:type" : "lightning__numberType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "sellingPrice" : {
+      "title" : "Selling Price",
+      "description" : "Selling Price",
+      "lightning:type" : "lightning__numberType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "sku" : {
+      "title" : "Sku",
+      "description" : "Product SKU",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "status" : {
+      "title" : "Status",
+      "description" : "Product status",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "stockOnHand" : {
+      "title" : "Stock On Hand",
+      "description" : "Stock On Hand",
+      "lightning:type" : "lightning__numberType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}

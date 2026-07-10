@@ -1,0 +1,14 @@
+{
+  "required" : [ ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "productId" : {
+      "title" : "Product Id",
+      "description" : "Product record ID to look up",
+      "lightning:type" : "lightning__recordIdType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}

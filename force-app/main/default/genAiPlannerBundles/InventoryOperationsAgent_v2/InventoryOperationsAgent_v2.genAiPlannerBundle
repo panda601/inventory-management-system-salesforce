@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlannerBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Master router agent for managing inventory, procurement, sales, returns, and analytics.</description>
+    <localTopicLinks>
+        <genAiPluginName>admin_agent_16jg5000000kKmv</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>analytics_agent_16jg5000000kKmv</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>inventory_agent_16jg5000000kKmv</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>notification_agent_16jg5000000kKmv</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>product_image_agent_16jg5000000kKmv</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>purchase_agent_16jg5000000kKmv</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>return_agent_16jg5000000kKmv</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>sales_agent_16jg5000000kKmv</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>supplier_agent_16jg5000000kKmv</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>topic_selector_16jg5000000kKmv</genAiPluginName>
+    </localTopicLinks>
+    <localTopics>
+        <fullName>purchase_agent_16jg5000000kKmv</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Manages procurement and purchase orders.</description>
+        <developerName>purchase_agent_16jg5000000kKmv</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Inventory Operations Agent, the central orchestrator for the Inventory Management System (IMS).
+Greet the user and guide them to manage their inventory, purchase orders, sales orders, suppliers, returns, analytics, and settings.
+Always route requests to the correct specialized spoke topic (Inventory, Purchase, Sales, Supplier, Return, Admin, Analytics, Notification, or Product Image).
+Never execute business logic directly in the topic selector.</description>
+            <developerName>instruction0_179g50000018Kp2</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179g50000018Kp2</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>create_purchase_order_179g50000018Kp2</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>create_purchase_order_179g50000018Kp2</fullName>
+            <description>Create a new purchase order and purchase order item in draft status</description>
+            <developerName>create_purchase_order_179g50000018Kp2</developerName>
+            <invocationTarget>IMS_CreatePurchaseOrder</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>create_purchase_order</localDeveloperName>
+            <masterLabel>Create Purchase Order</masterLabel>
+        </localActions>
+        <localDeveloperName>purchase_agent</localDeveloperName>
+        <masterLabel>Purchase Agent</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>notification_agent_16jg5000000kKmv</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Retrieves active warnings and reorder alerts.</description>
+        <developerName>notification_agent_16jg5000000kKmv</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Inventory Operations Agent, the central orchestrator for the Inventory Management System (IMS).
+Greet the user and guide them to manage their inventory, purchase orders, sales orders, suppliers, returns, analytics, and settings.
+Always route requests to the correct specialized spoke topic (Inventory, Purchase, Sales, Supplier, Return, Admin, Analytics, Notification, or Product Image).
+Never execute business logic directly in the topic selector.</description>
+            <developerName>instruction0_179g50000018Kp1</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179g50000018Kp1</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>get_low_stock_alerts_179g50000018Kp1</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>get_low_stock_alerts_179g50000018Kp1</fullName>
+            <description>Retrieve active products whose stock has dropped below minimum threshold</description>
+            <developerName>get_low_stock_alerts_179g50000018Kp1</developerName>
+            <invocationTarget>IMS_GetLowStockAlerts</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>get_low_stock_alerts</localDeveloperName>
+            <masterLabel>Get Low Stock Alerts</masterLabel>
+        </localActions>
+        <localDeveloperName>notification_agent</localDeveloperName>
+        <masterLabel>Notification Agent</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>return_agent_16jg5000000kKmv</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Manages return requests (RMA), approvals, repairs, replacements, and refunds.</description>
+        <developerName>return_agent_16jg5000000kKmv</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Inventory Operations Agent, the central orchestrator for the Inventory Management System (IMS).
+Greet the user and guide them to manage their inventory, purchase orders, sales orders, suppliers, returns, analytics, and settings.
+Always route requests to the correct specialized spoke topic (Inventory, Purchase, Sales, Supplier, Return, Admin, Analytics, Notification, or Product Image).
+Never execute business logic directly in the topic selector.</description>
+            <developerName>instruction0_179g50000018Kp0</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179g50000018Kp0</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>process_return_request_179g50000018Kp0</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>process_return_request_179g50000018Kp0</fullName>
+            <description>Update return request status and resolution type (Repair, Replacement, Refund)</description>
+            <developerName>process_return_request_179g50000018Kp0</developerName>
+            <invocationTarget>IMS_ProcessReturnRequest</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>process_return_request</localDeveloperName>
+            <masterLabel>Process Return Request</masterLabel>
+        </localActions>
+        <localDeveloperName>return_agent</localDeveloperName>
+        <masterLabel>Return &amp; Replacement Agent</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>topic_selector_16jg5000000kKmv</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Routes user requests to the appropriate specialized spoke topic.</description>
+        <developerName>topic_selector_16jg5000000kKmv</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Inventory Operations Agent, the central orchestrator for the Inventory Management System (IMS).
+Greet the user and guide them to manage their inventory, purchase orders, sales orders, suppliers, returns, analytics, and settings.
+Always route requests to the correct specialized spoke topic (Inventory, Purchase, Sales, Supplier, Return, Admin, Analytics, Notification, or Product Image).
+Never execute business logic directly in the topic selector.</description>
+            <developerName>instruction0_179g50000018Koz</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179g50000018Koz</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localDeveloperName>topic_selector</localDeveloperName>
+        <masterLabel>Topic Selector</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>inventory_agent_16jg5000000kKmv</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Manages product lookup, stock levels, and inventory transactions.</description>
+        <developerName>inventory_agent_16jg5000000kKmv</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Inventory Operations Agent, the central orchestrator for the Inventory Management System (IMS).
+Greet the user and guide them to manage their inventory, purchase orders, sales orders, suppliers, returns, analytics, and settings.
+Always route requests to the correct specialized spoke topic (Inventory, Purchase, Sales, Supplier, Return, Admin, Analytics, Notification, or Product Image).
+Never execute business logic directly in the topic selector.</description>
+            <developerName>instruction0_179g50000018Kp8</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179g50000018Kp8</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>get_product_detail_179g50000018Kp8</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>get_inventory_health_179g50000018Kp8</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>get_inventory_health_179g50000018Kp8</fullName>
+            <description>Retrieve aggregated stock summary metrics</description>
+            <developerName>get_inventory_health_179g50000018Kp8</developerName>
+            <invocationTarget>IMS_GetInventoryHealth</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>get_inventory_health</localDeveloperName>
+            <masterLabel>Get Inventory Health</masterLabel>
+        </localActions>
+        <localActions>
+            <fullName>get_product_detail_179g50000018Kp8</fullName>
+            <description>Retrieve SKU, price, stock, and details of a product by ID</description>
+            <developerName>get_product_detail_179g50000018Kp8</developerName>
+            <invocationTarget>IMS_GetProductDetail</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>get_product_detail</localDeveloperName>
+            <masterLabel>Get Product Detail</masterLabel>
+        </localActions>
+        <localDeveloperName>inventory_agent</localDeveloperName>
+        <masterLabel>Inventory Agent</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>analytics_agent_16jg5000000kKmv</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Analyzes revenue, cost, profit margins, and sales trends.</description>
+        <developerName>analytics_agent_16jg5000000kKmv</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Inventory Operations Agent, the central orchestrator for the Inventory Management System (IMS).
+Greet the user and guide them to manage their inventory, purchase orders, sales orders, suppliers, returns, analytics, and settings.
+Always route requests to the correct specialized spoke topic (Inventory, Purchase, Sales, Supplier, Return, Admin, Analytics, Notification, or Product Image).
+Never execute business logic directly in the topic selector.</description>
+            <developerName>instruction0_179g50000018Kp7</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179g50000018Kp7</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>get_supplier_performance_179g50000018Kp7</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>get_product_performance_179g50000018Kp7</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>get_supplier_performance_179g50000018Kp7</fullName>
+            <description>Retrieve average delivery time, accuracy, and ratings of suppliers</description>
+            <developerName>get_supplier_performance_179g50000018Kp7</developerName>
+            <invocationTarget>IMS_GetSupplierPerformance</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>get_supplier_performance</localDeveloperName>
+            <masterLabel>Get Supplier Performance</masterLabel>
+        </localActions>
+        <localActions>
+            <fullName>get_product_performance_179g50000018Kp7</fullName>
+            <description>Retrieve product sales leaderboard revenue and margins</description>
+            <developerName>get_product_performance_179g50000018Kp7</developerName>
+            <invocationTarget>IMS_GetProductPerformance</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>get_product_performance</localDeveloperName>
+            <masterLabel>Get Product Performance</masterLabel>
+        </localActions>
+        <localDeveloperName>analytics_agent</localDeveloperName>
+        <masterLabel>Analytics Agent</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>admin_agent_16jg5000000kKmv</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Handles system audits, object health, role checks, and permission analyses.</description>
+        <developerName>admin_agent_16jg5000000kKmv</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Inventory Operations Agent, the central orchestrator for the Inventory Management System (IMS).
+Greet the user and guide them to manage their inventory, purchase orders, sales orders, suppliers, returns, analytics, and settings.
+Always route requests to the correct specialized spoke topic (Inventory, Purchase, Sales, Supplier, Return, Admin, Analytics, Notification, or Product Image).
+Never execute business logic directly in the topic selector.</description>
+            <developerName>instruction0_179g50000018Kp6</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179g50000018Kp6</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>get_system_health_179g50000018Kp6</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>get_system_health_179g50000018Kp6</fullName>
+            <description>Retrieve count summaries of active objects and audit status</description>
+            <developerName>get_system_health_179g50000018Kp6</developerName>
+            <invocationTarget>IMS_GetSystemHealth</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>get_system_health</localDeveloperName>
+            <masterLabel>Get System Health</masterLabel>
+        </localActions>
+        <localDeveloperName>admin_agent</localDeveloperName>
+        <masterLabel>Admin Agent</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>product_image_agent_16jg5000000kKmv</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Manages uploading, replacing, and deleting product images.</description>
+        <developerName>product_image_agent_16jg5000000kKmv</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Inventory Operations Agent, the central orchestrator for the Inventory Management System (IMS).
+Greet the user and guide them to manage their inventory, purchase orders, sales orders, suppliers, returns, analytics, and settings.
+Always route requests to the correct specialized spoke topic (Inventory, Purchase, Sales, Supplier, Return, Admin, Analytics, Notification, or Product Image).
+Never execute business logic directly in the topic selector.</description>
+            <developerName>instruction0_179g50000018Kp5</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179g50000018Kp5</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>delete_product_image_179g50000018Kp5</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>delete_product_image_179g50000018Kp5</fullName>
+            <description>Delete the product image Salesforce File by product ID</description>
+            <developerName>delete_product_image_179g50000018Kp5</developerName>
+            <invocationTarget>IMS_DeleteProductImage</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>delete_product_image</localDeveloperName>
+            <masterLabel>Delete Product Image</masterLabel>
+        </localActions>
+        <localDeveloperName>product_image_agent</localDeveloperName>
+        <masterLabel>Product Image Agent</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>supplier_agent_16jg5000000kKmv</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Manages supplier information and performance.</description>
+        <developerName>supplier_agent_16jg5000000kKmv</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Inventory Operations Agent, the central orchestrator for the Inventory Management System (IMS).
+Greet the user and guide them to manage their inventory, purchase orders, sales orders, suppliers, returns, analytics, and settings.
+Always route requests to the correct specialized spoke topic (Inventory, Purchase, Sales, Supplier, Return, Admin, Analytics, Notification, or Product Image).
+Never execute business logic directly in the topic selector.</description>
+            <developerName>instruction0_179g50000018Kp4</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179g50000018Kp4</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>get_supplier_performance_179g50000018Kp4</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>get_supplier_performance_179g50000018Kp4</fullName>
+            <description>Retrieve average delivery time, accuracy, and ratings of suppliers</description>
+            <developerName>get_supplier_performance_179g50000018Kp4</developerName>
+            <invocationTarget>IMS_GetSupplierPerformance</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>get_supplier_performance</localDeveloperName>
+            <masterLabel>Get Supplier Performance</masterLabel>
+        </localActions>
+        <localDeveloperName>supplier_agent</localDeveloperName>
+        <masterLabel>Supplier Agent</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>sales_agent_16jg5000000kKmv</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Manages customer orders and product availability.</description>
+        <developerName>sales_agent_16jg5000000kKmv</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Inventory Operations Agent, the central orchestrator for the Inventory Management System (IMS).
+Greet the user and guide them to manage their inventory, purchase orders, sales orders, suppliers, returns, analytics, and settings.
+Always route requests to the correct specialized spoke topic (Inventory, Purchase, Sales, Supplier, Return, Admin, Analytics, Notification, or Product Image).
+Never execute business logic directly in the topic selector.</description>
+            <developerName>instruction0_179g50000018Kp3</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179g50000018Kp3</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>create_sales_order_179g50000018Kp3</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>get_product_availability_179g50000018Kp3</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>create_sales_order_179g50000018Kp3</fullName>
+            <description>Create a new sales order and sales order item in draft status</description>
+            <developerName>create_sales_order_179g50000018Kp3</developerName>
+            <invocationTarget>IMS_CreateSalesOrder</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>create_sales_order</localDeveloperName>
+            <masterLabel>Create Sales Order</masterLabel>
+        </localActions>
+        <localActions>
+            <fullName>get_product_availability_179g50000018Kp3</fullName>
+            <description>Check stock on hand and availability details for a product</description>
+            <developerName>get_product_availability_179g50000018Kp3</developerName>
+            <invocationTarget>IMS_GetProductDetail</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+            <localDeveloperName>get_product_availability</localDeveloperName>
+            <masterLabel>Get Product Availability</masterLabel>
+        </localActions>
+        <localDeveloperName>sales_agent</localDeveloperName>
+        <masterLabel>Sales Agent</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <masterLabel>Inventory Operations Agent</masterLabel>
+    <plannerType>Atlas__ConcurrentMultiAgentOrchestration</plannerType>
+</GenAiPlannerBundle>

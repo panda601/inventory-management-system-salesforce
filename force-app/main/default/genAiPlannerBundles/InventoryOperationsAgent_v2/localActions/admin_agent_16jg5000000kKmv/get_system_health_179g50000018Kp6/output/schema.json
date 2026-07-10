@@ -1,0 +1,54 @@
+{
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "activeProductsCount" : {
+      "title" : "Active Products Count",
+      "description" : "Active Products Count",
+      "lightning:type" : "lightning__integerType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "pendingPOCount" : {
+      "title" : "Pending POCount",
+      "description" : "Pending PO Count",
+      "lightning:type" : "lightning__integerType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "pendingReturnCount" : {
+      "title" : "Pending Return Count",
+      "description" : "Pending Return Count",
+      "lightning:type" : "lightning__integerType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "pendingSOCount" : {
+      "title" : "Pending SOCount",
+      "description" : "Pending SO Count",
+      "lightning:type" : "lightning__integerType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "systemStatus" : {
+      "title" : "System Status",
+      "description" : "System status",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "totalSuppliersCount" : {
+      "title" : "Total Suppliers Count",
+      "description" : "Total Suppliers Count",
+      "lightning:type" : "lightning__integerType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}
